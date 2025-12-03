@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>@yield('title', 'Pradytecai - Enterprise Software Solutions')</title>
+    <meta name="description" content="@yield('description', 'Pradytecai offers cutting-edge software solutions including BulkSMS CRM, Microfinance Management, and more.')">
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.bunny.net">
+    <link href="https://fonts.bunny.net/css?family=inter:400,500,600,700" rel="stylesheet" />
+    
+    <!-- Styles -->
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    
+    <style>
+        body {
+            font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        }
+
+        /* Simple hero fade/slide animation */
+        @keyframes heroFadeUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hero-animate {
+            opacity: 0;
+            transform: translateY(24px);
+            animation: heroFadeUp 0.8s ease-out forwards;
+        }
+
+        .hero-animate.delay-sm {
+            animation-delay: 0.1s;
+        }
+
+        .hero-animate.delay-md {
+            animation-delay: 0.2s;
+        }
+
+        .hero-animate.delay-lg {
+            animation-delay: 0.3s;
+        }
+    </style>
+    @stack('styles')
+</head>
+<body class="bg-white text-gray-900">
+    <!-- Navigation -->
+    <nav class="fixed top-0 left-0 right-0 bg-white/95 backdrop-blur-sm border-b border-gray-200 z-50 px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <div class="flex items-center">
+                <a href="/" class="text-2xl font-bold text-blue-600">Pradytecai</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-6">
+                <a href="/" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('/') ? 'text-blue-600 font-semibold' : '' }}">Home</a>
+                <a href="/about" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('about') ? 'text-blue-600 font-semibold' : '' }}">About</a>
+                <a href="/services" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('services') ? 'text-blue-600 font-semibold' : '' }}">Services</a>
+                <a href="/products" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('products') ? 'text-blue-600 font-semibold' : '' }}">Products</a>
+                <a href="/careers" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('careers') ? 'text-blue-600 font-semibold' : '' }}">Careers</a>
+                <a href="/blog" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('blog') ? 'text-blue-600 font-semibold' : '' }}">Blog</a>
+                <a href="/contact" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('contact') ? 'text-blue-600 font-semibold' : '' }}">Contact</a>
+            </div>
+            <div class="flex items-center space-x-4">
+                @auth
+                    <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-blue-600 transition text-sm sm:text-base">Admin</a>
+                    <form method="POST" action="{{ route('logout') }}" class="inline">
+                        @csrf
+                        <button type="submit" class="text-gray-700 hover:text-blue-600 transition text-sm sm:text-base">Logout</button>
+                    </form>
+                @else
+                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 transition text-sm sm:text-base">Login</a>
+                @endauth
+                <a href="https://crm.pradytecai.com" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base">Open CRM</a>
+                <!-- Mobile menu button -->
+                <button id="mobile-menu-button" class="md:hidden text-gray-700 hover:text-blue-600">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+        <!-- Mobile menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
+            <div class="px-4 py-4 space-y-3">
+                <a href="/" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('/') ? 'text-blue-600 font-semibold' : '' }}">Home</a>
+                <a href="/about" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('about') ? 'text-blue-600 font-semibold' : '' }}">About</a>
+                <a href="/services" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('services') ? 'text-blue-600 font-semibold' : '' }}">Services</a>
+                <a href="/products" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('products') ? 'text-blue-600 font-semibold' : '' }}">Products</a>
+                <a href="/careers" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('careers') ? 'text-blue-600 font-semibold' : '' }}">Careers</a>
+                <a href="/blog" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('blog') ? 'text-blue-600 font-semibold' : '' }}">Blog</a>
+                <a href="/contact" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('contact') ? 'text-blue-600 font-semibold' : '' }}">Contact</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="pt-16">
+        @yield('content')
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gradient-to-r from-slate-950 via-slate-900 to-slate-950 text-slate-300 py-12 px-4 sm:px-6 lg:px-8">
+        <div class="grid md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <h3 class="text-white text-xl font-semibold tracking-tight mb-3">Pradytecai</h3>
+                <p class="text-sm leading-relaxed">
+                    Enterprise software solutions for modern businesses. Secure, scalable and built for growth.
+                </p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wide">Solutions</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="https://crm.pradytecai.com" target="_blank" class="hover:text-white hover:underline underline-offset-4 transition">BulkSMS CRM</a></li>
+                    <li><a href="https://demo.pradytecai.com" target="_blank" class="hover:text-white hover:underline underline-offset-4 transition">Prady Mfi</a></li>
+                    <li><a href="/products" class="hover:text-white hover:underline underline-offset-4 transition">All Products</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wide">Company</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="/about" class="hover:text-white hover:underline underline-offset-4 transition">About Us</a></li>
+                    <li><a href="/services" class="hover:text-white hover:underline underline-offset-4 transition">Services</a></li>
+                    <li><a href="/careers" class="hover:text-white hover:underline underline-offset-4 transition">Careers</a></li>
+                    <li><a href="/blog" class="hover:text-white hover:underline underline-offset-4 transition">Blog</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wide">Legal</h4>
+                <ul class="space-y-2 text-sm">
+                    <li><a href="/policies" class="hover:text-white hover:underline underline-offset-4 transition">Terms & Privacy</a></li>
+                    <li><a href="/contact" class="hover:text-white hover:underline underline-offset-4 transition">Contact</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-slate-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
+            <p class="order-2 md:order-1 text-center md:text-left w-full md:w-auto">
+                &copy; {{ date('Y') }} Pradytecai. All rights reserved.
+            </p>
+            <div class="order-1 md:order-2 flex items-center justify-center md:justify-end w-full md:w-auto space-x-4">
+                <span class="text-xs uppercase tracking-wide text-slate-400 hidden sm:inline">Follow</span>
+                <a href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="Pradytecai on LinkedIn" class="text-slate-400 hover:text-white transition">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M4.98 3.5C3.88 3.5 3 4.38 3 5.47c0 1.06.86 1.93 1.96 1.93h.02c1.1 0 1.98-.87 1.98-1.93C6.96 4.38 6.08 3.5 4.98 3.5zM3.25 8.75h3.47V20.5H3.25V8.75zM9.5 8.75h3.32v1.6h.05c.46-.87 1.57-1.78 3.23-1.78 3.45 0 4.09 2.27 4.09 5.22v6.71h-3.47v-5.95c0-1.42-.03-3.24-1.98-3.24-1.98 0-2.29 1.54-2.29 3.14v6.05H9.5V8.75z" />
+                    </svg>
+                </a>
+                <a href="https://x.com" target="_blank" rel="noopener" aria-label="Pradytecai on X" class="text-slate-400 hover:text-white transition">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M18.244 4h3.039l-6.64 7.59L22 20h-3.18l-3.92-4.6-3.52 4.6H8.34l6.64-7.59L6 4h3.18l3.42 4.01L16.48 4z" />
+                    </svg>
+                </a>
+                <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Pradytecai on Facebook" class="text-slate-400 hover:text-white transition">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M13 10h2.5l-.3 3H13v7h-3v-7H8v-3h2V8.5C10 6.57 11.57 5 13.5 5H17v3h-2c-.55 0-1 .45-1 1V10z" />
+                    </svg>
+                </a>
+                <a href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="Pradytecai on YouTube" class="text-slate-400 hover:text-white transition">
+                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                        <path d="M21.8 8.3a2.7 2.7 0 0 0-1.9-1.9C18.4 6 12 6 12 6s-6.4 0-7.9.4a2.7 2.7 0 0 0-1.9 1.9C2 9.8 2 12 2 12s0 2.2.2 3.7a2.7 2.7 0 0 0 1.9 1.9C5.6 18 12 18 12 18s6.4 0 7.9-.4a2.7 2.7 0 0 0 1.9-1.9C22 14.2 22 12 22 12s0-2.2-.2-3.7zM10 15.5v-7l6 3.5-6 3.5z" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Chatbot Widget -->
+    <div id="chatbot-root" class="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-3">
+        <!-- Chat panel -->
+        <div id="chatbot-panel" class="hidden w-[360px] max-w-[90vw] bg-white/95 backdrop-blur border border-slate-200 rounded-2xl shadow-2xl overflow-hidden">
+            <div class="bg-gradient-to-r from-indigo-600 to-sky-600 text-white px-4 py-3 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-9 h-9 rounded-full bg-white/10 border border-white/30 flex items-center justify-center text-xs font-semibold">
+                        PT
+                    </div>
+                    <div class="text-left">
+                        <p class="font-semibold text-sm">Pradytecai Assistant</p>
+                        <p class="text-[11px] text-indigo-100">Online • Typically replies in a few minutes</p>
+                    </div>
+                </div>
+                <button id="chatbot-close" class="text-indigo-100 hover:text-white text-sm px-1">
+                    ✕
+                </button>
+            </div>
+            <div id="chatbot-messages" class="px-4 py-3 space-y-3 max-h-72 overflow-y-auto text-sm bg-slate-50">
+                <div class="flex items-start space-x-2">
+                    <div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-semibold">
+                        PT
+                    </div>
+                    <div class="bg-white border border-indigo-100 rounded-2xl px-3 py-2 shadow-sm">
+                        <p class="text-gray-800 font-medium mb-1">Hi, welcome to Pradytecai.</p>
+                        <p class="text-gray-700">Tell us briefly what you need and we’ll route it to the right team.</p>
+                        <div class="mt-3 flex flex-wrap gap-2">
+                            <button type="button" class="chatbot-quick text-[11px] px-3 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">
+                                BulkSMS CRM support
+                            </button>
+                            <button type="button" class="chatbot-quick text-[11px] px-3 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">
+                                Prady Mfi demo
+                            </button>
+                            <button type="button" class="chatbot-quick text-[11px] px-3 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">
+                                Talk to sales
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <form id="chatbot-form" class="border-t border-slate-200 bg-white/95 flex items-center px-3 py-2 space-x-2">
+                <input
+                    id="chatbot-input"
+                    type="text"
+                    placeholder="Type your message..."
+                    class="flex-1 text-sm px-3 py-2 rounded-full border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    autocomplete="off"
+                />
+                <button
+                    type="submit"
+                    class="inline-flex items-center justify-center px-3 py-2 rounded-full bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                >
+                    Send
+                </button>
+            </form>
+        </div>
+
+        <!-- Chat trigger button -->
+        <button
+            id="chatbot-toggle"
+            class="rounded-full shadow-xl bg-gradient-to-br from-indigo-600 to-sky-600 text-white flex items-center justify-center w-14 h-14 hover:from-indigo-500 hover:to-sky-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            aria-label="Open chat support"
+        >
+            <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 10c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 18l1.395-3.72C3.512 12.042 3 10.574 3 9c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+            </svg>
+        </button>
+    </div>
+
+    <!-- Scripts -->
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
+            const menu = document.getElementById('mobile-menu');
+            menu.classList.toggle('hidden');
+        });
+
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                const href = this.getAttribute('href');
+                if (!href || href === '#') return;
+                const target = document.querySelector(href);
+                if (target) {
+                    e.preventDefault();
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Simple chatbot behaviour (frontend only)
+        (function() {
+            const toggleBtn = document.getElementById('chatbot-toggle');
+            const panel = document.getElementById('chatbot-panel');
+            const closeBtn = document.getElementById('chatbot-close');
+            const form = document.getElementById('chatbot-form');
+            const input = document.getElementById('chatbot-input');
+            const messages = document.getElementById('chatbot-messages');
+            const quickButtons = document.querySelectorAll('.chatbot-quick');
+
+            if (!toggleBtn || !panel || !form || !input || !messages) return;
+
+            function openChat() {
+                panel.classList.remove('hidden');
+                input.focus();
+            }
+
+            function closeChat() {
+                panel.classList.add('hidden');
+            }
+
+            toggleBtn.addEventListener('click', function() {
+                if (panel.classList.contains('hidden')) {
+                    openChat();
+                } else {
+                    closeChat();
+                }
+            });
+
+            closeBtn?.addEventListener('click', function() {
+                closeChat();
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                const text = input.value.trim();
+                if (!text) return;
+
+                appendUserMessage(text);
+
+                input.value = '';
+                messages.scrollTop = messages.scrollHeight;
+
+                autoReply();
+            });
+
+            // Quick reply buttons
+            quickButtons.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    const text = this.textContent.trim();
+                    if (!text) return;
+                    openChat();
+                    appendUserMessage(text);
+                    autoReply();
+                });
+            });
+
+            function appendUserMessage(text) {
+                const userBubble = document.createElement('div');
+                userBubble.className = 'flex items-start justify-end space-x-2';
+                userBubble.innerHTML =
+                    '<div class="bg-indigo-600 text-white rounded-2xl px-3 py-2 text-sm max-w-[80%] shadow-sm">' +
+                    text.replace(/</g, '&lt;') +
+                    '</div>';
+                messages.appendChild(userBubble);
+                messages.scrollTop = messages.scrollHeight;
+            }
+
+            function autoReply() {
+                setTimeout(function() {
+                    const reply = document.createElement('div');
+                    reply.className = 'flex items-start space-x-2 mt-2';
+                    reply.innerHTML =
+                        '<div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-semibold">PT</div>' +
+                        '<div class="bg-white border border-indigo-100 rounded-2xl px-3 py-2 shadow-sm text-sm max-w-[80%]">' +
+                        '<p class="text-gray-800 mb-1">Thanks for your message.</p>' +
+                        '<p class="text-gray-700">We've logged your request. A member of the Pradytecai team will follow up via email or phone.</p>' +
+                        '</div>';
+                    messages.appendChild(reply);
+                    messages.scrollTop = messages.scrollHeight;
+                }, 600);
+            }
+        })();
+    </script>
+    @stack('scripts')
+</body>
+</html>
