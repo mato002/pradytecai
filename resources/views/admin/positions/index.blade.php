@@ -1,7 +1,7 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin - Blog')
-@section('page_title', 'Blog Posts')
+@section('title', 'Admin - Positions')
+@section('page_title', 'Open Positions')
 
 @section('content')
     @if(session('success'))
@@ -12,17 +12,17 @@
 
     <div class="flex items-center justify-between mb-6">
         <div>
-            <h2 class="text-xl font-semibold text-slate-900">Blog Posts</h2>
-            <p class="text-sm text-slate-500">Manage articles that appear on the public blog page.</p>
+            <h2 class="text-xl font-semibold text-slate-900">Open Positions</h2>
+            <p class="text-sm text-slate-500">Manage job positions that appear on the careers page.</p>
         </div>
-        <a href="{{ route('admin.blog.create') }}"
+        <a href="{{ route('admin.positions.create') }}"
            class="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition">
             <span class="mr-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
                 </svg>
             </span>
-            New Post
+            New Position
         </a>
     </div>
 
@@ -31,45 +31,43 @@
             <thead class="bg-slate-50">
                 <tr>
                     <th class="px-4 py-3 text-left font-semibold text-slate-600">Title</th>
-                    <th class="px-4 py-3 text-left font-semibold text-slate-600">Category</th>
-                    <th class="px-4 py-3 text-left font-semibold text-slate-600">Published</th>
+                    <th class="px-4 py-3 text-left font-semibold text-slate-600">Type</th>
+                    <th class="px-4 py-3 text-left font-semibold text-slate-600">Location</th>
                     <th class="px-4 py-3 text-left font-semibold text-slate-600">Status</th>
                     <th class="px-4 py-3 text-right font-semibold text-slate-600">Actions</th>
                 </tr>
             </thead>
             <tbody class="divide-y divide-slate-100">
-                @forelse($posts as $post)
+                @forelse($positions as $position)
                     <tr>
                         <td class="px-4 py-3">
-                            <p class="font-medium text-slate-900">{{ $post->title }}</p>
-                            @if($post->excerpt)
-                                <p class="text-xs text-slate-500 line-clamp-1">{{ $post->excerpt }}</p>
-                            @endif
+                            <p class="font-medium text-slate-900">{{ $position->title }}</p>
+                            <p class="text-xs text-slate-500 line-clamp-1">{{ Str::limit($position->description, 60) }}</p>
                         </td>
                         <td class="px-4 py-3 text-slate-700">
-                            {{ $post->category ?: 'General' }}
+                            {{ $position->type }}
                         </td>
-                        <td class="px-4 py-3 text-sm text-slate-500">
-                            {{ $post->published_at ? $post->published_at->format('M j, Y') : '—' }}
+                        <td class="px-4 py-3 text-slate-700">
+                            {{ $position->location }}
                         </td>
                         <td class="px-4 py-3">
-                            @if($post->is_published)
+                            @if($position->is_active)
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs">
-                                    Published
+                                    Active
                                 </span>
                             @else
                                 <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-slate-50 text-slate-600 text-xs">
-                                    Draft
+                                    Inactive
                                 </span>
                             @endif
                         </td>
                         <td class="px-4 py-3 text-right space-x-2">
-                            <a href="{{ route('admin.blog.edit', $post) }}"
+                            <a href="{{ route('admin.positions.edit', $position) }}"
                                class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs md:text-sm">
                                 Edit
                             </a>
-                            <form action="{{ route('admin.blog.destroy', $post) }}" method="POST" class="inline-block"
-                                  onsubmit="return confirm('Delete this post? This cannot be undone.');">
+                            <form action="{{ route('admin.positions.destroy', $position) }}" method="POST" class="inline-block"
+                                  onsubmit="return confirm('Delete this position? This cannot be undone.');">
                                 @csrf
                                 <button type="submit"
                                         class="inline-flex items-center px-3 py-1.5 rounded-lg border border-red-100 text-red-600 hover:bg-red-50 text-xs md:text-sm">
@@ -81,21 +79,20 @@
                 @empty
                     <tr>
                         <td colspan="5" class="px-4 py-6 text-center text-sm text-slate-500">
-                            No blog posts yet. Create your first article to populate the blog page.
+                            No positions yet. Create your first position to populate the careers page.
                         </td>
                     </tr>
                 @endforelse
             </tbody>
         </table>
 
-        @if(method_exists($posts, 'links'))
+        @if(method_exists($positions, 'links'))
             <div class="px-4 py-3 border-t border-slate-100">
-                {{ $posts->links() }}
+                {{ $positions->links() }}
             </div>
         @endif
     </div>
 @endsection
-
 
 
 

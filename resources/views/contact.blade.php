@@ -5,25 +5,36 @@
 
 @section('content')
     <!-- Hero Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-sky-50 via-white to-indigo-50">
-        <div class="w-full mx-auto text-center hero-animate">
-            <p class="inline-flex items-center px-3 py-1 rounded-full bg-white/70 border border-indigo-100 text-xs font-medium text-indigo-700 mb-4">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2"></span>
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1423666639041-f56000c27a9a?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="absolute inset-0 bg-gradient-to-br from-sky-900/85 via-indigo-900/80 to-teal-900/85"></div>
+        {{-- Subtle pattern overlay --}}
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+
+        <div class="relative z-10 w-full mx-auto text-center hero-animate">
+            <p class="inline-flex items-center px-3 py-1 rounded-full bg-white/90 border border-indigo-200 text-xs font-medium text-indigo-700 mb-4 backdrop-blur-sm">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
                 Typically replies in under 2 minutes
             </p>
-            <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-4">Let’s Talk About Your Next Project</h1>
-            <p class="text-xl text-gray-600 mb-6">
-                Whether you’re exploring BulkSMS CRM, Prady Mfi, or a custom enterprise solution, our team is ready to help.
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Let's Talk About Your Next Project</h1>
+            <p class="text-xl text-slate-200 mb-6">
+                Whether you're exploring BulkSMS CRM, Prady Mfi, or a custom enterprise solution, our team is ready to help.
             </p>
-            <p class="text-sm text-gray-500">
-                Prefer email or phone? Use the details below and we’ll make sure you reach the right person.
+            <p class="text-sm text-slate-300">
+                Prefer email or phone? Use the details below and we'll make sure you reach the right person.
             </p>
         </div>
     </section>
 
     <!-- Contact Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div class="w-full mx-auto grid lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-10 lg:gap-16 items-start">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-light"></div>
+        <div class="section-content w-full mx-auto grid lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] gap-10 lg:gap-16 items-start">
             <!-- Form Card -->
             <div class="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 sm:p-8">
                 <h2 class="text-2xl font-semibold text-gray-900 mb-2">Tell Us How We Can Help</h2>

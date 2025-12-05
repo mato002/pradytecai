@@ -5,18 +5,29 @@
 
 @section('content')
     <!-- Hero Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-sky-50 via-white to-indigo-50">
-        <div class="w-full mx-auto text-center hero-animate">
-            <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">Our Services</h1>
-            <p class="text-xl text-gray-600">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="absolute inset-0 bg-gradient-to-br from-sky-900/85 via-indigo-900/80 to-purple-900/85"></div>
+        {{-- Subtle pattern overlay --}}
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+
+        <div class="relative z-10 w-full mx-auto text-center hero-animate">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Our Services</h1>
+            <p class="text-xl text-slate-200">
                 Comprehensive software solutions tailored to your business needs
             </p>
         </div>
     </section>
 
     <!-- Services Grid -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div class="w-full mx-auto">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-light"></div>
+        <div class="section-content w-full mx-auto">
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 <!-- Custom Development -->
                 <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-xl transition-shadow">
@@ -226,8 +237,12 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-sky-50 via-white to-indigo-50">
-        <div class="w-full mx-auto text-center hero-animate delay-md">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-gradient"></div>
+        <div class="section-content w-full mx-auto text-center hero-animate delay-md">
             <h2 class="text-4xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
             <p class="text-xl text-gray-600 mb-8">
                 Let's discuss how our services can help transform your business.

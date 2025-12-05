@@ -64,18 +64,11 @@
                 <a href="/products" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('products') ? 'text-blue-600 font-semibold' : '' }}">Products</a>
                 <a href="/careers" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('careers') ? 'text-blue-600 font-semibold' : '' }}">Careers</a>
                 <a href="/blog" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('blog') ? 'text-blue-600 font-semibold' : '' }}">Blog</a>
+                <a href="/faq" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('faq') ? 'text-blue-600 font-semibold' : '' }}">FAQ</a>
                 <a href="/contact" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('contact') ? 'text-blue-600 font-semibold' : '' }}">Contact</a>
             </div>
             <div class="flex items-center space-x-4">
-                @auth
-                    <a href="{{ route('admin.dashboard') }}" class="text-gray-700 hover:text-blue-600 transition text-sm sm:text-base">Admin</a>
-                    <form method="POST" action="{{ route('logout') }}" class="inline">
-                        @csrf
-                        <button type="submit" class="text-gray-700 hover:text-blue-600 transition text-sm sm:text-base">Logout</button>
-                    </form>
-                @else
-                    <a href="{{ route('login') }}" class="text-gray-700 hover:text-blue-600 transition text-sm sm:text-base">Login</a>
-                @endauth
+                {{-- Public marketing shell should not expose auth controls --}}
                 <a href="https://crm.pradytecai.com" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base">Open CRM</a>
                 <!-- Mobile menu button -->
                 <button id="mobile-menu-button" class="md:hidden text-gray-700 hover:text-blue-600">
@@ -94,6 +87,7 @@
                 <a href="/products" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('products') ? 'text-blue-600 font-semibold' : '' }}">Products</a>
                 <a href="/careers" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('careers') ? 'text-blue-600 font-semibold' : '' }}">Careers</a>
                 <a href="/blog" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('blog') ? 'text-blue-600 font-semibold' : '' }}">Blog</a>
+                <a href="/faq" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('faq') ? 'text-blue-600 font-semibold' : '' }}">FAQ</a>
                 <a href="/contact" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('contact') ? 'text-blue-600 font-semibold' : '' }}">Contact</a>
             </div>
         </div>
@@ -131,10 +125,11 @@
                 </ul>
             </div>
             <div>
-                <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wide">Legal</h4>
+                <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wide">Support</h4>
                 <ul class="space-y-2 text-sm">
-                    <li><a href="/policies" class="hover:text-white hover:underline underline-offset-4 transition">Terms & Privacy</a></li>
+                    <li><a href="/faq" class="hover:text-white hover:underline underline-offset-4 transition">FAQ</a></li>
                     <li><a href="/contact" class="hover:text-white hover:underline underline-offset-4 transition">Contact</a></li>
+                    <li><a href="/policies" class="hover:text-white hover:underline underline-offset-4 transition">Terms & Privacy</a></li>
                 </ul>
             </div>
         </div>
@@ -142,36 +137,38 @@
             <p class="order-2 md:order-1 text-center md:text-left w-full md:w-auto">
                 &copy; {{ date('Y') }} Pradytecai. All rights reserved.
             </p>
-            <div class="order-1 md:order-2 flex items-center justify-center md:justify-end w-full md:w-auto space-x-4">
-                <span class="text-xs uppercase tracking-wide text-slate-400 hidden sm:inline">Follow</span>
-                <a href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="Pradytecai on LinkedIn" class="text-slate-400 hover:text-white transition">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M4.98 3.5C3.88 3.5 3 4.38 3 5.47c0 1.06.86 1.93 1.96 1.93h.02c1.1 0 1.98-.87 1.98-1.93C6.96 4.38 6.08 3.5 4.98 3.5zM3.25 8.75h3.47V20.5H3.25V8.75zM9.5 8.75h3.32v1.6h.05c.46-.87 1.57-1.78 3.23-1.78 3.45 0 4.09 2.27 4.09 5.22v6.71h-3.47v-5.95c0-1.42-.03-3.24-1.98-3.24-1.98 0-2.29 1.54-2.29 3.14v6.05H9.5V8.75z" />
-                    </svg>
-                </a>
-                <a href="https://x.com" target="_blank" rel="noopener" aria-label="Pradytecai on X" class="text-slate-400 hover:text-white transition">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M18.244 4h3.039l-6.64 7.59L22 20h-3.18l-3.92-4.6-3.52 4.6H8.34l6.64-7.59L6 4h3.18l3.42 4.01L16.48 4z" />
-                    </svg>
-                </a>
-                <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Pradytecai on Facebook" class="text-slate-400 hover:text-white transition">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M13 10h2.5l-.3 3H13v7h-3v-7H8v-3h2V8.5C10 6.57 11.57 5 13.5 5H17v3h-2c-.55 0-1 .45-1 1V10z" />
-                    </svg>
-                </a>
-                <a href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="Pradytecai on YouTube" class="text-slate-400 hover:text-white transition">
-                    <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                        <path d="M21.8 8.3a2.7 2.7 0 0 0-1.9-1.9C18.4 6 12 6 12 6s-6.4 0-7.9.4a2.7 2.7 0 0 0-1.9 1.9C2 9.8 2 12 2 12s0 2.2.2 3.7a2.7 2.7 0 0 0 1.9 1.9C5.6 18 12 18 12 18s6.4 0 7.9-.4a2.7 2.7 0 0 0 1.9-1.9C22 14.2 22 12 22 12s0-2.2-.2-3.7zM10 15.5v-7l6 3.5-6 3.5z" />
-                    </svg>
-                </a>
+            <div class="order-1 md:order-2 flex items-center justify-center md:justify-end w-full md:w-auto gap-4">
+                <span class="text-sm font-medium text-slate-200 hidden sm:inline-block">Follow Us</span>
+                <div class="flex items-center gap-3">
+                    <a href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="Pradytecai on LinkedIn" class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-200 hover:text-white transition-all transform hover:scale-110">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M4.98 3.5C3.88 3.5 3 4.38 3 5.47c0 1.06.86 1.93 1.96 1.93h.02c1.1 0 1.98-.87 1.98-1.93C6.96 4.38 6.08 3.5 4.98 3.5zM3.25 8.75h3.47V20.5H3.25V8.75zM9.5 8.75h3.32v1.6h.05c.46-.87 1.57-1.78 3.23-1.78 3.45 0 4.09 2.27 4.09 5.22v6.71h-3.47v-5.95c0-1.42-.03-3.24-1.98-3.24-1.98 0-2.29 1.54-2.29 3.14v6.05H9.5V8.75z" />
+                        </svg>
+                    </a>
+                    <a href="https://x.com" target="_blank" rel="noopener" aria-label="Pradytecai on X" class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-200 hover:text-white transition-all transform hover:scale-110">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M18.244 4h3.039l-6.64 7.59L22 20h-3.18l-3.92-4.6-3.52 4.6H8.34l6.64-7.59L6 4h3.18l3.42 4.01L16.48 4z" />
+                        </svg>
+                    </a>
+                    <a href="https://facebook.com" target="_blank" rel="noopener" aria-label="Pradytecai on Facebook" class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-200 hover:text-white transition-all transform hover:scale-110">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M13 10h2.5l-.3 3H13v7h-3v-7H8v-3h2V8.5C10 6.57 11.57 5 13.5 5H17v3h-2c-.55 0-1 .45-1 1V10z" />
+                        </svg>
+                    </a>
+                    <a href="https://www.youtube.com" target="_blank" rel="noopener" aria-label="Pradytecai on YouTube" class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-200 hover:text-white transition-all transform hover:scale-110">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+                            <path d="M21.8 8.3a2.7 2.7 0 0 0-1.9-1.9C18.4 6 12 6 12 6s-6.4 0-7.9.4a2.7 2.7 0 0 0-1.9 1.9C2 9.8 2 12 2 12s0 2.2.2 3.7a2.7 2.7 0 0 0 1.9 1.9C5.6 18 12 18 12 18s6.4 0 7.9-.4a2.7 2.7 0 0 0 1.9-1.9C22 14.2 22 12 22 12s0-2.2-.2-3.7zM10 15.5v-7l6 3.5-6 3.5z" />
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
     </footer>
 
     <!-- Chatbot Widget -->
-    <div id="chatbot-root" class="fixed bottom-6 right-6 z-50 flex flex-col items-end space-y-3">
+    <div id="chatbot-root" class="fixed bottom-6 right-6 z-[9999] flex flex-col items-end space-y-3">
         <!-- Chat panel -->
-        <div id="chatbot-panel" class="hidden w-[360px] max-w-[90vw] bg-white/95 backdrop-blur border border-slate-200 rounded-2xl shadow-2xl overflow-hidden">
+        <div id="chatbot-panel" class="hidden w-[360px] max-w-[90vw] bg-white/95 backdrop-blur border border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-[9999]">
             <div class="bg-gradient-to-r from-indigo-600 to-sky-600 text-white px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="w-9 h-9 rounded-full bg-white/10 border border-white/30 flex items-center justify-center text-xs font-semibold">
@@ -228,8 +225,10 @@
         <!-- Chat trigger button -->
         <button
             id="chatbot-toggle"
-            class="rounded-full shadow-xl bg-gradient-to-br from-indigo-600 to-sky-600 text-white flex items-center justify-center w-14 h-14 hover:from-indigo-500 hover:to-sky-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+            type="button"
+            class="rounded-full shadow-xl bg-gradient-to-br from-indigo-600 to-sky-600 text-white flex items-center justify-center w-14 h-14 hover:from-indigo-500 hover:to-sky-500 focus:outline-none focus:ring-2 focus:ring-indigo-300 cursor-pointer pointer-events-auto"
             aria-label="Open chat support"
+            onclick="window.toggleChatbot && window.toggleChatbot()"
         >
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 10c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 18l1.395-3.72C3.512 12.042 3 10.574 3 9c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
@@ -239,56 +238,77 @@
 
     <!-- Scripts -->
     <script>
-        // Mobile menu toggle
-        document.getElementById('mobile-menu-button')?.addEventListener('click', function() {
-            const menu = document.getElementById('mobile-menu');
-            menu.classList.toggle('hidden');
-        });
+        // Wait for DOM to be fully loaded
+        document.addEventListener('DOMContentLoaded', function() {
+            // Mobile menu toggle
+            const mobileMenuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (mobileMenuButton && mobileMenu) {
+                mobileMenuButton.addEventListener('click', function() {
+                    mobileMenu.classList.toggle('hidden');
+                });
+            }
 
-        // Smooth scroll for anchor links
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                const href = this.getAttribute('href');
-                if (!href || href === '#') return;
-                const target = document.querySelector(href);
-                if (target) {
+            // Smooth scroll for anchor links
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    const href = this.getAttribute('href');
+                    if (!href || href === '#') return;
+                    const target = document.querySelector(href);
+                    if (target) {
+                        e.preventDefault();
+                        target.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+
+            // Simple chatbot behaviour (frontend only)
+            (function() {
+                const toggleBtn = document.getElementById('chatbot-toggle');
+                const panel = document.getElementById('chatbot-panel');
+                const closeBtn = document.getElementById('chatbot-close');
+                const form = document.getElementById('chatbot-form');
+                const input = document.getElementById('chatbot-input');
+                const messages = document.getElementById('chatbot-messages');
+                const quickButtons = document.querySelectorAll('.chatbot-quick');
+
+                if (!toggleBtn || !panel || !form || !input || !messages) {
+                    console.warn('Chatbot elements not found', {toggleBtn, panel, form, input, messages});
+                    return;
+                }
+
+                function openChat() {
+                    panel.classList.remove('hidden');
+                    setTimeout(() => input.focus(), 100);
+                }
+
+                function closeChat() {
+                    panel.classList.add('hidden');
+                }
+
+                // Make function globally available for onclick fallback
+                window.toggleChatbot = function() {
+                    if (panel.classList.contains('hidden')) {
+                        openChat();
+                    } else {
+                        closeChat();
+                    }
+                };
+
+                // Ensure button is clickable
+                toggleBtn.style.pointerEvents = 'auto';
+                toggleBtn.style.cursor = 'pointer';
+                
+                toggleBtn.addEventListener('click', function(e) {
                     e.preventDefault();
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
-        });
-
-        // Simple chatbot behaviour (frontend only)
-        (function() {
-            const toggleBtn = document.getElementById('chatbot-toggle');
-            const panel = document.getElementById('chatbot-panel');
-            const closeBtn = document.getElementById('chatbot-close');
-            const form = document.getElementById('chatbot-form');
-            const input = document.getElementById('chatbot-input');
-            const messages = document.getElementById('chatbot-messages');
-            const quickButtons = document.querySelectorAll('.chatbot-quick');
-
-            if (!toggleBtn || !panel || !form || !input || !messages) return;
-
-            function openChat() {
-                panel.classList.remove('hidden');
-                input.focus();
-            }
-
-            function closeChat() {
-                panel.classList.add('hidden');
-            }
-
-            toggleBtn.addEventListener('click', function() {
-                if (panel.classList.contains('hidden')) {
-                    openChat();
-                } else {
-                    closeChat();
-                }
-            });
+                    e.stopPropagation();
+                    console.log('Chatbot button clicked');
+                    window.toggleChatbot();
+                }, { passive: false });
 
             closeBtn?.addEventListener('click', function() {
                 closeChat();
@@ -343,7 +363,8 @@
                     messages.scrollTop = messages.scrollHeight;
                 }, 600);
             }
-        })();
+            })();
+        });
     </script>
     @stack('scripts')
 </body>

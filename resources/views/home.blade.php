@@ -5,17 +5,31 @@
 
 @section('content')
     <!-- Hero Section -->
-    <section class="pt-16 pb-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-sky-50 via-white to-indigo-50">
-        <div class="w-full mx-auto text-center hero-animate">
-            <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
-                Enterprise Software Solutions
-                <span class="text-indigo-600">That Drive Success</span>
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="absolute inset-0 bg-gradient-to-br from-sky-900/80 via-indigo-900/70 to-slate-900/80"></div>
+        {{-- Subtle pattern overlay --}}
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+
+        <div class="relative z-10 w-full mx-auto max-w-6xl text-center hero-animate">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
+                <span class="hero-word">Enterprise</span>
+                <span class="hero-word">Software</span>
+                <span class="hero-word">Solutions</span>
+                <br class="md:hidden">
+                <span class="text-indigo-600">
+                    <span class="hero-word">That</span>
+                    <span class="hero-word">Drive</span>
+                    <span class="hero-word">Success</span>
+                </span>
             </h1>
-            <p class="text-xl text-gray-600 mb-8 max-w-3xl mx-auto">
+            <p class="hero-description text-xl text-slate-200 mb-8 max-w-3xl mx-auto">
                 Transform your business with our comprehensive suite of software platforms. 
                 From multi-channel messaging to microfinance management, we've got you covered.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <div class="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
                 <a href="/products" class="bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition shadow-lg">
                     Explore Solutions
                 </a>
@@ -27,8 +41,12 @@
     </section>
 
     <!-- Solutions Section -->
-    <section id="solutions" class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div class="w-full mx-auto">
+    <section id="solutions" class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-light"></div>
+        <div class="section-content w-full mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Solutions</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -170,8 +188,12 @@
     </section>
 
     <!-- Features Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50">
-        <div class="w-full mx-auto">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-slate"></div>
+        <div class="section-content w-full mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Choose Pradytecai?</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -214,8 +236,12 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-sky-50 via-white to-indigo-50">
-        <div class="w-full mx-auto text-center">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-gradient"></div>
+        <div class="section-content w-full mx-auto text-center">
             <h2 class="text-4xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
             <p class="text-xl text-gray-600 mb-8">
                 Join hundreds of businesses already using our platforms to transform their operations.
@@ -230,4 +256,5 @@
             </div>
         </div>
     </section>
+
 @endsection

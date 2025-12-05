@@ -4,12 +4,22 @@
 @section('page_title', 'Products')
 
 @section('content')
+    @if(session('success'))
+        <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
+            {{ session('success') }}
+        </div>
+    @endif
+
+    <div class="mb-4 rounded-lg border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+        <strong>Note:</strong> Product model needs to be created to persist data. Forms are ready for when the model is implemented.
+    </div>
+
     <div class="flex items-center justify-between mb-6">
         <div>
             <h2 class="text-xl font-semibold text-slate-900">Products</h2>
             <p class="text-sm text-slate-500">Manage the solutions and products shown on the marketing site.</p>
         </div>
-        <a href="#"
+        <a href="{{ route('admin.products.create') }}"
            class="inline-flex items-center px-4 py-2 rounded-lg bg-indigo-600 text-white text-sm font-semibold hover:bg-indigo-700 transition">
             <span class="mr-2">
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -38,8 +48,8 @@
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs">Active</span>
                     </td>
                     <td class="px-4 py-3 text-right space-x-2">
-                        <button class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">Edit</button>
-                        <button class="inline-flex items-center px-3 py-1.5 rounded-lg border border-red-100 text-red-600 hover:bg-red-50">Disable</button>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 text-xs md:text-sm cursor-not-allowed">Edit</span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 text-xs md:text-sm cursor-not-allowed">Disable</span>
                     </td>
                 </tr>
                 <tr>
@@ -49,8 +59,8 @@
                         <span class="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-xs">Active</span>
                     </td>
                     <td class="px-4 py-3 text-right space-x-2">
-                        <button class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50">Edit</button>
-                        <button class="inline-flex items-center px-3 py-1.5 rounded-lg border border-red-100 text-red-600 hover:bg-red-50">Disable</button>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 text-xs md:text-sm cursor-not-allowed">Edit</span>
+                        <span class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 text-slate-400 text-xs md:text-sm cursor-not-allowed">Disable</span>
                     </td>
                 </tr>
             </tbody>

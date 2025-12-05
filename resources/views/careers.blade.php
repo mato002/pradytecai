@@ -5,18 +5,29 @@
 
 @section('content')
     <!-- Hero Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-br from-sky-50 via-white to-indigo-50">
-        <div class="w-full mx-auto text-center hero-animate">
-            <h1 class="text-5xl md:text-6xl font-bold text-gray-900 mb-6">Join Our Team</h1>
-            <p class="text-xl text-gray-600">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/85 via-sky-900/80 to-blue-900/85"></div>
+        {{-- Subtle pattern overlay --}}
+        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+
+        <div class="relative z-10 w-full mx-auto text-center hero-animate">
+            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Join Our Team</h1>
+            <p class="text-xl text-slate-200">
                 Build the future of enterprise software with us
             </p>
         </div>
     </section>
 
     <!-- Why Work With Us -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div class="w-full mx-auto">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-light"></div>
+        <div class="section-content w-full mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Work at Pradytecai?</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -68,8 +79,12 @@
     </section>
 
     <!-- Open Positions -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-slate-50">
-        <div class="w-full mx-auto">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-slate"></div>
+        <div class="section-content w-full mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">Open Positions</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -78,85 +93,67 @@
             </div>
 
             <div class="space-y-6">
-                <!-- Position 1 -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-lg transition-shadow">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div class="mb-4 md:mb-0">
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Senior Software Developer</h3>
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">Full-time</span>
-                                <span class="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm">Remote</span>
-                                <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">Laravel</span>
+                @forelse($positions as $position)
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
+                            <div class="mb-4 md:mb-0">
+                                <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ $position->title }}</h3>
+                                <div class="flex flex-wrap gap-2 mb-4">
+                                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">{{ $position->type }}</span>
+                                    <span class="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm">{{ $position->location }}</span>
+                                    @if(!empty($position->tags))
+                                        @foreach($position->tags_array as $tag)
+                                            @if(trim($tag))
+                                                <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">{{ trim($tag) }}</span>
+                                            @endif
+                                        @endforeach
+                                    @endif
+                                </div>
+                                <p class="text-gray-600">
+                                    {{ $position->description }}
+                                </p>
                             </div>
-                            <p class="text-gray-600">
-                                We're looking for an experienced Laravel developer to join our team. You'll work on 
-                                building and maintaining our enterprise software platforms.
-                            </p>
+                            <a href="/contact?position={{ urlencode($position->title) }}" class="md:ml-6 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition whitespace-nowrap">
+                                Apply Now
+                            </a>
                         </div>
-                        <a href="/contact?position=Senior+Software+Developer" class="md:ml-6 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition whitespace-nowrap">
-                            Apply Now
+                    </div>
+                @empty
+                    <!-- No Open Positions Message -->
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-8 text-center">
+                        <p class="text-gray-600 mb-4">
+                            We don't have any open positions at the moment, but we're always interested in hearing 
+                            from talented individuals.
+                        </p>
+                        <a href="/contact" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                            Send Us Your Resume
                         </a>
                     </div>
-                </div>
+                @endforelse
 
-                <!-- Position 2 -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-lg transition-shadow">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div class="mb-4 md:mb-0">
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">DevOps Engineer</h3>
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">Full-time</span>
-                                <span class="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm">Hybrid</span>
-                                <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">AWS</span>
-                            </div>
-                            <p class="text-gray-600">
-                                Join our infrastructure team to help scale our cloud platforms and ensure 
-                                maximum uptime and performance.
-                            </p>
-                        </div>
-                        <a href="/contact?position=DevOps+Engineer" class="md:ml-6 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition whitespace-nowrap">
-                            Apply Now
+                <!-- Always show general contact option -->
+                @if($positions->count() > 0)
+                    <div class="bg-white border-2 border-gray-200 rounded-xl p-8 text-center">
+                        <p class="text-gray-600 mb-4">
+                            Don't see a position that matches your skills? We're always interested in hearing 
+                            from talented individuals.
+                        </p>
+                        <a href="/contact" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                            Send Us Your Resume
                         </a>
                     </div>
-                </div>
-
-                <!-- Position 3 -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-lg transition-shadow">
-                    <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                        <div class="mb-4 md:mb-0">
-                            <h3 class="text-2xl font-bold text-gray-900 mb-2">Product Manager</h3>
-                            <div class="flex flex-wrap gap-2 mb-4">
-                                <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">Full-time</span>
-                                <span class="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm">On-site</span>
-                            </div>
-                            <p class="text-gray-600">
-                                Lead product development initiatives and work closely with engineering teams 
-                                to deliver exceptional software solutions.
-                            </p>
-                        </div>
-                        <a href="/contact?position=Product+Manager" class="md:ml-6 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition whitespace-nowrap">
-                            Apply Now
-                        </a>
-                    </div>
-                </div>
-
-                <!-- No Open Positions Message -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 text-center">
-                    <p class="text-gray-600 mb-4">
-                        Don't see a position that matches your skills? We're always interested in hearing 
-                        from talented individuals.
-                    </p>
-                    <a href="/contact" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                        Send Us Your Resume
-                    </a>
-                </div>
+                @endif
             </div>
         </div>
     </section>
 
     <!-- Benefits Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-white">
-        <div class="w-full mx-auto">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-light"></div>
+        <div class="section-content w-full mx-auto">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">Benefits & Perks</h2>
             </div>
@@ -206,8 +203,12 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 px-4 sm:px-6 lg:px-8 bg-gradient-to-r from-sky-50 via-white to-indigo-50">
-        <div class="w-full mx-auto text-center hero-animate delay-md">
+    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
+        {{-- Background image --}}
+        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&q=80');"></div>
+        {{-- Overlay for readability --}}
+        <div class="section-bg-overlay section-bg-overlay-gradient"></div>
+        <div class="section-content w-full mx-auto text-center hero-animate delay-md">
             <h2 class="text-4xl font-bold text-gray-900 mb-4">Ready to Join Us?</h2>
             <p class="text-xl text-gray-600 mb-8">
                 Get in touch to learn more about opportunities at Pradytecai.
