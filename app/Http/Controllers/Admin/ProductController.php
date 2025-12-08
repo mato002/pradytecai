@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Product;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -12,8 +13,8 @@ class ProductController extends Controller
 {
     public function index(): View
     {
-        // For now, return a simple view - can be extended when Product model is created
-        return view('admin.products.index');
+        $products = Product::ordered()->get();
+        return view('admin.products.index', compact('products'));
     }
 
     public function create(): View
@@ -29,27 +30,25 @@ class ProductController extends Controller
             'type' => ['nullable', 'string', 'max:255'],
             'url' => ['nullable', 'url', 'max:255'],
             'is_active' => ['sometimes', 'boolean'],
+            'order' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $data['is_active'] = $request->boolean('is_active', true);
+        $data['order'] = $data['order'] ?? Product::max('order') + 1;
 
-        // TODO: Create Product model and save
-        // For now, just redirect with success message
-        // Product::create($data);
+        Product::create($data);
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'Product created successfully. (Note: Product model needs to be created to persist data)');
+            ->with('success', 'Product created successfully.');
     }
 
-    public function edit($id): View
+    public function edit(Product $product): View
     {
-        // TODO: Load product when model exists
-        // $product = Product::findOrFail($id);
-        return view('admin.products.edit', compact('id'));
+        return view('admin.products.edit', compact('product'));
     }
 
-    public function update(Request $request, $id): RedirectResponse
+    public function update(Request $request, Product $product): RedirectResponse
     {
         $data = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -57,28 +56,37 @@ class ProductController extends Controller
             'type' => ['nullable', 'string', 'max:255'],
             'url' => ['nullable', 'url', 'max:255'],
             'is_active' => ['sometimes', 'boolean'],
+            'order' => ['nullable', 'integer', 'min:0'],
         ]);
 
         $data['is_active'] = $request->boolean('is_active', true);
 
-        // TODO: Update product when model exists
-        // $product = Product::findOrFail($id);
-        // $product->update($data);
+        $product->update($data);
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'Product updated successfully. (Note: Product model needs to be created to persist data)');
+            ->with('success', 'Product updated successfully.');
     }
 
-    public function destroy($id): RedirectResponse
+    public function destroy(Product $product): RedirectResponse
     {
-        // TODO: Delete product when model exists
-        // $product = Product::findOrFail($id);
-        // $product->delete();
+        $product->delete();
 
         return redirect()
             ->route('admin.products.index')
-            ->with('success', 'Product deleted successfully. (Note: Product model needs to be created to persist data)');
+            ->with('success', 'Product deleted successfully.');
+    }
+
+    public function toggleStatus(Product $product): RedirectResponse
+    {
+        $product->update([
+            'is_active' => !$product->is_active
+        ]);
+
+        $status = $product->is_active ? 'enabled' : 'disabled';
+        return redirect()
+            ->route('admin.products.index')
+            ->with('success', "Product {$status} successfully.");
     }
 }
 

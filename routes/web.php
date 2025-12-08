@@ -2,11 +2,17 @@
 
 use App\Http\Controllers\Admin\BlogController;
 use App\Http\Controllers\Admin\HeroSettingsController;
+use App\Http\Controllers\Admin\JobApplicationController as AdminJobApplicationController;
 use App\Http\Controllers\Admin\PositionController;
 use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\ProfileController;
+use App\Http\Controllers\Admin\SearchController as AdminSearchController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\JobApplicationController;
+use App\Http\Controllers\SearchController;
 use App\Models\BlogPost;
 use App\Models\ContactMessage;
 use App\Models\Position;
@@ -38,7 +44,11 @@ Route::get('/careers', function () {
         ->get();
 
     return view('careers', compact('positions'));
-});
+})->name('careers.index');
+
+// Job Application Routes
+Route::get('/careers/{position}/apply', [JobApplicationController::class, 'create'])->name('careers.apply');
+Route::post('/careers/apply', [JobApplicationController::class, 'store'])->name('careers.apply.store');
 
 Route::get('/contact', function () {
     return view('contact');
@@ -55,6 +65,24 @@ Route::get('/blog', function () {
     return view('blog', compact('posts'));
 })->name('blog.index');
 
+Route::get('/blog/{post:slug}', function (BlogPost $post) {
+    if (!$post->is_published) {
+        abort(404);
+    }
+    
+    // Get related posts (same category, excluding current)
+    $relatedPosts = BlogPost::where('is_published', true)
+        ->where('id', '!=', $post->id)
+        ->when($post->category, function ($query) use ($post) {
+            return $query->where('category', $post->category);
+        })
+        ->orderByDesc('published_at')
+        ->limit(3)
+        ->get();
+    
+    return view('blog.show', compact('post', 'relatedPosts'));
+})->name('blog.show');
+
 Route::get('/policies', function () {
     return view('policies');
 });
@@ -62,6 +90,8 @@ Route::get('/policies', function () {
 Route::get('/faq', function () {
     return view('faq');
 });
+
+Route::get('/search', [SearchController::class, 'index'])->name('search');
 
 Route::post('/newsletter/subscribe', function () {
     // TODO: Implement newsletter subscription logic
@@ -94,9 +124,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
         Route::post('/', [ProductController::class, 'store'])->name('store');
-        Route::get('/{id}/edit', [ProductController::class, 'edit'])->name('edit');
-        Route::post('/{id}', [ProductController::class, 'update'])->name('update');
-        Route::post('/{id}/delete', [ProductController::class, 'destroy'])->name('destroy');
+        Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
+        Route::post('/{product}', [ProductController::class, 'update'])->name('update');
+        Route::post('/{product}/delete', [ProductController::class, 'destroy'])->name('destroy');
+        Route::post('/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('toggle-status');
     });
 
     Route::get('/enquiries', function () {
@@ -114,6 +145,10 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::post('/{user}', [UserController::class, 'update'])->name('update');
         Route::post('/{user}/delete', [UserController::class, 'destroy'])->name('destroy');
     });
+
+    // Admin search
+    Route::get('/search', [AdminSearchController::class, 'index'])->name('search');
+    Route::get('/search/api', [AdminSearchController::class, 'api'])->name('search.api');
 
     // Blog management
     Route::prefix('blog')->name('blog.')->group(function () {
@@ -135,8 +170,29 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::post('/{position}/delete', [PositionController::class, 'destroy'])->name('destroy');
     });
 
-    // Site appearance / hero settings
+    // Job Applications management
+    Route::prefix('applications')->name('applications.')->group(function () {
+        Route::get('/', [AdminJobApplicationController::class, 'index'])->name('index');
+        Route::get('/{application}', [AdminJobApplicationController::class, 'show'])->name('show');
+        Route::post('/{application}/status', [AdminJobApplicationController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/{application}/schedule-interview', [AdminJobApplicationController::class, 'scheduleInterview'])->name('scheduleInterview');
+        Route::post('/{application}/interview-notes', [AdminJobApplicationController::class, 'updateInterviewNotes'])->name('updateInterviewNotes');
+        Route::post('/{application}/send-message', [AdminJobApplicationController::class, 'sendMessage'])->name('sendMessage');
+        Route::get('/{application}/resume', [AdminJobApplicationController::class, 'downloadResume'])->name('downloadResume');
+    });
+
+    // Profile management
+    Route::prefix('profile')->name('profile.')->group(function () {
+        Route::get('/', [ProfileController::class, 'show'])->name('show');
+        Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
+        Route::post('/update', [ProfileController::class, 'update'])->name('update');
+    });
+
+    // Settings
     Route::prefix('settings')->name('settings.')->group(function () {
+        Route::get('/', [SettingsController::class, 'index'])->name('index');
+        Route::get('/general', [SettingsController::class, 'general'])->name('general');
+        Route::post('/general', [SettingsController::class, 'updateGeneral'])->name('general.update');
         Route::get('/hero', [HeroSettingsController::class, 'edit'])->name('hero.edit');
         Route::post('/hero', [HeroSettingsController::class, 'update'])->name('hero.update');
     });

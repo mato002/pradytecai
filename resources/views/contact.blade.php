@@ -13,18 +13,24 @@
         {{-- Subtle pattern overlay --}}
         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
 
-        <div class="relative z-10 w-full mx-auto text-center hero-animate">
-            <p class="inline-flex items-center px-3 py-1 rounded-full bg-white/90 border border-indigo-200 text-xs font-medium text-indigo-700 mb-4 backdrop-blur-sm">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
-                Typically replies in under 2 minutes
-            </p>
-            <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Let's Talk About Your Next Project</h1>
+        <div class="relative z-10 w-full mx-auto max-w-6xl hero-animate">
+            <x-breadcrumbs :items="[
+                ['label' => 'Home', 'url' => '/'],
+                ['label' => 'Contact']
+            ]" light="true" />
+            <div class="text-center">
+                <p class="inline-flex items-center px-3 py-1 rounded-full bg-white/90 border border-indigo-200 text-xs font-medium text-indigo-700 mb-4 backdrop-blur-sm">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 mr-2 animate-pulse"></span>
+                    Typically replies in under 2 minutes
+                </p>
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-4">Let's Talk About Your Next Project</h1>
             <p class="text-xl text-slate-200 mb-6">
                 Whether you're exploring BulkSMS CRM, Prady Mfi, or a custom enterprise solution, our team is ready to help.
             </p>
-            <p class="text-sm text-slate-300">
-                Prefer email or phone? Use the details below and we'll make sure you reach the right person.
-            </p>
+                <p class="text-sm text-slate-300">
+                    Prefer email or phone? Use the details below and we'll make sure you reach the right person.
+                </p>
+            </div>
         </div>
     </section>
 
@@ -182,7 +188,7 @@
                     <h3 class="text-sm font-semibold text-gray-900 mb-3">Quick links</h3>
                     <ul class="space-y-2 text-sm">
                         <li><a href="https://crm.pradytecai.com" target="_blank" class="text-indigo-700 hover:underline">BulkSMS CRM platform</a></li>
-                        <li><a href="https://demo.pradytecai.com" target="_blank" class="text-indigo-700 hover:underline">Prady Mfi live demo</a></li>
+                        <li><a href="https://demo.pradytec.com" target="_blank" class="text-indigo-700 hover:underline">Prady Mfi live demo</a></li>
                         <li><a href="/products" class="text-indigo-700 hover:underline">All products & solutions</a></li>
                         <li><a href="/services" class="text-indigo-700 hover:underline">Implementation & consulting</a></li>
                         <li><a href="/policies" class="text-indigo-700 hover:underline">Terms, privacy & compliance</a></li>

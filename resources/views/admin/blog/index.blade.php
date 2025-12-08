@@ -68,9 +68,9 @@
                                class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-200 text-slate-700 hover:bg-slate-50 text-xs md:text-sm">
                                 Edit
                             </a>
-                            <form action="{{ route('admin.blog.destroy', $post) }}" method="POST" class="inline-block"
-                                  onsubmit="return confirm('Delete this post? This cannot be undone.');">
+                            <form action="{{ route('admin.blog.destroy', $post) }}" method="POST" class="inline-block delete-form">
                                 @csrf
+                                @method('DELETE')
                                 <button type="submit"
                                         class="inline-flex items-center px-3 py-1.5 rounded-lg border border-red-100 text-red-600 hover:bg-red-50 text-xs md:text-sm">
                                     Delete

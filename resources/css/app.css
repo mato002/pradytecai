@@ -13,31 +13,66 @@
 @layer base {
     body {
         font-feature-settings: 'ss01' on, 'cv02' on;
+        font-size: 16px; /* Base font size for better readability */
+        line-height: 1.6; /* Improved line height for readability */
+    }
+    
+    /* Improved accessibility - larger base text sizes */
+    .admin-shell {
+        font-size: 16px;
+        line-height: 1.6;
+    }
+    
+    .admin-shell p, .admin-shell span, .admin-shell div {
+        font-size: inherit;
     }
 }
 
 @layer components {
     .admin-shell {
-        @apply min-h-screen text-slate-100 antialiased;
-        background-color: #010314;
-        background-image:
-            radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.18), transparent 45%),
-            radial-gradient(circle at 80% 0%, rgba(99, 102, 241, 0.25), transparent 40%),
-            radial-gradient(circle at 50% 80%, rgba(251, 113, 133, 0.15), transparent 55%),
-            linear-gradient(130deg, rgba(2, 6, 23, 0.9), rgba(2, 6, 23, 0.98));
+        @apply min-h-screen text-slate-900 antialiased;
+        background-color: #ffffff !important;
+        background-image: none !important; /* Remove subtle gradients that might appear blue */
         transition: background-color 0.3s ease, background-image 0.3s ease, color 0.3s ease;
+    }
+    
+    /* Ensure no blue backgrounds anywhere */
+    .admin-shell,
+    .admin-shell > div,
+    .admin-shell > div > div {
+        background-color: #ffffff !important;
+    }
+
+    html, body {
+        height: 100%;
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .admin-shell {
+        width: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    .admin-shell > div:first-child {
+        min-height: 100vh;
+        display: flex;
+        width: 100%;
+        background-color: #ffffff;
     }
 
     body.admin-shell[data-theme="light"],
     .admin-shell[data-theme="light"],
     body.theme-light.admin-shell {
         @apply text-slate-900;
-        background-color: #f8fafc;
+        background-color: #ffffff;
         background-image:
-            radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.08), transparent 45%),
-            radial-gradient(circle at 80% 0%, rgba(99, 102, 241, 0.1), transparent 40%),
-            radial-gradient(circle at 50% 80%, rgba(251, 113, 133, 0.06), transparent 55%),
-            linear-gradient(130deg, rgba(248, 250, 252, 0.95), rgba(241, 245, 249, 0.98));
+            radial-gradient(circle at 10% 20%, rgba(56, 189, 248, 0.04), transparent 45%),
+            radial-gradient(circle at 80% 0%, rgba(99, 102, 241, 0.05), transparent 40%),
+            radial-gradient(circle at 50% 80%, rgba(251, 113, 133, 0.03), transparent 55%),
+            linear-gradient(130deg, rgba(255, 255, 255, 0.98), rgba(248, 250, 252, 0.99));
     }
 
     .admin-shell::before {
@@ -56,29 +91,144 @@
     }
 
     .admin-header {
-        @apply border-b border-white/10;
+        @apply border-b border-slate-200 sticky top-0 z-20;
+        background-color: #ffffff !important; /* Force white background */
+        background-image: none !important; /* Remove any background images */
     }
 
     .admin-shell[data-theme="light"] .admin-header {
         @apply border-b border-slate-200;
+        background-color: #ffffff !important;
+        background-image: none !important;
+    }
+    
+    /* Override any blue backgrounds on header */
+    .admin-header,
+    .admin-header * {
+        background-color: #ffffff !important;
+    }
+    
+    /* Ensure header inner has white background */
+    .admin-header__inner {
+        background-color: #ffffff !important;
+        background-image: none !important;
     }
 
     .admin-header__inner,
     .admin-main__inner,
     .admin-footer__inner {
-        @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+        @apply w-full;
+        padding-left: 1rem; /* px-4 */
+        padding-right: 1rem; /* px-4 */
+    }
+
+    /* Full width on larger screens - edge to edge */
+    @media (min-width: 640px) {
+        .admin-header__inner,
+        .admin-main__inner,
+        .admin-footer__inner {
+            padding-left: 1.5rem; /* sm:px-6 */
+            padding-right: 1.5rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .admin-header__inner,
+        .admin-main__inner,
+        .admin-footer__inner {
+            padding-left: 1.5rem; /* Reduced padding for more width */
+            padding-right: 1.5rem;
+        }
+    }
+    
+    /* On very large screens, minimal padding for edge-to-edge content */
+    @media (min-width: 1536px) {
+        .admin-header__inner,
+        .admin-main__inner,
+        .admin-footer__inner {
+            padding-left: 1rem; /* Minimal padding - almost edge-to-edge */
+            padding-right: 1rem;
+        }
+    }
+    
+    /* On extra large screens, truly edge-to-edge */
+    @media (min-width: 1920px) {
+        .admin-header__inner,
+        .admin-main__inner,
+        .admin-footer__inner {
+            padding-left: 0.75rem; /* Very minimal padding */
+            padding-right: 0.75rem;
+        }
+    }
+
+    /* Ensure main content area fills available space on large screens */
+    @media (min-width: 1024px) {
+        .admin-shell > div:first-child {
+            height: 100vh;
+        }
+        
+        /* Sidebar positioning - fixed width on left */
+        #admin-sidebar {
+            position: fixed !important;
+            left: 0;
+            top: 0;
+            height: 100vh;
+            width: 18rem; /* w-72 = 288px */
+        }
+        
+        /* Main content area starts after sidebar */
+        .admin-shell > div:first-child > div:last-child {
+            display: flex !important;
+            flex-direction: column !important;
+            flex: 1 !important;
+            min-height: 0;
+            overflow-y: auto;
+            width: calc(100% - 18rem) !important;
+            margin-left: 18rem !important; /* Start after sidebar */
+            max-width: calc(100% - 18rem) !important;
+            background-color: #ffffff !important;
+        }
+        
+        /* Ensure header is positioned correctly */
+        .admin-header {
+            margin-left: 0 !important;
+            width: 100% !important;
+        }
+        
+        /* When sidebar is hidden, main area takes full width */
+        .admin-sidebar-hidden .admin-shell > div:first-child > div:last-child {
+            width: 100%;
+            margin-left: 0;
+            max-width: 100%;
+        }
+        
+        /* Remove any max-width constraints */
+        .admin-header__inner,
+        .admin-main__inner,
+        .admin-footer__inner {
+            max-width: 100% !important;
+        }
+    }
+
+    /* Ensure full width on large screens */
+    .admin-shell > div:first-child {
+        width: 100%;
     }
 
     .admin-header__inner {
-        @apply flex flex-col gap-6 py-8 lg:flex-row lg:items-center lg:justify-between;
+        @apply flex flex-col gap-6 py-6 lg:py-8 lg:flex-row lg:items-center lg:justify-between;
     }
 
     .admin-main {
-        @apply flex-1 py-6 lg:py-10;
+        @apply flex-1 py-8 lg:py-10 bg-white;
+        min-height: 0;
+        overflow-y: auto;
+        width: 100%;
+        font-size: 16px; /* Ensure readable base font size */
     }
 
     .admin-footer {
-        @apply border-t border-white/10 py-4 text-xs text-slate-400;
+        @apply border-t border-slate-200 bg-white py-4 text-xs text-slate-600;
     }
 
     .admin-shell[data-theme="light"] .admin-footer {
@@ -86,19 +236,19 @@
     }
 
     .glass-card {
-        @apply rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/50 backdrop-blur-2xl;
+        @apply rounded-2xl border-2 border-slate-300 bg-white p-8 shadow-lg shadow-slate-200/50;
     }
 
     .admin-shell[data-theme="light"] .glass-card {
-        @apply border border-slate-200 bg-white/80 shadow-xl shadow-slate-200/50;
+        @apply border-2 border-slate-300 bg-white shadow-lg shadow-slate-200/50;
     }
 
     .metric-card {
-        @apply rounded-3xl border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/50 backdrop-blur-2xl relative overflow-hidden;
+        @apply rounded-2xl border-2 border-slate-300 bg-white p-8 shadow-lg shadow-slate-200/50 relative overflow-hidden;
     }
 
     .admin-shell[data-theme="light"] .metric-card {
-        @apply border border-slate-200 bg-white/80 shadow-xl shadow-slate-200/50;
+        @apply border-2 border-slate-300 bg-white shadow-lg shadow-slate-200/50;
     }
 
     .metric-card__spark {
@@ -110,27 +260,34 @@
     }
 
     .badge-soft {
-        @apply inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-3 py-1 text-[10px] font-semibold uppercase tracking-[0.2em] text-slate-200;
+        @apply inline-flex items-center gap-2 rounded-full border-2 border-slate-400 bg-slate-100 px-4 py-2 text-xs font-semibold uppercase tracking-wide text-slate-800;
     }
 
     .admin-shell[data-theme="light"] .badge-soft {
-        @apply border border-slate-300 bg-slate-100 text-slate-700;
+        @apply border-2 border-slate-400 bg-slate-100 text-slate-800;
     }
 
     .btn-primary {
-        @apply inline-flex items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-sky-500 via-indigo-500 to-purple-500 px-4 py-2 text-sm font-semibold text-white shadow-lg shadow-indigo-900/40 transition hover:scale-[1.01] focus:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900 focus-visible:ring-sky-400;
+        @apply inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 px-6 py-3 text-base font-semibold text-white shadow-lg shadow-indigo-200/50 transition hover:scale-[1.02] hover:shadow-xl focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-indigo-500;
+        min-height: 44px; /* WCAG touch target size */
     }
 
     .btn-ghost {
-        @apply inline-flex items-center justify-center gap-2 rounded-2xl border border-white/15 bg-white/5 px-3 py-2 text-sm font-semibold text-slate-200 transition hover:border-white/40 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/30;
+        @apply inline-flex items-center justify-center gap-2 rounded-xl border-2 border-slate-400 bg-white px-5 py-3 text-base font-semibold text-slate-800 transition hover:border-indigo-500 hover:bg-indigo-50 hover:text-indigo-700 focus:outline-none focus-visible:ring-4 focus-visible:ring-offset-2 focus-visible:ring-offset-white focus-visible:ring-indigo-500;
+        min-height: 44px; /* WCAG touch target size */
+        pointer-events: auto;
+        position: relative;
+        z-index: 50;
     }
 
     .admin-shell[data-theme="light"] .btn-ghost {
-        @apply border border-slate-300 bg-white text-slate-700 hover:border-slate-400 hover:bg-slate-50 focus-visible:ring-slate-400;
+        @apply border-2 border-slate-400 bg-white text-slate-800 hover:border-indigo-500 hover:bg-indigo-50 hover:text-indigo-700 focus-visible:ring-indigo-500;
+        min-height: 44px;
     }
 
     .nav-pill {
-        @apply flex items-center justify-between gap-3 rounded-2xl border border-transparent px-4 py-3 text-sm font-semibold text-slate-300 transition;
+        @apply flex items-center justify-between gap-3 rounded-xl border-2 border-transparent px-5 py-4 text-base font-semibold text-slate-800 transition;
+        min-height: 52px; /* Larger touch target for navigation */
     }
 
     .admin-shell[data-theme="light"] .nav-pill {
@@ -138,27 +295,27 @@
     }
 
     .nav-pill:hover {
-        @apply border-white/15 bg-white/5 text-white;
+        @apply border-slate-400 bg-slate-100 text-slate-900;
     }
 
     .admin-shell[data-theme="light"] .nav-pill:hover {
-        @apply border-slate-300 bg-slate-100 text-slate-900;
+        @apply border-slate-400 bg-slate-100 text-slate-900;
     }
 
     .nav-pill--active {
-        @apply border-white/25 bg-gradient-to-r from-indigo-600/70 to-sky-500/60 text-white shadow-lg shadow-indigo-900/30;
+        @apply border-indigo-500 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-200/50;
     }
 
     .admin-shell[data-theme="light"] .nav-pill--active {
-        @apply border-indigo-300 bg-gradient-to-r from-indigo-500 to-sky-500 text-white shadow-lg shadow-indigo-200/50;
+        @apply border-indigo-500 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white shadow-lg shadow-indigo-200/50;
     }
 
     .nav-pill__icon {
-        @apply flex h-10 w-10 items-center justify-center rounded-2xl bg-white/10 text-white;
+        @apply flex h-12 w-12 items-center justify-center rounded-xl bg-slate-200 text-slate-800;
     }
 
     .admin-shell[data-theme="light"] .nav-pill__icon {
-        @apply bg-slate-200 text-slate-700;
+        @apply bg-slate-200 text-slate-800;
     }
 
     .stat-trend {
@@ -166,15 +323,17 @@
     }
 
     .stat-trend--up {
-        @apply text-emerald-300;
+        @apply text-emerald-600;
     }
 
     .pill {
-        @apply inline-flex items-center justify-between gap-2 rounded-2xl border border-white/10 bg-white/5 px-4 py-2 text-sm text-slate-200 transition hover:border-white/40;
+        @apply inline-flex items-center justify-between gap-3 rounded-xl border-2 border-slate-400 bg-white px-5 py-3 text-base text-slate-800 transition hover:border-indigo-500 hover:bg-indigo-50;
+        min-height: 44px;
     }
 
     .admin-shell[data-theme="light"] .pill {
-        @apply border border-slate-300 bg-white text-slate-700 hover:border-slate-400;
+        @apply border-2 border-slate-400 bg-white text-slate-800 hover:border-indigo-500 hover:bg-indigo-50;
+        min-height: 44px;
     }
 
     .timeline-dot {
@@ -182,77 +341,192 @@
     }
 
     .quick-link {
-        @apply flex items-center justify-between rounded-2xl border border-white/10 px-4 py-3 text-sm text-slate-200 transition hover:border-white/40 hover:bg-white/5;
+        @apply flex items-center justify-between rounded-xl border-2 border-slate-400 px-5 py-4 text-base text-slate-800 transition hover:border-indigo-500 hover:bg-indigo-50;
+        min-height: 56px;
     }
 
     .admin-shell[data-theme="light"] .quick-link {
-        @apply border border-slate-300 text-slate-700 hover:border-slate-400 hover:bg-slate-50;
+        @apply border-2 border-slate-400 text-slate-800 hover:border-indigo-500 hover:bg-indigo-50;
+        min-height: 56px;
     }
 
-    /* Collapsible sidebar (desktop) */
-    .admin-shell--collapsed #admin-sidebar {
-        @apply w-20 px-4;
+    /* Hide sidebar completely on desktop */
+    @media (min-width: 1024px) {
+        .admin-sidebar-hidden #admin-sidebar {
+            transform: translateX(-100%) !important;
+            position: fixed !important;
+        }
+
+        .admin-sidebar-hidden .admin-shell > div:first-child > div:last-child {
+            margin-left: 0 !important;
+        }
     }
 
-    .admin-shell--collapsed #admin-sidebar .sidebar-text,
-    .admin-shell--collapsed #admin-sidebar p.text-sm.text-slate-400,
-    .admin-shell--collapsed #admin-sidebar .pill span:last-child {
-        @apply hidden;
-    }
-
-    .admin-shell--collapsed #admin-sidebar .nav-pill {
-        @apply justify-center px-0;
-    }
-
-    .admin-shell--collapsed #admin-sidebar .nav-pill__icon {
-        @apply h-9 w-9;
-    }
-
-    .admin-shell--collapsed #admin-sidebar .pill {
-        @apply justify-center;
+    /* Smooth transitions for sidebar hide/show */
+    #admin-sidebar {
+        transition: transform 0.3s ease-in-out;
     }
 
     /* Light mode sidebar */
-    .admin-shell[data-theme="light"] #admin-sidebar {
-        @apply border-r border-slate-200 bg-white/95 shadow-xl shadow-slate-200/50;
+    .admin-shell[data-theme="light"] #admin-sidebar,
+    #admin-sidebar {
+        @apply border-r border-slate-200 bg-white shadow-xl shadow-slate-200/50;
+        height: 100vh;
+        overflow-y: auto;
+        pointer-events: auto;
+    }
+
+    /* Ensure toggle button is always clickable */
+    #admin-sidebar-toggle {
+        pointer-events: auto !important;
+        z-index: 100 !important;
+        position: relative !important;
+        cursor: pointer !important;
+        display: inline-flex !important;
+    }
+
+    @media (min-width: 1024px) {
+        #admin-sidebar-toggle {
+            display: inline-flex !important;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        #admin-sidebar {
+            height: 100vh;
+            position: sticky;
+            top: 0;
+        }
+    }
+
+    /* Sidebar toggle button styling */
+    #admin-sidebar-toggle {
+        transition: all 0.3s ease;
     }
 
     .admin-shell[data-theme="light"] #admin-sidebar-backdrop {
         @apply bg-slate-900/80;
     }
+    
+    /* Force white background for all content areas */
+    .admin-shell .admin-main,
+    .admin-shell .admin-main__inner,
+    .admin-shell > div:first-child > div:last-child {
+        background-color: #ffffff !important;
+    }
+    
+    /* Ensure all text in content area is dark */
+    .admin-shell .admin-main,
+    .admin-shell .admin-main * {
+        color: inherit;
+    }
+    
+    /* Override any white text in content area */
+    .admin-shell .admin-main .text-white:not(.nav-pill--active *):not(.btn-primary *):not(.btn-ghost.bg-indigo *) {
+        color: #0f172a !important; /* slate-900 */
+    }
+    
+    .admin-shell .admin-main .text-slate-100,
+    .admin-shell .admin-main .text-slate-200,
+    .admin-shell .admin-main .text-slate-300 {
+        color: #334155 !important; /* slate-700 */
+    }
+    
+    /* Ensure all table content is visible with dark text */
+    .admin-shell table,
+    .admin-shell table td,
+    .admin-shell table th {
+        color: #0f172a !important; /* slate-900 */
+    }
+    
+    .admin-shell table td {
+        color: #1e293b !important; /* slate-800 */
+    }
+    
+    .admin-shell table th {
+        color: #0f172a !important; /* slate-900 */
+        font-weight: 700 !important;
+    }
+    
+    /* Ensure table rows are visible */
+    .admin-shell table tbody tr {
+        background-color: #ffffff !important;
+    }
+    
+    .admin-shell table tbody tr:hover {
+        background-color: #f8fafc !important; /* slate-50 */
+    }
 
-    /* Light mode text colors */
-    .admin-shell[data-theme="light"] .text-white {
+    /* Light mode text colors - applied by default */
+    .admin-shell .text-white {
         @apply text-slate-900;
     }
 
-    .admin-shell[data-theme="light"] .text-slate-100 {
+    .admin-shell .text-slate-100 {
         @apply text-slate-900;
     }
 
-    .admin-shell[data-theme="light"] .text-slate-200 {
+    .admin-shell .text-slate-200 {
         @apply text-slate-700;
     }
 
-    .admin-shell[data-theme="light"] .text-slate-300 {
+    .admin-shell .text-slate-300 {
         @apply text-slate-600;
     }
 
-    .admin-shell[data-theme="light"] .text-slate-400 {
+    .admin-shell .text-slate-400 {
         @apply text-slate-500;
     }
 
     /* Light mode sidebar text */
-    .admin-shell[data-theme="light"] #admin-sidebar .text-white {
+    .admin-shell #admin-sidebar .text-white {
         @apply text-slate-900;
     }
 
-    .admin-shell[data-theme="light"] #admin-sidebar .text-slate-400 {
+    .admin-shell #admin-sidebar .text-slate-400 {
         @apply text-slate-600;
     }
 
-    .admin-shell[data-theme="light"] #admin-sidebar .text-slate-500 {
+    .admin-shell #admin-sidebar .text-slate-500 {
         @apply text-slate-500;
+    }
+
+    /* Override for active nav pills - keep white text on colored background */
+    .admin-shell .nav-pill--active .text-slate-900 {
+        @apply text-white;
+    }
+    
+    /* Ensure active nav pills have white text */
+    .admin-shell .nav-pill--active .sidebar-text span:first-child {
+        @apply text-white;
+    }
+    
+    /* Enhanced contrast for better accessibility */
+    .admin-shell .text-slate-600 {
+        color: #475569; /* Darker for better contrast */
+    }
+    
+    .admin-shell .text-slate-700 {
+        color: #334155; /* Darker for better contrast */
+    }
+    
+    .admin-shell .text-slate-800 {
+        color: #1e293b; /* Very dark for maximum contrast */
+    }
+    
+    .admin-shell .text-slate-900 {
+        color: #0f172a; /* Maximum contrast */
+    }
+    
+    /* Ensure all links have sufficient contrast */
+    .admin-shell a {
+        font-weight: 500; /* Medium weight for better visibility */
+    }
+    
+    /* Better focus states for keyboard navigation */
+    .admin-shell *:focus-visible {
+        outline: 3px solid #4f46e5;
+        outline-offset: 2px;
     }
 
     /* Light mode profile menu */
@@ -559,5 +833,112 @@
         min-height: 2.5rem !important;
         visibility: visible !important;
         opacity: 1 !important;
+    }
+
+    /* Loading States */
+    @keyframes pulse {
+        0%, 100% {
+            opacity: 1;
+        }
+        50% {
+            opacity: 0.5;
+        }
+    }
+
+    .animate-pulse {
+        animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
+
+    /* Image Lazy Loading */
+    img[loading="lazy"] {
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    img[loading="lazy"].loaded {
+        opacity: 1;
+    }
+
+    /* Admin Form Styles */
+    .admin-form-card {
+        @apply rounded-2xl border border-slate-200 bg-white p-6 lg:p-8 shadow-lg shadow-slate-200/50;
+    }
+
+    .admin-form-section {
+        @apply space-y-6;
+    }
+
+    .admin-form-group {
+        @apply space-y-2;
+    }
+
+    .admin-form-label {
+        @apply block text-sm font-semibold text-slate-700 mb-2;
+    }
+
+    .admin-form-label-required::after {
+        content: ' *';
+        @apply text-red-500;
+    }
+
+    .admin-form-input {
+        @apply w-full rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-sm md:text-base text-slate-900 placeholder-slate-400 transition-all duration-200;
+        @apply focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 focus:outline-none;
+        @apply hover:border-slate-400;
+    }
+
+    .admin-form-input:disabled {
+        @apply bg-slate-100 cursor-not-allowed;
+    }
+
+    .admin-form-textarea {
+        @apply w-full rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-sm md:text-base text-slate-900 placeholder-slate-400 transition-all duration-200 resize-y;
+        @apply focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 focus:outline-none;
+        @apply hover:border-slate-400;
+    }
+
+    .admin-form-select {
+        @apply w-full rounded-xl border-2 border-slate-300 bg-white px-4 py-3 text-sm md:text-base text-slate-900 transition-all duration-200;
+        @apply focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/20 focus:outline-none;
+        @apply hover:border-slate-400;
+    }
+
+    .admin-form-checkbox {
+        @apply h-5 w-5 rounded border-2 border-slate-300 text-indigo-600 transition-all duration-200;
+        @apply focus:ring-4 focus:ring-indigo-500/20 focus:ring-offset-0;
+        @apply checked:bg-indigo-600 checked:border-indigo-600;
+    }
+
+    .admin-form-error {
+        @apply mt-1.5 text-xs font-medium text-red-600 flex items-center gap-1.5;
+    }
+
+    .admin-form-help {
+        @apply mt-1.5 text-xs text-slate-500;
+    }
+
+    .admin-form-actions {
+        @apply flex flex-col sm:flex-row items-start sm:items-center gap-3 pt-6 border-t border-slate-200;
+    }
+
+    .admin-btn-primary {
+        @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 text-white text-sm font-semibold shadow-lg shadow-indigo-500/30 transition-all duration-200;
+        @apply hover:from-indigo-700 hover:to-indigo-800 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-[1.02];
+        @apply focus:outline-none focus:ring-4 focus:ring-indigo-500/20;
+        @apply active:scale-[0.98];
+    }
+
+    .admin-btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl border-2 border-slate-300 bg-white text-slate-700 text-sm font-semibold transition-all duration-200;
+        @apply hover:border-slate-400 hover:bg-slate-50;
+        @apply focus:outline-none focus:ring-4 focus:ring-slate-500/20;
+    }
+
+    .admin-form-divider {
+        @apply border-t border-slate-200 my-6;
+    }
+
+    .admin-form-section-title {
+        @apply text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2;
     }
 }

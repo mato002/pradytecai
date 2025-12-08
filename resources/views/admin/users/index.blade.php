@@ -66,8 +66,9 @@
                             <a href="{{ route('admin.users.edit', $user) }}" class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 text-xs md:text-sm hover:bg-slate-50 transition">
                                 Edit
                             </a>
-                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline" onsubmit="return confirm('Are you sure you want to delete this user?');">
+                            <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline delete-form">
                                 @csrf
+                                @method('DELETE')
                                 <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg border border-red-300 bg-white text-red-600 text-xs md:text-sm hover:bg-red-50 transition">
                                     Delete
                                 </button>

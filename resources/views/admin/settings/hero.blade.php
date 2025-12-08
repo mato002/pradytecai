@@ -9,9 +9,9 @@
     <div class="grid gap-8 lg:grid-cols-12">
         <div class="lg:col-span-7 space-y-6">
             <div class="glass-card">
-                <h2 class="text-lg font-semibold text-white">Hero background image</h2>
-                <p class="mt-2 text-sm text-slate-300">
-                    Upload a wide, high‑resolution image that feels <span class="font-semibold text-sky-300">technical</span> –
+                <h2 class="text-xl font-bold text-slate-900">Hero background image</h2>
+                <p class="mt-2 text-base text-slate-700">
+                    Upload a wide, high‑resolution image that feels <span class="font-semibold text-indigo-700">technical</span> –
                     data visualisations, network meshes, dashboards, or abstract circuitry usually work best.
                 </p>
 
@@ -25,7 +25,7 @@
                     @csrf
 
                     <div>
-                        <label for="hero_image" class="block text-sm font-medium text-slate-200 mb-2">
+                        <label for="hero_image" class="block text-base font-semibold text-slate-800 mb-2">
                             Background image
                         </label>
                         <div class="flex items-center gap-4">
@@ -34,12 +34,12 @@
                                 name="hero_image"
                                 type="file"
                                 accept="image/*"
-                                class="block w-full text-sm text-slate-200 file:mr-4 file:rounded-xl file:border-0
-                                       file:bg-sky-500/80 file:px-4 file:py-2 file:text-sm file:font-semibold
-                                       file:text-white hover:file:bg-sky-400"
+                                class="block w-full text-base text-slate-900 file:mr-4 file:rounded-xl file:border-0
+                                       file:bg-indigo-600 file:px-4 file:py-2 file:text-sm file:font-semibold
+                                       file:text-white hover:file:bg-indigo-700"
                             >
                         </div>
-                        <p class="mt-2 text-xs text-slate-400">
+                        <p class="mt-2 text-sm text-slate-600">
                             Recommended: 1920×1080 or wider • up to 4&nbsp;MB • will be darkened and layered with animated tech overlays.
                         </p>
                         @error('hero_image')
@@ -58,8 +58,8 @@
 
         <div class="lg:col-span-5 space-y-4">
             <div class="glass-card">
-                <h3 class="text-sm font-semibold text-white mb-3">Live preview</h3>
-                <p class="text-xs text-slate-400 mb-4">
+                <h3 class="text-lg font-bold text-slate-900 mb-3">Live preview</h3>
+                <p class="text-sm text-slate-700 mb-4">
                     This is an approximate preview of how the public hero will render with the selected image and
                     animated tech overlays.
                 </p>
@@ -100,7 +100,7 @@
                     </div>
                 </div>
 
-                <p class="mt-3 text-xs text-slate-500">
+                <p class="mt-3 text-sm text-slate-600">
                     For best results, choose imagery with depth, gradients, or subtle patterns that complement
                     overlays rather than flat solid colours.
                 </p>

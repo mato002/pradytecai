@@ -13,11 +13,17 @@
         {{-- Subtle pattern overlay --}}
         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
 
-        <div class="relative z-10 w-full mx-auto text-center hero-animate">
-            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Blog & Updates</h1>
-            <p class="text-xl text-slate-200">
-                Stay informed with the latest news, insights, and updates from Pradytecai
-            </p>
+        <div class="relative z-10 w-full mx-auto max-w-6xl hero-animate">
+            <x-breadcrumbs :items="[
+                ['label' => 'Home', 'url' => '/'],
+                ['label' => 'Blog']
+            ]" light="true" />
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Blog & Updates</h1>
+                <p class="text-xl text-slate-200">
+                    Stay informed with the latest news, insights, and updates from Pradytecai
+                </p>
+            </div>
         </div>
     </section>
 
@@ -38,7 +44,7 @@
                 <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                     @foreach($posts as $post)
                         <article class="bg-white border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-shadow">
-                            <div class="h-48 bg-gradient-to-br from-indigo-100 to-sky-200"></div>
+                            <div class="h-48 bg-gradient-to-br from-indigo-100 to-sky-200" loading="lazy"></div>
                             <div class="p-6">
                                 <div class="flex items-center text-sm text-gray-500 mb-3">
                                     <span>{{ optional($post->published_at ?? $post->created_at)->format('F j, Y') }}</span>
@@ -47,16 +53,22 @@
                                         <span>{{ $post->category }}</span>
                                     @endif
                                 </div>
-                                <h2 class="text-2xl font-bold text-gray-900 mb-3">{{ $post->title }}</h2>
+                                <h2 class="text-2xl font-bold text-gray-900 mb-3">
+                                    <a href="{{ route('blog.show', $post) }}" class="hover:text-indigo-600 transition">
+                                        {{ $post->title }}
+                                    </a>
+                                </h2>
                                 @if($post->excerpt)
                                     <p class="text-gray-600 mb-4">
                                         {{ $post->excerpt }}
                                     </p>
                                 @endif
-                                {{-- For now there is no dedicated single-post page --}}
-                                <p class="text-xs text-gray-400">
-                                    Managed from the admin blog panel.
-                                </p>
+                                <a href="{{ route('blog.show', $post) }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                                    Read more
+                                    <svg class="w-4 h-4 ml-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"></path>
+                                    </svg>
+                                </a>
                             </div>
                         </article>
                     @endforeach

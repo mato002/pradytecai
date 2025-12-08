@@ -13,11 +13,17 @@
         {{-- Subtle pattern overlay --}}
         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
 
-        <div class="relative z-10 w-full mx-auto text-center hero-animate">
-            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Our Services</h1>
-            <p class="text-xl text-slate-200">
-                Comprehensive software solutions tailored to your business needs
-            </p>
+        <div class="relative z-10 w-full mx-auto max-w-6xl hero-animate">
+            <x-breadcrumbs :items="[
+                ['label' => 'Home', 'url' => '/'],
+                ['label' => 'Services']
+            ]" light="true" />
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Our Services</h1>
+                <p class="text-xl text-slate-200">
+                    Comprehensive software solutions tailored to your business needs
+                </p>
+            </div>
         </div>
     </section>
 

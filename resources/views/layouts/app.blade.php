@@ -67,6 +67,22 @@
                 <a href="/faq" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('faq') ? 'text-blue-600 font-semibold' : '' }}">FAQ</a>
                 <a href="/contact" class="text-gray-700 hover:text-blue-600 transition {{ request()->is('contact') ? 'text-blue-600 font-semibold' : '' }}">Contact</a>
             </div>
+            <div class="hidden md:flex items-center space-x-4">
+                <form action="{{ route('search') }}" method="GET" class="relative">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search..." 
+                        value="{{ request('q') }}"
+                        class="w-48 px-4 py-2 pr-10 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                    >
+                    <button type="submit" class="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                        </svg>
+                    </button>
+                </form>
+            </div>
             <div class="flex items-center space-x-4">
                 {{-- Public marketing shell should not expose auth controls --}}
                 <a href="https://crm.pradytecai.com" target="_blank" class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition text-sm sm:text-base">Open CRM</a>
@@ -81,6 +97,15 @@
         <!-- Mobile menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-white border-t border-gray-200">
             <div class="px-4 py-4 space-y-3">
+                <form action="{{ route('search') }}" method="GET" class="mb-4">
+                    <input 
+                        type="text" 
+                        name="q" 
+                        placeholder="Search..." 
+                        value="{{ request('q') }}"
+                        class="w-full px-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                </form>
                 <a href="/" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('/') ? 'text-blue-600 font-semibold' : '' }}">Home</a>
                 <a href="/about" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('about') ? 'text-blue-600 font-semibold' : '' }}">About</a>
                 <a href="/services" class="block text-gray-700 hover:text-blue-600 transition {{ request()->is('services') ? 'text-blue-600 font-semibold' : '' }}">Services</a>
@@ -111,7 +136,7 @@
                 <h4 class="text-white font-semibold mb-3 text-sm uppercase tracking-wide">Solutions</h4>
                 <ul class="space-y-2 text-sm">
                     <li><a href="https://crm.pradytecai.com" target="_blank" class="hover:text-white hover:underline underline-offset-4 transition">BulkSMS CRM</a></li>
-                    <li><a href="https://demo.pradytecai.com" target="_blank" class="hover:text-white hover:underline underline-offset-4 transition">Prady Mfi</a></li>
+                    <li><a href="https://demo.pradytec.com" target="_blank" class="hover:text-white hover:underline underline-offset-4 transition">Prady Mfi</a></li>
                     <li><a href="/products" class="hover:text-white hover:underline underline-offset-4 transition">All Products</a></li>
                 </ul>
             </div>
@@ -365,7 +390,39 @@
             }
             })();
         });
+
+        // Lazy loading images
+        document.addEventListener('DOMContentLoaded', function() {
+            const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+            
+            if ('IntersectionObserver' in window) {
+                const imageObserver = new IntersectionObserver(function(entries, observer) {
+                    entries.forEach(function(entry) {
+                        if (entry.isIntersecting) {
+                            const img = entry.target;
+                            img.classList.add('loaded');
+                            observer.unobserve(img);
+                        }
+                    });
+                });
+
+                lazyImages.forEach(function(img) {
+                    imageObserver.observe(img);
+                });
+            } else {
+                // Fallback for browsers without IntersectionObserver
+                lazyImages.forEach(function(img) {
+                    img.classList.add('loaded');
+                });
+            }
+        });
     </script>
     @stack('scripts')
+    
+    <!-- Back to Top Button -->
+    @include('components.back-to-top')
+    
+    <!-- Cookie Consent Banner -->
+    @include('components.cookie-consent')
 </body>
 </html>

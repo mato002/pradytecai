@@ -35,4 +35,17 @@ return [
         ],
     ],
 
+    'bulksms' => [
+        'api_url' => env('BULKSMS_API_URL', 'https://crm.pradytecai.com/api'),
+        'api_key' => env('BULKSMS_API_KEY'),
+        'client_id' => env('BULKSMS_CLIENT_ID', '1'),
+        'sender_id' => env('BULKSMS_SENDER_ID'),
+    ],
+
+    'ultramsg' => [
+        'api_url' => env('ULTRAMSG_API_URL', 'https://api.ultramsg.com'),
+        'instance_id' => env('ULTRAMSG_INSTANCE_ID'),
+        'token' => env('ULTRAMSG_TOKEN'),
+    ],
+
 ];

@@ -59,17 +59,17 @@
         @foreach ($statCards as $card)
             <div class="metric-card">
                 <div class="flex items-center justify-between">
-                    <p class="text-sm font-medium text-slate-300">{{ $card['label'] }}</p>
-                    <span class="stat-trend stat-trend--up">
-                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <p class="text-base font-semibold text-slate-800">{{ $card['label'] }}</p>
+                    <span class="stat-trend stat-trend--up text-sm font-semibold">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                   d="M5 10l4-4 4 4 6-6" />
                         </svg>
                         {{ $card['trend'] }}
                     </span>
                 </div>
-                <p class="mt-4 text-4xl font-semibold text-white">{{ $card['value'] }}</p>
-                <p class="text-xs text-slate-400">{{ $card['meta'] }}</p>
+                <p class="mt-6 text-5xl font-bold text-slate-900">{{ $card['value'] }}</p>
+                <p class="mt-2 text-sm font-medium text-slate-700">{{ $card['meta'] }}</p>
                 <div class="metric-card__spark">
                     @foreach ($card['spark'] as $height)
                         <span style="height: {{ $height }}px"></span>
@@ -81,88 +81,88 @@
 
     <div class="grid gap-6 lg:grid-cols-12">
         <div class="glass-card lg:col-span-8">
-            <div class="flex flex-wrap items-center justify-between gap-3">
+            <div class="flex flex-wrap items-center justify-between gap-4">
                 <div>
-                    <h2 class="text-lg font-semibold text-white">Enquiry activity</h2>
-                    <p class="text-sm text-slate-400">Last {{ $recent_enquiries->count() ? $recent_enquiries->count() : 'few' }} signals</p>
+                    <h2 class="text-xl font-bold text-slate-900">Enquiry activity</h2>
+                    <p class="mt-1 text-base text-slate-700">Last {{ $recent_enquiries->count() ? $recent_enquiries->count() : 'few' }} signals</p>
                 </div>
                 <span class="badge-soft">Live feed</span>
             </div>
 
             <div class="mt-6 space-y-4">
                 @forelse ($recent_enquiries as $enquiry)
-                    <div class="flex items-start justify-between border-b border-white/5 pb-4 last:border-0 last:pb-0">
+                    <div class="flex items-start justify-between border-b border-slate-200 pb-4 last:border-0 last:pb-0">
                         <div class="flex items-start">
                             <span class="timeline-dot"></span>
                             <div>
-                                <p class="font-semibold text-white">{{ $enquiry->name ?? 'Anonymous' }}</p>
-                                <p class="text-sm text-slate-400">
+                                <p class="text-lg font-bold text-slate-900">{{ $enquiry->name ?? 'Anonymous' }}</p>
+                                <p class="mt-1 text-base text-slate-700">
                                     {{ $enquiry->subject ?? $enquiry->company ?? 'General enquiry' }}
                                 </p>
-                                <p class="mt-1 max-w-lg text-xs text-slate-500">{{ Str::limit($enquiry->message ?? '—', 80) }}</p>
+                                <p class="mt-2 max-w-lg text-sm text-slate-600">{{ Str::limit($enquiry->message ?? '—', 80) }}</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <p class="text-xs text-slate-400">{{ optional($enquiry->created_at)->diffForHumans() }}</p>
-                            <a href="{{ route('admin.enquiries.index') }}" class="text-xs text-sky-300 underline-offset-4 hover:underline">Open</a>
+                            <p class="text-sm font-medium text-slate-700">{{ optional($enquiry->created_at)->diffForHumans() }}</p>
+                            <a href="{{ route('admin.enquiries.index') }}" class="mt-2 inline-block text-sm font-semibold text-indigo-700 underline-offset-4 hover:underline hover:text-indigo-800">Open</a>
                         </div>
                     </div>
                 @empty
-                    <p class="text-sm text-slate-400">You’re all caught up. New enquiries will stream here.</p>
+                    <p class="text-base text-slate-700">You're all caught up. New enquiries will stream here.</p>
                 @endforelse
             </div>
         </div>
 
         <div class="lg:col-span-4 space-y-6">
             <div class="glass-card">
-                <h2 class="text-lg font-semibold text-white">Quick actions</h2>
-                <div class="mt-4 space-y-3">
+                <h2 class="text-xl font-bold text-slate-900">Quick actions</h2>
+                <div class="mt-6 space-y-4">
                     <a href="{{ route('admin.enquiries.index') }}" class="quick-link">
-                        <span>Review inbox</span>
-                        <span class="text-xs text-slate-400">2m avg</span>
+                        <span class="font-semibold">Review inbox</span>
+                        <span class="text-sm text-slate-600">2m avg</span>
                     </a>
                     <a href="{{ route('admin.users.index') }}" class="quick-link">
-                        <span>Invite teammate</span>
-                        <span class="text-xs text-slate-400">Role based</span>
+                        <span class="font-semibold">Invite teammate</span>
+                        <span class="text-sm text-slate-600">Role based</span>
                     </a>
                     <a href="{{ route('admin.positions.index') }}" class="quick-link">
-                        <span>Update hiring</span>
-                        <span class="text-xs text-slate-400">{{ $stats['active_positions'] ?? 0 }} roles</span>
+                        <span class="font-semibold">Update hiring</span>
+                        <span class="text-sm text-slate-600">{{ $stats['active_positions'] ?? 0 }} roles</span>
                     </a>
                 </div>
             </div>
 
             <div class="glass-card">
-                <h2 class="text-lg font-semibold text-white">Operational health</h2>
-                <div class="mt-5 space-y-5 text-sm">
+                <h2 class="text-xl font-bold text-slate-900">Operational health</h2>
+                <div class="mt-6 space-y-6 text-base">
                     <div>
-                        <div class="flex items-center justify-between">
-                            <p class="text-slate-300">Hiring pipeline</p>
-                            <span class="text-xs text-slate-400">{{ $stats['active_positions'] ?? 0 }} active</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-slate-800">Hiring pipeline</p>
+                            <span class="text-sm font-medium text-slate-700">{{ $stats['active_positions'] ?? 0 }} active</span>
                         </div>
-                        <div class="mt-2 h-2 w-full rounded-full bg-white/5">
+                        <div class="mt-2 h-2 w-full rounded-full bg-slate-200">
                             <span class="block h-2 rounded-full bg-gradient-to-r from-amber-400 via-pink-500 to-purple-500"
                                   style="width: {{ min(($stats['active_positions'] ?? 0) * 10, 100) }}%"></span>
                         </div>
                     </div>
                     <div>
-                        <div class="flex items-center justify-between">
-                            <p class="text-slate-300">Content cadence</p>
-                            <span class="text-xs text-slate-400">{{ $stats['published_posts'] ?? 0 }} live</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-slate-800">Content cadence</p>
+                            <span class="text-sm font-medium text-slate-700">{{ $stats['published_posts'] ?? 0 }} live</span>
                         </div>
-                        <div class="mt-2 h-2 w-full rounded-full bg-white/5">
+                        <div class="mt-2 h-2 w-full rounded-full bg-slate-200">
                             <span class="block h-2 rounded-full bg-gradient-to-r from-sky-400 to-indigo-500"
                                   style="width: {{ min(($stats['published_posts'] ?? 0) * 8, 100) }}%"></span>
                         </div>
                     </div>
                     <div>
-                        <div class="flex items-center justify-between">
-                            <p class="text-slate-300">Enquiry response SLA</p>
-                            <span class="text-xs text-emerald-300">↑ healthy</span>
+                        <div class="flex items-center justify-between mb-3">
+                            <p class="font-semibold text-slate-800">Enquiry response SLA</p>
+                            <span class="text-sm font-semibold text-emerald-700">↑ healthy</span>
                         </div>
-                        <div class="mt-2 flex items-baseline gap-2">
-                            <p class="text-3xl font-semibold text-white">2h</p>
-                            <p class="text-xs text-slate-400">average first reply</p>
+                        <div class="mt-3 flex items-baseline gap-3">
+                            <p class="text-4xl font-bold text-slate-900">2h</p>
+                            <p class="text-sm font-medium text-slate-700">average first reply</p>
                         </div>
                     </div>
                 </div>

@@ -13,11 +13,17 @@
         {{-- Subtle pattern overlay --}}
         <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
 
-        <div class="relative z-10 w-full mx-auto text-center hero-animate">
-            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Join Our Team</h1>
-            <p class="text-xl text-slate-200">
-                Build the future of enterprise software with us
-            </p>
+        <div class="relative z-10 w-full mx-auto max-w-6xl hero-animate">
+            <x-breadcrumbs :items="[
+                ['label' => 'Home', 'url' => '/'],
+                ['label' => 'Careers']
+            ]" light="true" />
+            <div class="text-center">
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Join Our Team</h1>
+                <p class="text-xl text-slate-200">
+                    Build the future of enterprise software with us
+                </p>
+            </div>
         </div>
     </section>
 
@@ -92,58 +98,104 @@
                 </p>
             </div>
 
-            <div class="space-y-6">
-                @forelse($positions as $position)
-                    <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-lg transition-shadow">
-                        <div class="flex flex-col md:flex-row md:items-center md:justify-between">
-                            <div class="mb-4 md:mb-0">
-                                <h3 class="text-2xl font-bold text-gray-900 mb-2">{{ $position->title }}</h3>
-                                <div class="flex flex-wrap gap-2 mb-4">
-                                    <span class="px-3 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm">{{ $position->type }}</span>
-                                    <span class="px-3 py-1 bg-sky-100 text-sky-700 rounded-full text-sm">{{ $position->location }}</span>
+            @if($positions->count() > 0)
+                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    @foreach($positions as $position)
+                        <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 hover:-translate-y-1 group">
+                            <div class="flex flex-col h-full">
+                                <div class="flex-1">
+                                    <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">
+                                        {{ $position->title }}
+                                    </h3>
+                                    
+                                    <div class="flex flex-wrap gap-2 mb-4">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                                            </svg>
+                                            {{ $position->type }}
+                                        </span>
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-sky-100 text-sky-700 rounded-full text-xs font-semibold">
+                                            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            {{ $position->location }}
+                                        </span>
+                                    </div>
+                                    
+                                    <p class="text-slate-600 text-sm mb-4 line-clamp-3">
+                                        {{ \Illuminate\Support\Str::limit($position->description, 120) }}
+                                    </p>
+                                    
                                     @if(!empty($position->tags))
-                                        @foreach($position->tags_array as $tag)
-                                            @if(trim($tag))
-                                                <span class="px-3 py-1 bg-slate-100 text-slate-700 rounded-full text-sm">{{ trim($tag) }}</span>
+                                        <div class="flex flex-wrap gap-1.5 mb-4">
+                                            @foreach(array_slice($position->tags_array, 0, 3) as $tag)
+                                                @if(trim($tag))
+                                                    <span class="px-2 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium">
+                                                        {{ trim($tag) }}
+                                                    </span>
+                                                @endif
+                                            @endforeach
+                                            @if(count($position->tags_array) > 3)
+                                                <span class="px-2 py-1 bg-slate-100 text-slate-700 rounded-lg text-xs font-medium">
+                                                    +{{ count($position->tags_array) - 3 }} more
+                                                </span>
                                             @endif
-                                        @endforeach
+                                        </div>
                                     @endif
                                 </div>
-                                <p class="text-gray-600">
-                                    {{ $position->description }}
-                                </p>
+                                
+                                <a href="{{ route('careers.apply', $position) }}" class="mt-4 inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98]">
+                                    <span>Apply Now</span>
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                                    </svg>
+                                </a>
                             </div>
-                            <a href="/contact?position={{ urlencode($position->title) }}" class="md:ml-6 bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition whitespace-nowrap">
-                                Apply Now
-                            </a>
                         </div>
-                    </div>
-                @empty
-                    <!-- No Open Positions Message -->
-                    <div class="bg-white border-2 border-gray-200 rounded-xl p-8 text-center">
-                        <p class="text-gray-600 mb-4">
+                    @endforeach
+                </div>
+            @else
+                <!-- No Open Positions Message -->
+                <div class="bg-white border-2 border-slate-200 rounded-2xl p-12 text-center">
+                    <div class="max-w-md mx-auto">
+                        <div class="w-20 h-20 bg-slate-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                            <svg class="w-10 h-10 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">No Open Positions</h3>
+                        <p class="text-slate-600 mb-6">
                             We don't have any open positions at the moment, but we're always interested in hearing 
                             from talented individuals.
                         </p>
-                        <a href="/contact" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                        <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-8 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40">
                             Send Us Your Resume
                         </a>
                     </div>
-                @endforelse
+                </div>
+            @endforelse
 
-                <!-- Always show general contact option -->
-                @if($positions->count() > 0)
-                    <div class="bg-white border-2 border-gray-200 rounded-xl p-8 text-center">
-                        <p class="text-gray-600 mb-4">
-                            Don't see a position that matches your skills? We're always interested in hearing 
-                            from talented individuals.
+            <!-- Always show general contact option -->
+            @if($positions->count() > 0)
+                <div class="mt-12 bg-gradient-to-br from-indigo-50 to-sky-50 border-2 border-indigo-200 rounded-2xl p-8 text-center">
+                    <div class="max-w-2xl mx-auto">
+                        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="text-2xl font-bold text-slate-900 mb-3">Don't See a Match?</h3>
+                        <p class="text-slate-600 mb-6">
+                            We're always interested in hearing from talented individuals. Send us your resume and we'll keep you in mind for future opportunities.
                         </p>
-                        <a href="/contact" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                        <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-8 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40">
                             Send Us Your Resume
                         </a>
                     </div>
-                @endif
-            </div>
+                </div>
+            @endif
         </div>
     </section>
 
