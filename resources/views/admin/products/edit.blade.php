@@ -71,6 +71,27 @@
                 @enderror
             </div>
 
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Features (one per line)</label>
+                <textarea name="features_text" rows="6"
+                          class="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition resize-none">{{ old('features_text', $product->features ? implode("\n", $product->features) : '') }}</textarea>
+                <p class="mt-1 text-xs text-slate-500">Enter each feature on a new line</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Benefits (one per line)</label>
+                <textarea name="benefits_text" rows="6"
+                          class="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition resize-none">{{ old('benefits_text', $product->benefits ? implode("\n", $product->benefits) : '') }}</textarea>
+                <p class="mt-1 text-xs text-slate-500">Enter each benefit on a new line</p>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-slate-700 mb-2">Statistics (JSON format)</label>
+                <textarea name="statistics_json" rows="4"
+                          class="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-sm font-mono focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition resize-none">{{ old('statistics_json', $product->statistics ? json_encode($product->statistics, JSON_PRETTY_PRINT) : '') }}</textarea>
+                <p class="mt-1 text-xs text-slate-500">Enter statistics as JSON. Example: {"stat1_label": "99.9%", "stat1_value": "Delivery Rate"}</p>
+            </div>
+
             <div class="grid md:grid-cols-2 gap-6">
                 <div>
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Type</label>
@@ -89,6 +110,21 @@
                     @error('url')
                         <p class="mt-1 text-xs text-red-600">{{ $message }}</p>
                     @enderror
+                </div>
+            </div>
+
+            <div class="grid md:grid-cols-2 gap-6">
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Button Text</label>
+                    <input type="text" name="button_text" value="{{ old('button_text', $product->button_text ?? 'Learn More') }}"
+                           class="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                           placeholder="e.g. Learn More, Open CRM">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Icon</label>
+                    <input type="text" name="icon" value="{{ old('icon', $product->icon) }}"
+                           class="w-full rounded-xl border-2 border-slate-200 px-4 py-3 text-sm focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
+                           placeholder="e.g. messaging, finance">
                 </div>
             </div>
 

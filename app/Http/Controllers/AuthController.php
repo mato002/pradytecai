@@ -14,6 +14,11 @@ class AuthController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
+            // Redirect based on user role
+            $user = Auth::user();
+            if ($user->isHrManager()) {
+                return redirect()->route('admin.positions.index');
+            }
             return redirect()->route('admin.dashboard');
         }
         return view('auth.login');
@@ -34,7 +39,27 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-            return redirect()->intended(route('admin.dashboard'));
+            
+            // Clear any intended URL, especially if it points to profile
+            $intended = $request->session()->pull('url.intended');
+            
+            // Redirect based on user role - never redirect to profile
+            $user = Auth::user();
+            if ($user->isHrManager()) {
+                // HR Managers always go to positions page
+                return redirect()->route('admin.positions.index');
+            }
+            
+            // For admins, only use intended if it's a valid admin route (not profile)
+            if ($intended && 
+                str_starts_with($intended, '/admin') && 
+                !str_contains($intended, '/profile') &&
+                !str_contains($intended, '/login')) {
+                return redirect($intended);
+            }
+            
+            // Default: go to dashboard
+            return redirect()->route('admin.dashboard');
         }
 
         throw ValidationException::withMessages([
@@ -52,7 +77,7 @@ class AuthController extends Controller
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return redirect()->route('login');
+        return redirect()->route('login')->with('success', 'You have been logged out successfully.');
     }
 }
 

@@ -52,6 +52,30 @@
                     @enderror
                 </div>
 
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Features (one per line)</label>
+                    <textarea name="features_text" rows="6"
+                              class="admin-form-textarea"
+                              placeholder="Multi-channel messaging&#10;Contact management&#10;Campaign builder">{{ old('features_text') }}</textarea>
+                    <p class="admin-form-help">Enter each feature on a new line. These will be displayed as a bulleted list.</p>
+                </div>
+
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Benefits (one per line)</label>
+                    <textarea name="benefits_text" rows="6"
+                              class="admin-form-textarea"
+                              placeholder="Real-time analytics&#10;API integration&#10;Wallet system">{{ old('benefits_text') }}</textarea>
+                    <p class="admin-form-help">Enter each benefit on a new line. These will be displayed as a bulleted list.</p>
+                </div>
+
+                <div class="admin-form-group">
+                    <label class="admin-form-label">Statistics (JSON format)</label>
+                    <textarea name="statistics_json" rows="4"
+                              class="admin-form-textarea font-mono text-sm"
+                              placeholder='{"stat1_label": "99.9%", "stat1_value": "Delivery Rate", "stat2_label": "3", "stat2_value": "Communication Channels"}'>{{ old('statistics_json') }}</textarea>
+                    <p class="admin-form-help">Enter statistics as JSON. Each stat should have a label (number) and value (description).</p>
+                </div>
+
                 <div class="admin-form-divider"></div>
 
                 <div class="admin-form-section-title">
@@ -91,6 +115,23 @@
                                 {{ $message }}
                             </p>
                         @enderror
+                    </div>
+                </div>
+
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Button Text</label>
+                        <input type="text" name="button_text" value="{{ old('button_text', 'Learn More') }}"
+                               class="admin-form-input"
+                               placeholder="e.g. Learn More, Open CRM, View Demo">
+                        <p class="admin-form-help">Text for the call-to-action button</p>
+                    </div>
+                    <div class="admin-form-group">
+                        <label class="admin-form-label">Icon</label>
+                        <input type="text" name="icon" value="{{ old('icon') }}"
+                               class="admin-form-input"
+                               placeholder="e.g. messaging, finance, cloud">
+                        <p class="admin-form-help">Icon identifier (optional)</p>
                     </div>
                 </div>
 

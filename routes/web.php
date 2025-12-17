@@ -35,7 +35,11 @@ Route::get('/services', function () {
 });
 
 Route::get('/products', function () {
-    return view('products');
+    $products = \App\Models\Product::where('is_active', true)
+        ->ordered()
+        ->get();
+    
+    return view('products', compact('products'));
 });
 
 Route::get('/careers', function () {
@@ -106,9 +110,14 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 // Admin area (protected by authentication)
 Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     Route::get('/', function () {
+        // Redirect HR Managers to positions page
+        if (auth()->user()->isHrManager()) {
+            return redirect()->route('admin.positions.index');
+        }
+        
         $stats = [
             'total_users' => User::count(),
-            'active_products' => 0, // Placeholder - no Product model yet
+            'active_products' => \App\Models\Product::where('is_active', true)->count(),
             'new_enquiries' => \App\Models\ContactMessage::where('created_at', '>=', now()->subDays(7))->count(),
             'published_posts' => \App\Models\BlogPost::where('is_published', true)->count(),
             'active_positions' => \App\Models\Position::where('is_active', true)->count(),
@@ -119,25 +128,29 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         return view('admin.dashboard', compact('stats', 'recent_enquiries'));
     })->name('dashboard');
 
-    // Products management
-    Route::prefix('products')->name('products.')->group(function () {
+    // Products management (Admin only)
+    Route::prefix('products')->name('products.')->middleware('role:admin')->group(function () {
         Route::get('/', [ProductController::class, 'index'])->name('index');
         Route::get('/create', [ProductController::class, 'create'])->name('create');
         Route::post('/', [ProductController::class, 'store'])->name('store');
         Route::get('/{product}/edit', [ProductController::class, 'edit'])->name('edit');
+        Route::get('/{product}', [ProductController::class, 'show'])->name('show');
         Route::post('/{product}', [ProductController::class, 'update'])->name('update');
         Route::post('/{product}/delete', [ProductController::class, 'destroy'])->name('destroy');
         Route::post('/{product}/toggle-status', [ProductController::class, 'toggleStatus'])->name('toggle-status');
     });
 
-    Route::get('/enquiries', function () {
-        $messages = ContactMessage::latest()->paginate(20);
+    // Enquiries management (Admin only)
+    Route::prefix('enquiries')->name('enquiries.')->middleware('role:admin')->group(function () {
+        Route::get('/', [\App\Http\Controllers\Admin\EnquiryController::class, 'index'])->name('index');
+        Route::get('/{enquiry}', [\App\Http\Controllers\Admin\EnquiryController::class, 'show'])->name('show');
+        Route::post('/{enquiry}/status', [\App\Http\Controllers\Admin\EnquiryController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/{enquiry}/reply', [\App\Http\Controllers\Admin\EnquiryController::class, 'reply'])->name('reply');
+        Route::post('/{enquiry}/delete', [\App\Http\Controllers\Admin\EnquiryController::class, 'destroy'])->name('destroy');
+    });
 
-        return view('admin.enquiries.index', compact('messages'));
-    })->name('enquiries.index');
-
-    // Users management
-    Route::prefix('users')->name('users.')->group(function () {
+    // Users management (Admin only)
+    Route::prefix('users')->name('users.')->middleware('role:admin')->group(function () {
         Route::get('/', [UserController::class, 'index'])->name('index');
         Route::get('/create', [UserController::class, 'create'])->name('create');
         Route::post('/', [UserController::class, 'store'])->name('store');
@@ -146,12 +159,12 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::post('/{user}/delete', [UserController::class, 'destroy'])->name('destroy');
     });
 
-    // Admin search
-    Route::get('/search', [AdminSearchController::class, 'index'])->name('search');
-    Route::get('/search/api', [AdminSearchController::class, 'api'])->name('search.api');
+    // Admin search (Admin only)
+    Route::get('/search', [AdminSearchController::class, 'index'])->name('search')->middleware('role:admin');
+    Route::get('/search/api', [AdminSearchController::class, 'api'])->name('search.api')->middleware('role:admin');
 
-    // Blog management
-    Route::prefix('blog')->name('blog.')->group(function () {
+    // Blog management (Admin only)
+    Route::prefix('blog')->name('blog.')->middleware('role:admin')->group(function () {
         Route::get('/', [BlogController::class, 'index'])->name('index');
         Route::get('/create', [BlogController::class, 'create'])->name('create');
         Route::post('/', [BlogController::class, 'store'])->name('store');
@@ -165,6 +178,7 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
         Route::get('/', [PositionController::class, 'index'])->name('index');
         Route::get('/create', [PositionController::class, 'create'])->name('create');
         Route::post('/', [PositionController::class, 'store'])->name('store');
+        Route::get('/{position}', [PositionController::class, 'show'])->name('show');
         Route::get('/{position}/edit', [PositionController::class, 'edit'])->name('edit');
         Route::post('/{position}', [PositionController::class, 'update'])->name('update');
         Route::post('/{position}/delete', [PositionController::class, 'destroy'])->name('destroy');
@@ -173,29 +187,35 @@ Route::prefix('admin')->name('admin.')->middleware('auth')->group(function () {
     // Job Applications management
     Route::prefix('applications')->name('applications.')->group(function () {
         Route::get('/', [AdminJobApplicationController::class, 'index'])->name('index');
+        Route::post('/bulk-action', [AdminJobApplicationController::class, 'bulkAction'])->name('bulkAction');
         Route::get('/{application}', [AdminJobApplicationController::class, 'show'])->name('show');
         Route::post('/{application}/status', [AdminJobApplicationController::class, 'updateStatus'])->name('updateStatus');
         Route::post('/{application}/schedule-interview', [AdminJobApplicationController::class, 'scheduleInterview'])->name('scheduleInterview');
         Route::post('/{application}/interview-notes', [AdminJobApplicationController::class, 'updateInterviewNotes'])->name('updateInterviewNotes');
         Route::post('/{application}/send-message', [AdminJobApplicationController::class, 'sendMessage'])->name('sendMessage');
+        Route::post('/{application}/comments', [AdminJobApplicationController::class, 'addComment'])->name('addComment');
+        Route::post('/comments/{comment}/delete', [AdminJobApplicationController::class, 'deleteComment'])->name('deleteComment');
         Route::get('/{application}/resume', [AdminJobApplicationController::class, 'downloadResume'])->name('downloadResume');
     });
 
-    // Profile management
+    // Profile management (accessible but not a default redirect)
     Route::prefix('profile')->name('profile.')->group(function () {
         Route::get('/', [ProfileController::class, 'show'])->name('show');
         Route::get('/edit', [ProfileController::class, 'edit'])->name('edit');
         Route::post('/update', [ProfileController::class, 'update'])->name('update');
     });
 
-    // Settings
-    Route::prefix('settings')->name('settings.')->group(function () {
+    // Settings (Admin only)
+    Route::prefix('settings')->name('settings.')->middleware('role:admin')->group(function () {
         Route::get('/', [SettingsController::class, 'index'])->name('index');
         Route::get('/general', [SettingsController::class, 'general'])->name('general');
         Route::post('/general', [SettingsController::class, 'updateGeneral'])->name('general.update');
         Route::get('/hero', [HeroSettingsController::class, 'edit'])->name('hero.edit');
         Route::post('/hero', [HeroSettingsController::class, 'update'])->name('hero.update');
     });
+
+    // Activity Logs (Admin only)
+    Route::get('/activity-logs', [\App\Http\Controllers\Admin\ActivityLogController::class, 'index'])->name('activity-logs.index')->middleware('role:admin');
 });
 
 

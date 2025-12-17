@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Mail\ApplicationReplyMail;
+use App\Mail\EnquiryReplyMail;
 use App\Models\JobApplication;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
@@ -36,11 +37,45 @@ class CommunicationService
     }
 
     /**
+     * Send email to a generic recipient (for enquiries/contact messages)
+     */
+    public function sendEmailToRecipient(string $email, string $subject, string $message, ?string $name = null): bool
+    {
+        try {
+            Mail::to($email)
+                ->send(new EnquiryReplyMail($subject, $message, $name));
+            
+            Log::info('Email sent to recipient', [
+                'email' => $email,
+                'subject' => $subject,
+                'name' => $name,
+            ]);
+            
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Failed to send email to recipient', [
+                'email' => $email,
+                'error' => $e->getMessage(),
+            ]);
+            
+            return false;
+        }
+    }
+
+    /**
      * Send SMS to applicant using BulkSMS CRM API
      * Documentation: https://crm.pradytecai.com/api-documentation
      */
     public function sendSMS(JobApplication $application, string $message): bool
     {
+        // Check if BulkSMS CRM is enabled
+        if (!config('services.bulksms.enabled', true)) {
+            Log::info('BulkSMS CRM is disabled, skipping SMS send', [
+                'application_id' => $application->id,
+            ]);
+            return false;
+        }
+
         if (!$application->phone) {
             Log::warning('Cannot send SMS: No phone number provided', [
                 'application_id' => $application->id,

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\JobApplication;
 use App\Models\Position;
+use App\Services\ActivityLogService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -37,6 +38,17 @@ class JobApplicationController extends Controller
             'resume' => 'required|file|mimes:pdf,doc,docx|max:5120', // 5MB max
         ]);
 
+        // Check for duplicate application (same email and position)
+        $duplicate = JobApplication::where('email', $validated['email'])
+            ->where('position_id', $validated['position_id'])
+            ->exists();
+
+        if ($duplicate) {
+            return back()
+                ->withInput()
+                ->withErrors(['email' => 'You have already applied for this position.']);
+        }
+
         // Handle resume upload
         if ($request->hasFile('resume')) {
             $resumePath = $request->file('resume')->store('resumes', 'public');
@@ -45,7 +57,10 @@ class JobApplicationController extends Controller
 
         unset($validated['resume']);
 
-        JobApplication::create($validated);
+        $application = JobApplication::create($validated);
+
+        // Log the application creation
+        ActivityLogService::created($application, "New application submitted by {$application->name} for {$application->position->title}");
 
         return redirect()->route('careers.index')
             ->with('success', 'Thank you! Your application has been submitted successfully. We will review it and get back to you soon.');

@@ -21,6 +21,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'role',
     ];
 
     /**
@@ -44,5 +45,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
         ];
+    }
+
+    /**
+     * Check if user is an admin
+     */
+    public function isAdmin(): bool
+    {
+        return $this->role === 'admin';
+    }
+
+    /**
+     * Check if user is HR Manager
+     */
+    public function isHrManager(): bool
+    {
+        return $this->role === 'hr_manager';
+    }
+
+    /**
+     * Check if user can access careers-related features
+     */
+    public function canAccessCareers(): bool
+    {
+        return $this->isAdmin() || $this->isHrManager();
     }
 }

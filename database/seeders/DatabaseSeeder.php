@@ -17,5 +17,11 @@ class DatabaseSeeder extends Seeder
     {
         // Seed admin user
         $this->call(AdminUserSeeder::class);
+
+        // Seed core marketing content
+        $this->call([
+            BlogPostSeeder::class,
+            ProductSeeder::class,
+        ]);
     }
 }

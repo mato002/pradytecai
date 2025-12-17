@@ -51,6 +51,22 @@ class JobApplication extends Model
     {
         return $query->orderBy('created_at', 'desc');
     }
+
+    /**
+     * Get comments for this application
+     */
+    public function comments()
+    {
+        return $this->hasMany(\App\Models\ApplicationComment::class)->whereNull('parent_id')->orderByDesc('created_at');
+    }
+
+    /**
+     * Get all comments including replies
+     */
+    public function allComments()
+    {
+        return $this->hasMany(\App\Models\ApplicationComment::class)->orderByDesc('created_at');
+    }
 }
 
 

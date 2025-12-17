@@ -16,11 +16,19 @@ class Product extends Model
         'url',
         'is_active',
         'order',
+        'features',
+        'benefits',
+        'statistics',
+        'button_text',
+        'icon',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
         'order' => 'integer',
+        'features' => 'array',
+        'benefits' => 'array',
+        'statistics' => 'array',
     ];
 
     /**

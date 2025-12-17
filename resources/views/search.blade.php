@@ -30,7 +30,13 @@
             </div>
             
             @if($query)
-                @if(empty($results['blog_posts']) && empty($results['positions']))
+                @php
+                    $hasBlog = !empty($results['blog_posts']) && $results['blog_posts'] instanceof \Illuminate\Support\Collection && $results['blog_posts']->isNotEmpty();
+                    $hasPositions = !empty($results['positions']) && $results['positions'] instanceof \Illuminate\Support\Collection && $results['positions']->isNotEmpty();
+                    $hasProducts = !empty($results['products']) && $results['products'] instanceof \Illuminate\Support\Collection && $results['products']->isNotEmpty();
+                @endphp
+
+                @if(!$hasBlog && !$hasPositions && !$hasProducts)
                     <div class="bg-white rounded-xl p-12 text-center">
                         <svg class="w-16 h-16 text-gray-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
@@ -39,7 +45,7 @@
                         <p class="text-gray-600">Try different keywords or browse our <a href="/blog" class="text-indigo-600 hover:underline">blog</a> and <a href="/careers" class="text-indigo-600 hover:underline">careers</a> pages.</p>
                     </div>
                 @else
-                    @if(!empty($results['blog_posts']) && $results['blog_posts']->isNotEmpty())
+                    @if($hasBlog)
                         <div class="mb-12">
                             <h2 class="text-2xl font-bold text-gray-900 mb-6">Blog Posts ({{ $results['blog_posts']->count() }})</h2>
                             <div class="grid md:grid-cols-2 gap-6">
@@ -70,8 +76,51 @@
                             </div>
                         </div>
                     @endif
+
+                    @if($hasProducts)
+                        <div class="mb-12">
+                            <h2 class="text-2xl font-bold text-gray-900 mb-6">Products ({{ $results['products']->count() }})</h2>
+                            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+                                @foreach($results['products'] as $product)
+                                    <article class="bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow flex flex-col">
+                                        <div class="flex items-center justify-between mb-3">
+                                            <div>
+                                                <h3 class="text-lg font-semibold text-gray-900">
+                                                    <a href="/products#{{ Str::slug($product->name) }}" class="hover:text-indigo-600 transition">
+                                                        {{ $product->name }}
+                                                    </a>
+                                                </h3>
+                                                @if($product->type)
+                                                    <p class="text-xs font-medium text-indigo-600 mt-1">{{ $product->type }}</p>
+                                                @endif
+                                            </div>
+                                            @if($product->is_active)
+                                                <span class="inline-flex items-center gap-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-100 px-3 py-1 text-[11px] font-semibold">
+                                                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+                                                    Live
+                                                </span>
+                                            @endif
+                                        </div>
+                                        @if($product->description)
+                                            <p class="text-sm text-gray-600 mb-4">
+                                                {{ Str::limit($product->description, 150) }}
+                                            </p>
+                                        @endif
+                                        @if($product->url)
+                                            <div class="mt-auto pt-1">
+                                                <a href="{{ $product->url }}" target="_blank" class="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700">
+                                                    {{ $product->button_text ?? 'Open product' }}
+                                                    <span aria-hidden="true">→</span>
+                                                </a>
+                                            </div>
+                                        @endif
+                                    </article>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                     
-                    @if(!empty($results['positions']) && $results['positions']->isNotEmpty())
+                    @if($hasPositions)
                         <div>
                             <h2 class="text-2xl font-bold text-gray-900 mb-6">Job Positions ({{ $results['positions']->count() }})</h2>
                             <div class="space-y-4">

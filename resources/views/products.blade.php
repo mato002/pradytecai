@@ -34,206 +34,191 @@
         {{-- Overlay for readability --}}
         <div class="section-bg-overlay section-bg-overlay-light"></div>
         <div class="section-content w-full mx-auto">
-            <!-- BulkSMS CRM -->
-            <div class="mb-20">
-                <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div>
-                        <div class="inline-block w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                            </svg>
-                        </div>
-                        <h2 class="text-4xl font-bold text-gray-900 mb-6">BulkSMS CRM</h2>
-                        <p class="text-lg text-gray-600 mb-6">
-                            A comprehensive multi-channel messaging platform that enables businesses to send SMS, 
-                            WhatsApp, and Email campaigns at scale. Manage contacts, create campaigns, and track 
-                            delivery with real-time analytics.
-                        </p>
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <h4 class="font-semibold text-gray-900 mb-2">Key Features</h4>
-                                <ul class="space-y-2 text-gray-600">
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Multi-channel messaging
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Contact management
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Campaign builder
-                                    </li>
-                                </ul>
-                            </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900 mb-2">Benefits</h4>
-                                <ul class="space-y-2 text-gray-600">
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Real-time analytics
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        API integration
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Wallet system
-                                    </li>
-                                </ul>
-                            </div>
-                        </div>
-                        <a href="https://crm.pradytecai.com" target="_blank" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
-                            Open BulkSMS CRM →
-                        </a>
-                    </div>
-                    <div class="bg-gradient-to-br from-indigo-50 to-sky-100 rounded-xl p-8">
-                        <div class="text-center">
-                            <div class="text-5xl font-bold text-indigo-600 mb-2">99.9%</div>
-                            <div class="text-gray-600 mb-6">Delivery Rate</div>
-                            <div class="text-3xl font-bold text-indigo-600 mb-2">3</div>
-                            <div class="text-gray-600">Communication Channels</div>
-                        </div>
-                    </div>
+            @if($products->isEmpty())
+                <div class="text-center py-20">
+                    <svg class="w-16 h-16 text-slate-400 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"></path>
+                    </svg>
+                    <h2 class="text-3xl font-bold text-gray-900 mb-4">No Products Available</h2>
+                    <p class="text-lg text-gray-600">Check back soon for our latest products and solutions.</p>
                 </div>
-            </div>
+            @else
+                @php
+                    // Separate products by type - main products vs enterprise solutions
+                    $mainProducts = $products->filter(function($product) {
+                        return !$product->type || strtolower($product->type) !== 'enterprise';
+                    });
+                    $enterpriseProducts = $products->filter(function($product) {
+                        return $product->type && strtolower($product->type) === 'enterprise';
+                    });
+                @endphp
 
-            <!-- Prady Mfi -->
-            <div class="mb-20">
-                <div class="grid md:grid-cols-2 gap-12 items-center">
-                    <div class="order-2 md:order-1 bg-gradient-to-br from-indigo-50 to-sky-100 rounded-xl p-8">
-                        <div class="text-center">
-                            <div class="text-5xl font-bold text-indigo-600 mb-2">100%</div>
-                            <div class="text-gray-600 mb-6">Automated Processing</div>
-                            <div class="text-3xl font-bold text-sky-600 mb-2">24/7</div>
-                            <div class="text-gray-600">System Availability</div>
-                        </div>
-                    </div>
-                    <div class="order-1 md:order-2">
-                        <div class="inline-block w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                            </svg>
-                        </div>
-                        <h2 class="text-4xl font-bold text-gray-900 mb-6">Prady Mfi</h2>
-                        <p class="text-lg text-gray-600 mb-6">
-                            A comprehensive microfinance management system designed to streamline loan processing, 
-                            client management, and financial reporting. Perfect for microfinance institutions 
-                            looking to digitize and automate their operations.
-                        </p>
-                        <div class="grid grid-cols-2 gap-4 mb-6">
-                            <div>
-                                <h4 class="font-semibold text-gray-900 mb-2">Core Features</h4>
-                                <ul class="space-y-2 text-gray-600">
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Loan management
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Client database
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Payment tracking
-                                    </li>
-                                </ul>
+                {{-- Main Products (Featured) --}}
+                @if($mainProducts->isNotEmpty())
+                    @foreach($mainProducts as $index => $product)
+                        <div class="mb-20 {{ $index > 0 ? 'mt-20' : '' }}">
+                            <div class="grid md:grid-cols-2 gap-12 items-center">
+                                <div class="{{ $index % 2 == 1 ? 'md:order-2' : '' }}">
+                                    <div class="inline-block w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+                                        @if($product->icon === 'messaging' || (!$product->icon && str_contains(strtolower($product->name), 'sms')))
+                                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
+                                            </svg>
+                                        @elseif($product->icon === 'finance' || (!$product->icon && str_contains(strtolower($product->name), 'mfi')))
+                                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        @else
+                                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                            </svg>
+                                        @endif
+                                    </div>
+                                    <h2 class="text-4xl font-bold text-gray-900 mb-2">{{ $product->name }}</h2>
+                                    @if($product->type)
+                                        <p class="text-sm font-medium text-indigo-600 mb-4">
+                                            {{ $product->type }}
+                                        </p>
+                                    @else
+                                        <div class="mb-2"></div>
+                                    @endif
+                                    @if($product->description)
+                                        <p class="text-lg text-gray-600 mb-6 whitespace-pre-line">{{ $product->description }}</p>
+                                    @endif
+                                    
+                                    @if($product->features || $product->benefits)
+                                        <div class="grid grid-cols-2 gap-4 mb-6">
+                                            @if($product->features && count($product->features) > 0)
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-900 mb-2">Key Features</h4>
+                                                    <ul class="space-y-2 text-gray-600">
+                                                        @foreach($product->features as $feature)
+                                                            <li class="flex items-center">
+                                                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                                </svg>
+                                                                {{ $feature }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                            @if($product->benefits && count($product->benefits) > 0)
+                                                <div>
+                                                    <h4 class="font-semibold text-gray-900 mb-2">Benefits</h4>
+                                                    <ul class="space-y-2 text-gray-600">
+                                                        @foreach($product->benefits as $benefit)
+                                                            <li class="flex items-center">
+                                                                <svg class="w-5 h-5 text-green-500 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                                                    <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
+                                                                </svg>
+                                                                {{ $benefit }}
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            @endif
+                                        </div>
+                                    @endif
+                                    
+                                    @if($product->url)
+                                        <a href="{{ $product->url }}" target="_blank" class="inline-block bg-indigo-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-indigo-700 transition">
+                                            {{ $product->button_text ?? 'Learn More' }} →
+                                        </a>
+                                    @endif
+                                </div>
+                                <div class="{{ $index % 2 == 1 ? 'md:order-1' : '' }} bg-gradient-to-br from-indigo-50 to-sky-100 rounded-xl p-8">
+                                    <div class="text-center">
+                                        @if($product->statistics && count($product->statistics) > 0)
+                                            @php
+                                                $stats = array_values($product->statistics);
+                                                $statCount = count($stats);
+                                            @endphp
+                                            @for($i = 0; $i < $statCount; $i += 2)
+                                                @if(isset($stats[$i]) && isset($stats[$i + 1]))
+                                                    <div class="{{ $i > 0 ? 'mt-6' : '' }}">
+                                                        <div class="text-5xl font-bold text-indigo-600 mb-2">{{ $stats[$i] }}</div>
+                                                        <div class="text-gray-600 mb-6">{{ $stats[$i + 1] }}</div>
+                                                    </div>
+                                                @endif
+                                            @endfor
+                                        @else
+                                            @if($product->type)
+                                                <div class="text-2xl font-bold text-indigo-600 mb-2">{{ $product->type }}</div>
+                                                <div class="text-gray-600 mb-6">Product Type</div>
+                                            @endif
+                                            <div class="text-3xl font-bold text-indigo-600 mb-2">{{ $product->name }}</div>
+                                            <div class="text-gray-600">Available Now</div>
+                                        @endif
+                                    </div>
+                                </div>
                             </div>
-                            <div>
-                                <h4 class="font-semibold text-gray-900 mb-2">Advanced</h4>
-                                <ul class="space-y-2 text-gray-600">
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Financial reporting
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Risk assessment
-                                    </li>
-                                    <li class="flex items-center">
-                                        <svg class="w-5 h-5 text-emerald-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                            <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                                        </svg>
-                                        Compliance tools
-                                    </li>
-                                </ul>
-                            </div>
                         </div>
-                        <a href="https://demo.pradytec.com" target="_blank" class="inline-block bg-sky-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-sky-700 transition">
-                            View Demo →
-                        </a>
-                    </div>
-                </div>
-            </div>
+                    @endforeach
+                @endif
 
-            <!-- Enterprise Solutions -->
-            <div>
-                <div class="text-center mb-12">
-                    <h2 class="text-4xl font-bold text-gray-900 mb-4">Enterprise Solutions</h2>
-                    <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                        Custom software solutions tailored to your specific business needs
-                    </p>
-                </div>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="bg-white border-2 border-gray-200 rounded-xl p-8">
-                        <div class="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                            </svg>
+                {{-- Enterprise Solutions (Grid) --}}
+                @if($enterpriseProducts->isNotEmpty())
+                    <div class="mt-20">
+                        <div class="text-center mb-12">
+                            <h2 class="text-4xl font-bold text-gray-900 mb-4">Enterprise Solutions</h2>
+                            <p class="text-xl text-gray-600 max-w-2xl mx-auto">
+                                Custom software solutions tailored to your specific business needs
+                            </p>
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Custom Development</h3>
-                        <p class="text-gray-600">
-                            Bespoke software solutions built from the ground up to meet your unique requirements.
-                        </p>
-                    </div>
-                    <div class="bg-white border-2 border-gray-200 rounded-xl p-8">
-                        <div class="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"></path>
-                            </svg>
+                        <div class="grid md:grid-cols-3 gap-8">
+                            @foreach($enterpriseProducts as $product)
+                                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                                    <div class="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+                                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                        </svg>
+                                    </div>
+                                    <h3 class="text-2xl font-bold text-gray-900 mb-1">{{ $product->name }}</h3>
+                                    @if($product->type)
+                                        <p class="text-xs font-medium text-indigo-600 mb-3">{{ $product->type }}</p>
+                                    @endif
+                                    @if($product->description)
+                                        <p class="text-gray-600 mb-4">{{ Str::limit($product->description, 150) }}</p>
+                                    @endif
+                                    @if($product->url)
+                                        <a href="{{ $product->url }}" target="_blank" class="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                                            Learn More →
+                                        </a>
+                                    @endif
+                                </div>
+                            @endforeach
                         </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">Cloud Solutions</h3>
-                        <p class="text-gray-600">
-                            Scalable cloud infrastructure designed for performance, reliability, and growth.
-                        </p>
                     </div>
-                    <div class="bg-white border-2 border-gray-200 rounded-xl p-8">
-                        <div class="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
-                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
-                            </svg>
-                        </div>
-                        <h3 class="text-2xl font-bold text-gray-900 mb-4">System Integration</h3>
-                        <p class="text-gray-600">
-                            Connect your existing systems with our platforms for seamless operations.
-                        </p>
+                @endif
+
+                {{-- If no type separation, show all products in a grid --}}
+                @if($mainProducts->isEmpty() && $enterpriseProducts->isEmpty())
+                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                        @foreach($products as $product)
+                            <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-lg transition-shadow">
+                                <div class="w-16 h-16 bg-indigo-100 rounded-lg flex items-center justify-center mb-6">
+                                    <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                    </svg>
+                                </div>
+                                <h3 class="text-2xl font-bold text-gray-900 mb-4">{{ $product->name }}</h3>
+                                @if($product->type)
+                                    <p class="text-sm text-indigo-600 font-medium mb-3">{{ $product->type }}</p>
+                                @endif
+                                @if($product->description)
+                                    <p class="text-gray-600 mb-4">{{ Str::limit($product->description, 150) }}</p>
+                                @endif
+                                @if($product->url)
+                                    <a href="{{ $product->url }}" target="_blank" class="inline-block bg-indigo-600 text-white px-4 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition text-sm">
+                                        Learn More →
+                                    </a>
+                                @endif
+                            </div>
+                        @endforeach
                     </div>
-                </div>
-            </div>
+                @endif
+            @endif
         </div>
     </section>
 

@@ -60,6 +60,24 @@
                     @enderror
                 </div>
 
+                <div class="admin-form-group">
+                    <label class="admin-form-label admin-form-label-required">Role</label>
+                    <select name="role" class="admin-form-select" required>
+                        <option value="">Select a role</option>
+                        <option value="admin" {{ old('role') === 'admin' ? 'selected' : '' }}>Admin - Full access to all features</option>
+                        <option value="hr_manager" {{ old('role') === 'hr_manager' ? 'selected' : '' }}>HR Manager - Careers & Applications only</option>
+                    </select>
+                    <p class="admin-form-help">HR Managers can only access Positions and Applications</p>
+                    @error('role')
+                        <p class="admin-form-error">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                            {{ $message }}
+                        </p>
+                    @enderror
+                </div>
+
                 <div class="admin-form-divider"></div>
 
                 <div class="admin-form-section-title">

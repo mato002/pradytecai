@@ -195,11 +195,11 @@
             width: 100% !important;
         }
         
-        /* When sidebar is hidden, main area takes full width */
-        .admin-sidebar-hidden .admin-shell > div:first-child > div:last-child {
-            width: 100%;
-            margin-left: 0;
-            max-width: 100%;
+        /* When sidebar is collapsed, main area adjusts width */
+        .admin-shell.admin-sidebar-collapsed > div:first-child > div:last-child {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            max-width: calc(100% - 4.5rem) !important;
         }
         
         /* Remove any max-width constraints */
@@ -350,21 +350,28 @@
         min-height: 56px;
     }
 
-    /* Hide sidebar completely on desktop */
+    /* Desktop sidebar collapse (professional behaviour) */
     @media (min-width: 1024px) {
-        .admin-sidebar-hidden #admin-sidebar {
-            transform: translateX(-100%) !important;
-            position: fixed !important;
+        /* Expanded sidebar (default) */
+        .admin-shell.admin-sidebar-collapsed #admin-sidebar {
+            width: 4.5rem !important; /* compact rail */
         }
 
-        .admin-sidebar-hidden .admin-shell > div:first-child > div:last-child {
-            margin-left: 0 !important;
+        .admin-shell.admin-sidebar-collapsed > div:first-child > div:last-child {
+            width: calc(100% - 4.5rem) !important;
+            margin-left: 4.5rem !important;
+            max-width: calc(100% - 4.5rem) !important;
+        }
+
+        /* Hide sidebar text when collapsed */
+        .admin-shell.admin-sidebar-collapsed .sidebar-text {
+            display: none !important;
         }
     }
 
-    /* Smooth transitions for sidebar hide/show */
+    /* Smooth transitions for sidebar show/collapse */
     #admin-sidebar {
-        transition: transform 0.3s ease-in-out;
+        transition: transform 0.3s ease-in-out, width 0.3s ease-in-out;
     }
 
     /* Light mode sidebar */

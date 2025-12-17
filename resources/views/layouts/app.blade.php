@@ -159,10 +159,7 @@
             </div>
         </div>
         <div class="border-t border-slate-800 pt-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-slate-500">
-            <p class="order-2 md:order-1 text-center md:text-left w-full md:w-auto">
-                &copy; {{ date('Y') }} Pradytecai. All rights reserved.
-            </p>
-            <div class="order-1 md:order-2 flex items-center justify-center md:justify-end w-full md:w-auto gap-4">
+            <div class="order-1 w-full md:w-auto flex items-center justify-start gap-4">
                 <span class="text-sm font-medium text-slate-200 hidden sm:inline-block">Follow Us</span>
                 <div class="flex items-center gap-3">
                     <a href="https://www.linkedin.com" target="_blank" rel="noopener" aria-label="Pradytecai on LinkedIn" class="inline-flex items-center justify-center w-10 h-10 rounded-full bg-slate-800/50 hover:bg-slate-700 text-slate-200 hover:text-white transition-all transform hover:scale-110">
@@ -187,13 +184,16 @@
                     </a>
                 </div>
             </div>
+            <p class="order-2 text-center md:text-right w-full md:w-auto">
+                &copy; {{ date('Y') }} Pradytecai. All rights reserved.
+            </p>
         </div>
     </footer>
 
     <!-- Chatbot Widget -->
-    <div id="chatbot-root" class="fixed bottom-6 right-6 z-[9999] flex flex-col items-end space-y-3">
+    <div id="chatbot-container" style="position: fixed; bottom: 24px; right: 24px; z-index: 10001;">
         <!-- Chat panel -->
-        <div id="chatbot-panel" class="hidden w-[360px] max-w-[90vw] bg-white/95 backdrop-blur border border-slate-200 rounded-2xl shadow-2xl overflow-hidden z-[9999]">
+        <div id="chatbot-panel" class="hidden w-[360px] max-w-[90vw] bg-white/95 backdrop-blur border border-slate-200 rounded-2xl shadow-2xl overflow-hidden mb-3">
             <div class="bg-gradient-to-r from-indigo-600 to-sky-600 text-white px-4 py-3 flex items-center justify-between">
                 <div class="flex items-center space-x-3">
                     <div class="w-9 h-9 rounded-full bg-white/10 border border-white/30 flex items-center justify-center text-xs font-semibold">
@@ -204,7 +204,7 @@
                         <p class="text-[11px] text-indigo-100">Online • Typically replies in a few minutes</p>
                     </div>
                 </div>
-                <button id="chatbot-close" class="text-indigo-100 hover:text-white text-sm px-1">
+                <button id="chatbot-close" type="button" class="text-indigo-100 hover:text-white text-lg font-bold px-2 py-1" style="cursor: pointer;">
                     ✕
                 </button>
             </div>
@@ -215,15 +215,15 @@
                     </div>
                     <div class="bg-white border border-indigo-100 rounded-2xl px-3 py-2 shadow-sm">
                         <p class="text-gray-800 font-medium mb-1">Hi, welcome to Pradytecai.</p>
-                        <p class="text-gray-700">Tell us briefly what you need and we’ll route it to the right team.</p>
+                        <p class="text-gray-700">Tell us briefly what you need and we'll route it to the right team.</p>
                         <div class="mt-3 flex flex-wrap gap-2">
-                            <button type="button" class="chatbot-quick text-[11px] px-3 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">
+                            <button type="button" class="chatbot-quick text-[11px] px-3 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200" style="cursor: pointer;">
                                 BulkSMS CRM support
                             </button>
-                            <button type="button" class="chatbot-quick text-[11px] px-3 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">
+                            <button type="button" class="chatbot-quick text-[11px] px-3 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200" style="cursor: pointer;">
                                 Prady Mfi demo
                             </button>
-                            <button type="button" class="chatbot-quick text-[11px] px-3 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200">
+                            <button type="button" class="chatbot-quick text-[11px] px-3 py-1 rounded-full bg-slate-100 text-slate-700 hover:bg-slate-200" style="cursor: pointer;">
                                 Talk to sales
                             </button>
                         </div>
@@ -241,6 +241,7 @@
                 <button
                     type="submit"
                     class="inline-flex items-center justify-center px-3 py-2 rounded-full bg-indigo-600 text-white text-xs font-semibold hover:bg-indigo-700 transition"
+                    style="cursor: pointer;"
                 >
                     Send
                 </button>
@@ -251,9 +252,9 @@
         <button
             id="chatbot-toggle"
             type="button"
-            class="rounded-full shadow-xl bg-gradient-to-br from-indigo-600 to-sky-600 text-white flex items-center justify-center w-14 h-14 hover:from-indigo-500 hover:to-sky-500 focus:outline-none focus:ring-2 focus:ring-indigo-300 cursor-pointer pointer-events-auto"
+            class="rounded-full shadow-xl bg-gradient-to-br from-indigo-600 to-sky-600 text-white flex items-center justify-center w-14 h-14 hover:from-indigo-500 hover:to-sky-500 focus:outline-none focus:ring-2 focus:ring-indigo-300"
             aria-label="Open chat support"
-            onclick="window.toggleChatbot && window.toggleChatbot()"
+            style="cursor: pointer; border: none; outline: none;"
         >
             <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M21 10c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 18l1.395-3.72C3.512 12.042 3 10.574 3 9c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
@@ -291,8 +292,8 @@
                 });
             });
 
-            // Simple chatbot behaviour (frontend only)
-            (function() {
+            // Chatbot functionality - simplified and reliable
+            (function initChatbot() {
                 const toggleBtn = document.getElementById('chatbot-toggle');
                 const panel = document.getElementById('chatbot-panel');
                 const closeBtn = document.getElementById('chatbot-close');
@@ -301,93 +302,117 @@
                 const messages = document.getElementById('chatbot-messages');
                 const quickButtons = document.querySelectorAll('.chatbot-quick');
 
-                if (!toggleBtn || !panel || !form || !input || !messages) {
-                    console.warn('Chatbot elements not found', {toggleBtn, panel, form, input, messages});
+                if (!toggleBtn || !panel) {
+                    console.error('Chatbot: Required elements missing');
                     return;
                 }
 
+                // Toggle functions
                 function openChat() {
                     panel.classList.remove('hidden');
-                    setTimeout(() => input.focus(), 100);
+                    if (input) setTimeout(() => input.focus(), 150);
                 }
 
                 function closeChat() {
                     panel.classList.add('hidden');
                 }
 
-                // Make function globally available for onclick fallback
-                window.toggleChatbot = function() {
+                function toggleChat() {
                     if (panel.classList.contains('hidden')) {
                         openChat();
                     } else {
                         closeChat();
                     }
-                };
+                }
 
-                // Ensure button is clickable
-                toggleBtn.style.pointerEvents = 'auto';
-                toggleBtn.style.cursor = 'pointer';
-                
-                toggleBtn.addEventListener('click', function(e) {
+                // Make globally available
+                window.toggleChatbot = toggleChat;
+
+                // Button click handler - multiple approaches for reliability
+                function handleToggleClick(e) {
+                    if (e) {
+                        e.preventDefault();
+                        e.stopPropagation();
+                    }
+                    toggleChat();
+                }
+
+                toggleBtn.onclick = handleToggleClick;
+                toggleBtn.addEventListener('click', handleToggleClick, true);
+                toggleBtn.addEventListener('mousedown', function(e) {
                     e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Chatbot button clicked');
-                    window.toggleChatbot();
-                }, { passive: false });
+                    handleToggleClick(e);
+                }, true);
 
-            closeBtn?.addEventListener('click', function() {
-                closeChat();
-            });
+                // Close button
+                if (closeBtn) {
+                    closeBtn.onclick = function(e) {
+                        e.preventDefault();
+                        closeChat();
+                    };
+                }
 
-            form.addEventListener('submit', function(e) {
-                e.preventDefault();
-                const text = input.value.trim();
-                if (!text) return;
+                // Form submission
+                if (form && input && messages) {
+                    form.onsubmit = function(e) {
+                        e.preventDefault();
+                        const text = input.value.trim();
+                        if (!text) return false;
 
-                appendUserMessage(text);
+                        const userMsg = document.createElement('div');
+                        userMsg.className = 'flex items-start justify-end space-x-2';
+                        userMsg.innerHTML = '<div class="bg-indigo-600 text-white rounded-2xl px-3 py-2 text-sm max-w-[80%] shadow-sm">' + 
+                            text.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
+                        messages.appendChild(userMsg);
+                        messages.scrollTop = messages.scrollHeight;
+                        input.value = '';
 
-                input.value = '';
-                messages.scrollTop = messages.scrollHeight;
+                        setTimeout(function() {
+                            const botReply = document.createElement('div');
+                            botReply.className = 'flex items-start space-x-2 mt-2';
+                            botReply.innerHTML = 
+                                '<div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-semibold">PT</div>' +
+                                '<div class="bg-white border border-indigo-100 rounded-2xl px-3 py-2 shadow-sm text-sm max-w-[80%]">' +
+                                '<p class="text-gray-800 mb-1">Thanks for your message.</p>' +
+                                '<p class="text-gray-700">We\'ve logged your request. A member of the Pradytecai team will follow up via email or phone.</p>' +
+                                '</div>';
+                            messages.appendChild(botReply);
+                            messages.scrollTop = messages.scrollHeight;
+                        }, 600);
 
-                autoReply();
-            });
+                        return false;
+                    };
+                }
 
-            // Quick reply buttons
-            quickButtons.forEach(function(btn) {
-                btn.addEventListener('click', function() {
-                    const text = this.textContent.trim();
-                    if (!text) return;
-                    openChat();
-                    appendUserMessage(text);
-                    autoReply();
+                // Quick reply buttons
+                quickButtons.forEach(function(btn) {
+                    btn.onclick = function() {
+                        const text = this.textContent.trim();
+                        if (!text) return;
+                        openChat();
+                        if (messages) {
+                            const userMsg = document.createElement('div');
+                            userMsg.className = 'flex items-start justify-end space-x-2';
+                            userMsg.innerHTML = '<div class="bg-indigo-600 text-white rounded-2xl px-3 py-2 text-sm max-w-[80%] shadow-sm">' + 
+                                text.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</div>';
+                            messages.appendChild(userMsg);
+                            messages.scrollTop = messages.scrollHeight;
+
+                            setTimeout(function() {
+                                const botReply = document.createElement('div');
+                                botReply.className = 'flex items-start space-x-2 mt-2';
+                                botReply.innerHTML = 
+                                    '<div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-semibold">PT</div>' +
+                                    '<div class="bg-white border border-indigo-100 rounded-2xl px-3 py-2 shadow-sm text-sm max-w-[80%]">' +
+                                    '<p class="text-gray-800 mb-1">Thanks for your message.</p>' +
+                                    '<p class="text-gray-700">We\'ve logged your request. A member of the Pradytecai team will follow up via email or phone.</p>' +
+                                    '</div>';
+                                messages.appendChild(botReply);
+                                messages.scrollTop = messages.scrollHeight;
+                            }, 600);
+                        }
+                    };
                 });
-            });
-
-            function appendUserMessage(text) {
-                const userBubble = document.createElement('div');
-                userBubble.className = 'flex items-start justify-end space-x-2';
-                userBubble.innerHTML =
-                    '<div class="bg-indigo-600 text-white rounded-2xl px-3 py-2 text-sm max-w-[80%] shadow-sm">' +
-                    text.replace(/</g, '&lt;') +
-                    '</div>';
-                messages.appendChild(userBubble);
-                messages.scrollTop = messages.scrollHeight;
-            }
-
-            function autoReply() {
-                setTimeout(function() {
-                    const reply = document.createElement('div');
-                    reply.className = 'flex items-start space-x-2 mt-2';
-                    reply.innerHTML =
-                        '<div class="w-8 h-8 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-semibold">PT</div>' +
-                        '<div class="bg-white border border-indigo-100 rounded-2xl px-3 py-2 shadow-sm text-sm max-w-[80%]">' +
-                        '<p class="text-gray-800 mb-1">Thanks for your message.</p>' +
-                        '<p class="text-gray-700">We've logged your request. A member of the Pradytecai team will follow up via email or phone.</p>' +
-                        '</div>';
-                    messages.appendChild(reply);
-                    messages.scrollTop = messages.scrollHeight;
-                }, 600);
-            }
             })();
         });
 

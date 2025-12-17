@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogPost;
 use App\Models\Position;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -35,10 +36,22 @@ class SearchController extends Controller
                 ->orderBy('order')
                 ->limit(5)
                 ->get();
+
+            // Search products
+            $products = Product::active()
+                ->where(function ($q) use ($query) {
+                    $q->where('name', 'like', "%{$query}%")
+                      ->orWhere('type', 'like', "%{$query}%")
+                      ->orWhere('description', 'like', "%{$query}%");
+                })
+                ->ordered()
+                ->limit(6)
+                ->get();
             
             $results = [
                 'blog_posts' => $blogPosts,
                 'positions' => $positions,
+                'products' => $products,
             ];
         }
         

@@ -38,6 +38,7 @@
                 <tr>
                     <th class="px-4 py-3 text-left font-semibold text-slate-600">Name</th>
                     <th class="px-4 py-3 text-left font-semibold text-slate-600">Email</th>
+                    <th class="px-4 py-3 text-left font-semibold text-slate-600">Role</th>
                     <th class="px-4 py-3 text-left font-semibold text-slate-600">Registered</th>
                     <th class="px-4 py-3 text-left font-semibold text-slate-600">Status</th>
                     <th class="px-4 py-3 text-right font-semibold text-slate-600">Actions</th>
@@ -53,6 +54,21 @@
                             <a href="mailto:{{ $user->email }}" class="text-indigo-600 hover:underline">
                                 {{ $user->email }}
                             </a>
+                        </td>
+                        <td class="px-4 py-3">
+                            @if($user->role === 'admin')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
+                                    Admin
+                                </span>
+                            @elseif($user->role === 'hr_manager')
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
+                                    HR Manager
+                                </span>
+                            @else
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+                                    {{ ucfirst(str_replace('_', ' ', $user->role ?? 'User')) }}
+                                </span>
+                            @endif
                         </td>
                         <td class="px-4 py-3 text-sm text-slate-500">
                             {{ $user->created_at?->format('M j, Y') }}
@@ -77,7 +93,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="5" class="px-4 py-6 text-center text-sm text-slate-500">
+                        <td colspan="6" class="px-4 py-6 text-center text-sm text-slate-500">
                             No users found.
                         </td>
                     </tr>

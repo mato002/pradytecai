@@ -1,4 +1,7 @@
 @extends('layouts.admin')
+@php
+    use Illuminate\Support\Str;
+@endphp
 
 @section('title', 'Admin - Products')
 @section('page_title', 'Products')
@@ -26,13 +29,62 @@
             <h2 class="text-2xl font-bold text-slate-900">Products</h2>
             <p class="text-sm text-slate-600 mt-1">Manage the solutions and products shown on the marketing site.</p>
         </div>
-        <a href="{{ route('admin.products.create') }}"
-           class="btn-primary inline-flex items-center gap-2">
-            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
-            </svg>
-            Add Product
-        </a>
+        <div class="flex items-center gap-3">
+            <a href="{{ route('admin.products.index', ['export' => 'csv'] + request()->except('export')) }}" 
+               class="inline-flex items-center px-4 py-2 rounded-lg border border-slate-200 text-sm text-slate-700 hover:bg-slate-50">
+                Export CSV
+            </a>
+            <a href="{{ route('admin.products.create') }}"
+               class="btn-primary inline-flex items-center gap-2">
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Product
+            </a>
+        </div>
+    </div>
+
+    <!-- Search & Filters -->
+    <div class="mb-6 bg-white border border-slate-200 rounded-xl p-4">
+        <form method="GET" action="{{ route('admin.products.index') }}" class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wide">Search</label>
+                <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, description, type..."
+                       class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500">
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wide">Status</label>
+                <select name="status" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="all" {{ request('status', 'all') === 'all' ? 'selected' : '' }}>All</option>
+                    <option value="active" {{ request('status') === 'active' ? 'selected' : '' }}>Active</option>
+                    <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                </select>
+            </div>
+
+            <div>
+                <label class="block text-xs font-semibold text-slate-600 mb-1 uppercase tracking-wide">Type</label>
+                <select name="type" class="w-full rounded-lg border border-slate-300 px-3 py-2 text-sm bg-white focus:border-indigo-500 focus:ring-indigo-500">
+                    <option value="">All types</option>
+                    @if(isset($types))
+                        @foreach($types as $type)
+                            <option value="{{ $type }}" {{ request('type') === $type ? 'selected' : '' }}>{{ $type }}</option>
+                        @endforeach
+                    @endif
+                </select>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button type="submit" class="px-4 py-2 bg-indigo-600 text-white rounded-lg text-sm font-semibold hover:bg-indigo-700 transition">
+                    Apply
+                </button>
+                @if(request()->hasAny(['search', 'status', 'type']))
+                    <a href="{{ route('admin.products.index') }}" class="px-4 py-2 bg-slate-100 text-slate-700 rounded-lg text-sm font-semibold hover:bg-slate-200 transition">
+                        Clear
+                    </a>
+                @endif
+            </div>
+        </form>
     </div>
 
     @if($products->isEmpty())
@@ -88,6 +140,14 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                                     <div class="flex items-center justify-end gap-2">
+                                        <a href="{{ route('admin.products.show', $product) }}" 
+                                           class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 hover:border-slate-400 transition-colors">
+                                            <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
+                                            </svg>
+                                            View
+                                        </a>
                                         <a href="{{ route('admin.products.edit', $product) }}" 
                                            class="inline-flex items-center px-3 py-1.5 rounded-lg border border-slate-300 bg-white text-slate-700 text-sm font-medium hover:bg-slate-50 hover:border-slate-400 transition-colors">
                                             <svg class="w-4 h-4 mr-1.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

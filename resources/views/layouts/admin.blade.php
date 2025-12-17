@@ -43,101 +43,103 @@
                 <div>
                     <p class="text-xs uppercase tracking-[0.3em] text-slate-500 mb-3">Workspace</p>
                     <div class="space-y-2">
-                        <a href="{{ route('admin.dashboard') }}"
-                           class="nav-pill {{ request()->routeIs('admin.dashboard') ? 'nav-pill--active' : '' }}">
-                            <span class="flex items-center gap-3">
-                                <span class="nav-pill__icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M3 12l2-2m0 0l7-7 7 7M5 10v10h4v-6h6v6h4V10" />
-                                    </svg>
+                        @if(auth()->user()->isAdmin())
+                            <a href="{{ route('admin.dashboard') }}"
+                               class="nav-pill {{ request()->routeIs('admin.dashboard') ? 'nav-pill--active' : '' }}">
+                                <span class="flex items-center gap-3">
+                                    <span class="nav-pill__icon">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10h4v-6h6v6h4V10" />
+                                        </svg>
+                                    </span>
+                                    <span class="sidebar-text">
+                                        <span class="block text-lg font-semibold text-slate-900">Dashboard</span>
+                                        <span class="text-sm font-normal text-slate-700">Mission control</span>
+                                    </span>
                                 </span>
-                                <span class="sidebar-text">
-                                    <span class="block text-lg font-semibold text-slate-900">Dashboard</span>
-                                    <span class="text-sm font-normal text-slate-700">Mission control</span>
+                                <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                            <a href="{{ route('admin.products.index') }}"
+                               class="nav-pill {{ request()->routeIs('admin.products.*') ? 'nav-pill--active' : '' }}">
+                                <span class="flex items-center gap-3">
+                                    <span class="nav-pill__icon">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M4 6h16M4 12h16M4 18h7" />
+                                        </svg>
+                                    </span>
+                                    <span class="sidebar-text">
+                                        <span class="block text-lg font-semibold text-slate-900">Products</span>
+                                        <span class="text-sm font-normal text-slate-700">Solutions catalog</span>
+                                    </span>
                                 </span>
-                            </span>
-                            <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 5l7 7-7 7" />
-                            </svg>
-                        </a>
-                        <a href="{{ route('admin.products.index') }}"
-                           class="nav-pill {{ request()->routeIs('admin.products.*') ? 'nav-pill--active' : '' }}">
-                            <span class="flex items-center gap-3">
-                                <span class="nav-pill__icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M4 6h16M4 12h16M4 18h7" />
-                                    </svg>
+                                <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                            <a href="{{ route('admin.enquiries.index') }}"
+                               class="nav-pill {{ request()->routeIs('admin.enquiries.*') ? 'nav-pill--active' : '' }}">
+                                <span class="flex items-center gap-3">
+                                    <span class="nav-pill__icon">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M21 10a8.38 8.38 0 01-.9 3.8l-3.2 6.4a1 1 0 01-1.8 0l-3.2-6.4A8.38 8.38 0 0111 10a8 8 0 1110 0z" />
+                                        </svg>
+                                    </span>
+                                    <span class="sidebar-text">
+                                        <span class="block text-lg font-semibold text-slate-900">Enquiries</span>
+                                        <span class="text-sm font-normal text-slate-700">Client pipeline</span>
+                                    </span>
                                 </span>
-                                <span class="sidebar-text">
-                                    <span class="block text-lg font-semibold text-slate-900">Products</span>
-                                    <span class="text-sm font-normal text-slate-700">Solutions catalog</span>
+                                <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                            <a href="{{ route('admin.users.index') }}"
+                               class="nav-pill {{ request()->routeIs('admin.users.*') ? 'nav-pill--active' : '' }}">
+                                <span class="flex items-center gap-3">
+                                    <span class="nav-pill__icon">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M9 20H4v-2a3 3 0 015.356-1.857M12 11a4 4 0 100-8 4 4 0 000 8z" />
+                                        </svg>
+                                    </span>
+                                    <span class="sidebar-text">
+                                        <span class="block text-lg font-semibold text-slate-900">Users</span>
+                                        <span class="text-sm font-normal text-slate-700">Admin accounts</span>
+                                    </span>
                                 </span>
-                            </span>
-                            <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 5l7 7-7 7" />
-                            </svg>
-                        </a>
-                        <a href="{{ route('admin.enquiries.index') }}"
-                           class="nav-pill {{ request()->routeIs('admin.enquiries.*') ? 'nav-pill--active' : '' }}">
-                            <span class="flex items-center gap-3">
-                                <span class="nav-pill__icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M21 10a8.38 8.38 0 01-.9 3.8l-3.2 6.4a1 1 0 01-1.8 0l-3.2-6.4A8.38 8.38 0 0111 10a8 8 0 1110 0z" />
-                                    </svg>
+                                <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                            <a href="{{ route('admin.blog.index') }}"
+                               class="nav-pill {{ request()->routeIs('admin.blog.*') ? 'nav-pill--active' : '' }}">
+                                <span class="flex items-center gap-3">
+                                    <span class="nav-pill__icon">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M12 20l9-5-9-5-9 5 9 5zm0-10l9-5-9-5-9 5 9 5z" />
+                                        </svg>
+                                    </span>
+                                    <span class="sidebar-text">
+                                        <span class="block text-lg font-semibold text-slate-900">Blog</span>
+                                        <span class="text-sm font-normal text-slate-700">Content lab</span>
+                                    </span>
                                 </span>
-                                <span class="sidebar-text">
-                                    <span class="block text-lg font-semibold text-slate-900">Enquiries</span>
-                                    <span class="text-sm font-normal text-slate-700">Client pipeline</span>
-                                </span>
-                            </span>
-                            <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 5l7 7-7 7" />
-                            </svg>
-                        </a>
-                        <a href="{{ route('admin.users.index') }}"
-                           class="nav-pill {{ request()->routeIs('admin.users.*') ? 'nav-pill--active' : '' }}">
-                            <span class="flex items-center gap-3">
-                                <span class="nav-pill__icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M17 20h5v-2a3 3 0 00-5.356-1.857M9 20H4v-2a3 3 0 015.356-1.857M12 11a4 4 0 100-8 4 4 0 000 8z" />
-                                    </svg>
-                                </span>
-                                <span class="sidebar-text">
-                                    <span class="block text-lg font-semibold text-slate-900">Users</span>
-                                    <span class="text-sm font-normal text-slate-700">Admin accounts</span>
-                                </span>
-                            </span>
-                            <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 5l7 7-7 7" />
-                            </svg>
-                        </a>
-                        <a href="{{ route('admin.blog.index') }}"
-                           class="nav-pill {{ request()->routeIs('admin.blog.*') ? 'nav-pill--active' : '' }}">
-                            <span class="flex items-center gap-3">
-                                <span class="nav-pill__icon">
-                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                              d="M12 20l9-5-9-5-9 5 9 5zm0-10l9-5-9-5-9 5 9 5z" />
-                                    </svg>
-                                </span>
-                                <span class="sidebar-text">
-                                    <span class="block text-lg font-semibold text-slate-900">Blog</span>
-                                    <span class="text-sm font-normal text-slate-700">Content lab</span>
-                                </span>
-                            </span>
-                            <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                      d="M9 5l7 7-7 7" />
-                            </svg>
-                        </a>
+                                <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        @endif
                         <a href="{{ route('admin.positions.index') }}"
                            class="nav-pill {{ request()->routeIs('admin.positions.*') ? 'nav-pill--active' : '' }}">
                             <span class="flex items-center gap-3">
@@ -176,6 +178,27 @@
                                       d="M9 5l7 7-7 7" />
                             </svg>
                         </a>
+                        @if(auth()->user()->isAdmin())
+                            <a href="{{ route('admin.activity-logs.index') }}"
+                               class="nav-pill {{ request()->routeIs('admin.activity-logs.*') ? 'nav-pill--active' : '' }}">
+                                <span class="flex items-center gap-3">
+                                    <span class="nav-pill__icon">
+                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                                        </svg>
+                                    </span>
+                                    <span class="sidebar-text">
+                                        <span class="block text-lg font-semibold text-slate-900">Activity Logs</span>
+                                        <span class="text-sm font-normal text-slate-700">Audit trail</span>
+                                    </span>
+                                </span>
+                                <svg class="w-4 h-4 text-slate-500 sidebar-text" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                          d="M9 5l7 7-7 7" />
+                                </svg>
+                            </a>
+                        @endif
                     </div>
                 </div>
 
@@ -511,24 +534,24 @@
             }
 
             function toggleSidebar() {
-                const isHidden = document.body.classList.contains('admin-sidebar-hidden');
-                document.body.classList.toggle('admin-sidebar-hidden');
+                const isCollapsed = document.body.classList.contains('admin-sidebar-collapsed');
+                document.body.classList.toggle('admin-sidebar-collapsed');
                 
-                // Update toggle icon - hamburger when visible, X when hidden
+                // Update toggle icon for collapsed/expanded state
                 const toggleIcon = document.getElementById('sidebar-toggle-icon');
                 if (toggleIcon) {
-                    if (document.body.classList.contains('admin-sidebar-hidden')) {
-                        // Sidebar is hidden, show hamburger icon (to open)
-                        toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+                    if (document.body.classList.contains('admin-sidebar-collapsed')) {
+                        // Sidebar is collapsed (show expand icon)
+                        toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d=\"M4 6h10M4 12h10M4 18h10\" />';
                     } else {
-                        // Sidebar is visible, show hamburger icon (to collapse)
-                        toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+                        // Sidebar is expanded (show collapse icon)
+                        toggleIcon.innerHTML = '<path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10 6h10M10 12h10M10 18h10\" />';
                     }
                 }
                 
-                // Show/hide floating button
+                // Show/hide floating button when collapsed
                 if (sidebarToggleFloating) {
-                    if (document.body.classList.contains('admin-sidebar-hidden')) {
+                    if (document.body.classList.contains('admin-sidebar-collapsed')) {
                         sidebarToggleFloating.classList.remove('hidden');
                         sidebarToggleFloating.classList.add('flex');
                     } else {
@@ -539,19 +562,19 @@
                 
                 try {
                     localStorage.setItem(
-                        'adminSidebarHidden',
-                        document.body.classList.contains('admin-sidebar-hidden') ? '1' : '0'
+                        'adminSidebarCollapsed',
+                        document.body.classList.contains('admin-sidebar-collapsed') ? '1' : '0'
                     );
                 } catch (_) {}
             }
 
-            // Restore hidden state
+            // Restore collapsed state
             try {
                 const toggleIcon = document.getElementById('sidebar-toggle-icon');
-                if (localStorage.getItem('adminSidebarHidden') === '1') {
-                    document.body.classList.add('admin-sidebar-hidden');
+                if (localStorage.getItem('adminSidebarCollapsed') === '1') {
+                    document.body.classList.add('admin-sidebar-collapsed');
                     if (toggleIcon) {
-                        toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+                        toggleIcon.innerHTML = '<path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M4 6h10M4 12h10M4 18h10\" />';
                     }
                     if (sidebarToggleFloating) {
                         sidebarToggleFloating.classList.remove('hidden');
@@ -559,7 +582,7 @@
                     }
                 } else {
                     if (toggleIcon) {
-                        toggleIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />';
+                        toggleIcon.innerHTML = '<path stroke-linecap=\"round\" stroke-linejoin=\"round\" stroke-width=\"2\" d=\"M10 6h10M10 12h10M10 18h10\" />';
                     }
                     if (sidebarToggleFloating) {
                         sidebarToggleFloating.classList.add('hidden');
