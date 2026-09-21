@@ -973,10 +973,18 @@
         --text-secondary: #535B67;
         --border-light: #E5EAF0;
         --prady-gradient: linear-gradient(110deg, #00398C 0%, #0557A6 48%, #0487CD 100%);
+        --mkt-header-offset: 3.75rem;
         font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         color: var(--text-primary);
         background: var(--prady-white);
         overflow-x: hidden;
+        padding-top: var(--mkt-header-offset);
+    }
+
+    @media (min-width: 1024px) {
+        .prady-site {
+            --mkt-header-offset: 4.85rem;
+        }
     }
 
     .mkt-container {
@@ -1009,10 +1017,6 @@
         .prady-brand__mark-svg {
             width: 3rem;
             height: 3rem;
-        }
-
-        .mkt-header__logo {
-            max-width: 360px;
         }
     }
 
@@ -1060,24 +1064,119 @@
 
     /* Header */
     .mkt-header {
-        position: sticky;
+        position: fixed;
         top: 0;
+        left: 0;
+        right: 0;
         z-index: 50;
         background: #fff;
         border-bottom: 1px solid var(--border-light);
+        transform: translateY(0);
+        transition: transform 280ms ease, box-shadow 280ms ease;
+        will-change: transform;
+    }
+
+    .mkt-header.is-scrolled {
+        box-shadow: 0 8px 24px rgba(5, 49, 113, 0.08);
+    }
+
+    .mkt-header.is-hidden {
+        transform: translateY(-100%);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .mkt-header {
+            transition: none;
+        }
     }
 
     .mkt-header__bar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1rem;
-        min-height: 4.5rem;
+        gap: 0.5rem;
+        min-height: 3.75rem;
+    }
+
+    @media (min-width: 640px) {
+        .mkt-header__bar {
+            gap: 0.85rem;
+            min-height: 4.15rem;
+        }
     }
 
     @media (min-width: 1024px) {
         .mkt-header__bar {
+            gap: 1rem;
             min-height: 4.85rem;
+        }
+    }
+
+    .mkt-header__logo {
+        max-width: min(168px, 46vw);
+        min-width: 0;
+        flex-shrink: 1;
+    }
+
+    .mkt-header .prady-brand {
+        gap: 0.55rem;
+    }
+
+    .mkt-header .prady-brand__mark-svg {
+        width: 2.15rem;
+        height: 2.15rem;
+    }
+
+    .mkt-header .prady-brand__name {
+        font-size: 1.05rem;
+    }
+
+    .mkt-header .prady-brand__sub {
+        font-size: 0.55rem;
+        letter-spacing: 0.1em;
+        margin-top: 0.18rem;
+    }
+
+    @media (min-width: 640px) {
+        .mkt-header__logo {
+            max-width: 220px;
+        }
+
+        .mkt-header .prady-brand__mark-svg {
+            width: 2.45rem;
+            height: 2.45rem;
+        }
+
+        .mkt-header .prady-brand__name {
+            font-size: 1.2rem;
+        }
+
+        .mkt-header .prady-brand__sub {
+            font-size: 0.62rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .mkt-header__logo {
+            max-width: 360px;
+        }
+
+        .mkt-header .prady-brand {
+            gap: 0.75rem;
+        }
+
+        .mkt-header .prady-brand__mark-svg {
+            width: 3rem;
+            height: 3rem;
+        }
+
+        .mkt-header .prady-brand__name {
+            font-size: 1.48rem;
+        }
+
+        .mkt-header .prady-brand__sub {
+            font-size: 0.78rem;
+            margin-top: 0.28rem;
         }
     }
 
@@ -1225,20 +1324,47 @@
     .mkt-header__actions {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
+        gap: 0.35rem;
+        flex-shrink: 0;
+    }
+
+    @media (min-width: 640px) {
+        .mkt-header__actions {
+            gap: 0.55rem;
+        }
     }
 
     .mkt-header__cta {
-        display: none;
-        min-height: 40px;
-        padding: 0.5rem 1.15rem;
-        border-radius: 8px;
-        font-size: 0.9rem;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 32px;
+        height: 32px;
+        padding: 0 0.7rem;
+        border-radius: 7px;
+        font-size: 0.72rem;
+        font-weight: 600;
+        line-height: 1;
+        white-space: nowrap;
+        letter-spacing: 0.01em;
     }
 
     @media (min-width: 640px) {
         .mkt-header__cta {
-            display: inline-flex;
+            min-height: 36px;
+            height: 36px;
+            padding: 0 0.9rem;
+            font-size: 0.8rem;
+        }
+    }
+
+    @media (min-width: 1024px) {
+        .mkt-header__cta {
+            min-height: 40px;
+            height: auto;
+            padding: 0.5rem 1.15rem;
+            border-radius: 8px;
+            font-size: 0.9rem;
         }
     }
 
@@ -1246,14 +1372,23 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        min-width: 44px;
-        min-height: 44px;
+        min-width: 40px;
+        min-height: 40px;
+        width: 40px;
+        height: 40px;
+        padding: 0;
         border: none;
-        border-radius: 10px;
+        border-radius: 9px;
         background: transparent;
         color: var(--prady-navy);
         cursor: pointer;
         transition: background 180ms ease;
+        flex-shrink: 0;
+    }
+
+    .mkt-menu-toggle svg {
+        width: 1.35rem;
+        height: 1.35rem;
     }
 
     .mkt-menu-toggle:hover {
@@ -1296,8 +1431,12 @@
     }
 
     .mkt-mobile-menu__cta {
-        margin-top: 0.5rem;
+        margin-top: 0.65rem;
         width: 100%;
+        min-height: 42px;
+        padding: 0.65rem 1rem;
+        font-size: 0.9rem;
+        border-radius: 8px;
     }
 
     .mkt-mobile-acc {
