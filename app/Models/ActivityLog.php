@@ -58,10 +58,10 @@ class ActivityLog extends Model
     }
 
     /**
-     * Scope to get recent activities
+     * Scope to get recent activities (ordering only — do not limit before paginate).
      */
-    public function scopeRecent($query, int $limit = 50)
+    public function scopeRecent($query)
     {
-        return $query->orderByDesc('created_at')->limit($limit);
+        return $query->orderByDesc('created_at');
     }
 }

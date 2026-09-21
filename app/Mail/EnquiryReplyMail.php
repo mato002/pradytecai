@@ -43,7 +43,12 @@ class EnquiryReplyMail extends Mailable
     public function content(): Content
     {
         return new Content(
-            html: 'emails.enquiry-reply',
+            view: 'emails.enquiry-reply',
+            with: [
+                'subject' => $this->subject,
+                'messageBody' => $this->message,
+                'name' => $this->name,
+            ],
         );
     }
 

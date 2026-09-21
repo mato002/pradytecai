@@ -142,7 +142,7 @@
                                 type="text" 
                                 id="site_name" 
                                 name="site_name" 
-                                value="{{ old('site_name', 'Pradytecai') }}" 
+                                value="{{ old('site_name', $settings['site_name'] ?? 'Pradytecai') }}" 
                                 required
                                 class="form-input-enhanced w-full px-4 py-3 pl-12 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none"
                             >
@@ -169,7 +169,7 @@
                             name="site_description" 
                             rows="3"
                             class="form-input-enhanced w-full px-4 py-3 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none resize-none"
-                        >{{ old('site_description', 'Enterprise software solutions for modern businesses.') }}</textarea>
+                        >{{ old('site_description', $settings['site_description'] ?? 'Enterprise software solutions for modern businesses.') }}</textarea>
                         <p class="mt-2 text-xs text-slate-500">Brief description for SEO and social sharing</p>
                     </div>
                 </div>
@@ -199,7 +199,7 @@
                                 type="email" 
                                 id="contact_email" 
                                 name="contact_email" 
-                                value="{{ old('contact_email', 'marketing@pradytecai.com') }}" 
+                                value="{{ old('contact_email', $settings['contact_email'] ?? 'marketing@pradytecai.com') }}" 
                                 required
                                 class="form-input-enhanced w-full px-4 py-3 pl-12 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none"
                             >
@@ -220,7 +220,7 @@
                                 type="tel" 
                                 id="contact_phone" 
                                 name="contact_phone" 
-                                value="{{ old('contact_phone', '+254 722 295 194') }}" 
+                                value="{{ old('contact_phone', $settings['contact_phone'] ?? '+254 722 295 194') }}" 
                                 class="form-input-enhanced w-full px-4 py-3 pl-12 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none"
                             >
                             <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
@@ -253,9 +253,36 @@
                         <p class="text-sm text-slate-600">When enabled, the site will be unavailable to visitors. Only admins can access.</p>
                     </div>
                     <label class="toggle-switch ml-4">
-                        <input type="checkbox" name="maintenance_mode" value="1">
+                        <input type="checkbox" name="maintenance_mode" value="1" @checked(old('maintenance_mode', ($settings['maintenance_mode'] ?? '0') === '1'))>
                         <span class="toggle-slider"></span>
                     </label>
+                </div>
+            </div>
+
+            <div class="form-section">
+                <div class="section-header">
+                    <h3 class="text-xl font-bold text-slate-900">Content & Pulse</h3>
+                    <p class="text-sm text-slate-600">Approval workflow and alert thresholds</p>
+                </div>
+                <div class="flex items-center justify-between p-6 rounded-xl bg-slate-50 border border-slate-200 mb-4">
+                    <div>
+                        <h4 class="font-semibold text-slate-900">Require content approval</h4>
+                        <p class="text-sm text-slate-600">Drafts must be approved before schedule/publish</p>
+                    </div>
+                    <label class="toggle-switch ml-4">
+                        <input type="checkbox" name="content_approval_required" value="1" @checked(old('content_approval_required', ($settings['content_approval_required'] ?? '1') === '1'))>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Social inactive days</label>
+                        <input type="number" min="1" name="pulse_social_inactive_days" value="{{ old('pulse_social_inactive_days', $settings['pulse_social_inactive_days'] ?? 5) }}" class="form-input-enhanced w-full px-4 py-3 border-2 border-slate-200 rounded-xl">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Product not marketed days</label>
+                        <input type="number" min="1" name="pulse_product_not_marketed_days" value="{{ old('pulse_product_not_marketed_days', $settings['pulse_product_not_marketed_days'] ?? 14) }}" class="form-input-enhanced w-full px-4 py-3 border-2 border-slate-200 rounded-xl">
+                    </div>
                 </div>
             </div>
 

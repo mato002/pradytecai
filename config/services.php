@@ -49,4 +49,16 @@ return [
         'token' => env('ULTRASMS_TOKEN', env('ULTRAMSG_TOKEN')),
     ],
 
+    'buffer' => [
+        'enabled' => env('BUFFER_ENABLED', true),
+        'client_id' => env('BUFFER_CLIENT_ID'),
+        'client_secret' => env('BUFFER_CLIENT_SECRET'),
+        'access_token' => env('BUFFER_ACCESS_TOKEN'),
+    ],
+
+    'ga4' => [
+        'property_id' => env('GA4_PROPERTY_ID'),
+        'credentials_json' => env('GA4_CREDENTIALS_JSON'),
+    ],
+
 ];

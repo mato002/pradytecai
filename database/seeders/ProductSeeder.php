@@ -4,24 +4,50 @@ namespace Database\Seeders;
 
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
     public function run(): void
     {
-        // Seed or update the core products with richer details
-        $products = [
+        $portfolio = config('portfolio.products', []);
+
+        $order = 1;
+        foreach ($portfolio as $item) {
+            Product::updateOrCreate(
+                ['slug' => $item['slug']],
+                [
+                    'name' => $item['name'],
+                    'short' => $item['short'] ?? null,
+                    'description' => $item['description'] ?? $item['short'] ?? null,
+                    'market' => $item['market'] ?? null,
+                    'icon' => $item['icon'] ?? null,
+                    'type' => $item['market'] ?? 'Product',
+                    'url' => '/contact?product='.urlencode($item['slug']),
+                    'button_text' => 'Request Demo',
+                    'is_active' => true,
+                    'order' => $order++,
+                    'features' => [],
+                    'benefits' => [],
+                    'statistics' => [],
+                ]
+            );
+        }
+
+        // Keep BulkSMS CRM as a real Pradytec product if sold; unpublish GSC.
+        Product::updateOrCreate(
+            ['slug' => 'bulksms-crm'],
             [
                 'name' => 'BulkSMS CRM',
+                'short' => 'Multi-channel messaging platform for SMS, WhatsApp and Email.',
+                'description' => 'Multi-channel messaging (SMS, WhatsApp, Email) with contacts, campaigns and analytics.',
+                'market' => 'Businesses needing customer messaging',
                 'type' => 'Messaging Platform',
                 'url' => 'https://crm.pradytecai.com',
                 'button_text' => 'Open BulkSMS CRM',
                 'icon' => 'messaging',
                 'is_active' => true,
-                'order' => 1,
+                'order' => $order++,
                 'features' => [
                     'Multi-channel messaging (SMS, WhatsApp, Email)',
                     'Contact and segment management',
@@ -34,70 +60,36 @@ class ProductSeeder extends Seeder
                     'Automate routine notifications and reminders',
                     'Scale communications without extra headcount',
                 ],
-                'statistics' => [
-                    '99.9%', 'Typical delivery rate',
-                    '3+',   'Supported messaging channels',
-                ],
-            ],
-            [
-                'name' => 'Google Search Console',
-                'type' => 'Webmaster Tool',
-                'url' => 'https://search.google.com/search-console',
-                'button_text' => 'Open Search Console',
-                'icon' => 'cloud',
-                'is_active' => true,
-                'order' => 3,
-                'features' => [
-                    'Monitor site indexing and search performance',
-                    'View search queries and top pages',
-                    'Identify crawling and mobile usability issues',
-                    'Submit sitemaps and individual URLs',
-                ],
-                'benefits' => [
-                    'Understand how Google sees your website',
-                    'Fix SEO issues before they impact traffic',
-                    'Track impressions, clicks and average position',
-                    'Improve overall search visibility over time',
-                ],
-                'statistics' => [
-                    '100%', 'Google search coverage overview',
-                    '24/7', 'Monitoring and reporting',
-                ],
-            ],
-            [
-                'name' => 'Prady Mfi',
-                'type' => 'Microfinance System',
-                'url' => 'https://demo.pradytecai.com',
-                'button_text' => 'Open Prady Mfi Demo',
-                'icon' => 'finance',
-                'is_active' => true,
-                'order' => 2,
-                'features' => [
-                    'End-to-end loan lifecycle management',
-                    'Client onboarding and KYC records',
-                    'Repayment tracking and arrears management',
-                    'Comprehensive financial and portfolio reports',
-                ],
-                'benefits' => [
-                    'Reduce manual paperwork and spreadsheet errors',
-                    'Gain real-time visibility into portfolio health',
-                    'Standardise processes across branches',
-                    'Support regulatory and compliance reporting',
-                ],
-                'statistics' => [
-                    '10,000+', 'Loans managed for institutions',
-                    '5+',      'Countries supported',
-                ],
-            ],
-        ];
+                'statistics' => ['99.9%', 'Typical delivery rate', '3+', 'Supported messaging channels'],
+            ]
+        );
 
-        foreach ($products as $data) {
-            Product::updateOrCreate(
-                ['name' => $data['name']],
-                $data
-            );
+        // Deprecate seeded Google Search Console “product”.
+        Product::where('name', 'Google Search Console')
+            ->orWhere('slug', 'google-search-console')
+            ->update(['is_active' => false, 'slug' => 'google-search-console']);
+
+        // Normalize any legacy Prady Mfi row onto portfolio microfinance slug if duplicate name.
+        $legacyMfi = Product::where('name', 'Prady Mfi')->where(function ($q) {
+            $q->whereNull('slug')->orWhere('slug', '!=', 'prady-microfinance');
+        })->first();
+
+        if ($legacyMfi) {
+            $canonical = Product::where('slug', 'prady-microfinance')->first();
+            if ($canonical) {
+                $legacyMfi->update(['is_active' => false, 'slug' => 'prady-mfi-legacy']);
+            } else {
+                $legacyMfi->update([
+                    'slug' => 'prady-microfinance',
+                    'name' => 'Prady Microfinance',
+                    'is_active' => true,
+                ]);
+            }
         }
+
+        // Ensure any product missing slug gets one.
+        Product::whereNull('slug')->orWhere('slug', '')->each(function (Product $product) {
+            $product->update(['slug' => Str::slug($product->name)]);
+        });
     }
 }
-
-

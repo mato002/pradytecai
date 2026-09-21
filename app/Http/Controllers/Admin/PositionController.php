@@ -12,6 +12,8 @@ class PositionController extends Controller
 {
     public function index(Request $request): View
     {
+        $this->authorize('viewAny', Position::class);
+
         $query = Position::query()->ordered();
 
         // Filters
@@ -65,11 +67,15 @@ class PositionController extends Controller
 
     public function create(): View
     {
+        $this->authorize('create', Position::class);
+
         return view('admin.positions.create');
     }
 
     public function store(Request $request): RedirectResponse
     {
+        $this->authorize('create', Position::class);
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
@@ -92,11 +98,15 @@ class PositionController extends Controller
 
     public function edit(Position $position): View
     {
+        $this->authorize('update', $position);
+
         return view('admin.positions.edit', compact('position'));
     }
 
     public function update(Request $request, Position $position): RedirectResponse
     {
+        $this->authorize('update', $position);
+
         $data = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['required', 'string'],
@@ -119,11 +129,15 @@ class PositionController extends Controller
 
     public function show(Position $position): View
     {
+        $this->authorize('view', $position);
+
         return view('admin.positions.show', compact('position'));
     }
 
     public function destroy(Position $position): RedirectResponse
     {
+        $this->authorize('delete', $position);
+
         $position->delete();
 
         return redirect()

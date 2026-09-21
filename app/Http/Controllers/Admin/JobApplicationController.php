@@ -17,6 +17,8 @@ class JobApplicationController extends Controller
      */
     public function index(Request $request)
     {
+        $this->authorize('viewAny', JobApplication::class);
+
         $query = JobApplication::with('position')->recent();
 
         // Filter by status if provided
@@ -167,6 +169,8 @@ class JobApplicationController extends Controller
      */
     public function bulkAction(Request $request): RedirectResponse
     {
+        abort_unless($request->user()->can('careers.manage'), 403);
+
         $validated = $request->validate([
             'action' => 'required|string',
             'ids' => 'required|string',
@@ -226,6 +230,8 @@ class JobApplicationController extends Controller
      */
     public function show(JobApplication $application): View
     {
+        $this->authorize('view', $application);
+
         $application->load('position');
         
         // Log the view
@@ -253,6 +259,8 @@ class JobApplicationController extends Controller
      */
     public function updateStatus(Request $request, JobApplication $application): RedirectResponse
     {
+        $this->authorize('update', $application);
+
         $validated = $request->validate([
             'status' => 'required|in:pending,reviewing,shortlisted,interviewed,accepted,rejected',
             'admin_notes' => 'nullable|string',
@@ -288,6 +296,8 @@ class JobApplicationController extends Controller
      */
     public function scheduleInterview(Request $request, JobApplication $application): RedirectResponse
     {
+        $this->authorize('update', $application);
+
         // Only allow scheduling interviews for reviewing, shortlisted, or interviewed statuses
         // This ensures proper workflow order: pending → reviewing → shortlisted → interviewed → accepted
         // Rejected applications cannot proceed further
@@ -337,6 +347,8 @@ class JobApplicationController extends Controller
      */
     public function updateInterviewNotes(Request $request, JobApplication $application): RedirectResponse
     {
+        $this->authorize('update', $application);
+
         $validated = $request->validate([
             'interview_notes' => 'required|string',
         ]);
@@ -356,6 +368,8 @@ class JobApplicationController extends Controller
      */
     public function downloadResume(JobApplication $application)
     {
+        $this->authorize('view', $application);
+
         if (!$application->resume_path) {
             abort(404, 'Resume not found');
         }
@@ -368,6 +382,8 @@ class JobApplicationController extends Controller
      */
     public function sendMessage(Request $request, JobApplication $application, CommunicationService $communicationService): RedirectResponse
     {
+        $this->authorize('update', $application);
+
         $validated = $request->validate([
             'channels' => 'required|array|min:1',
             'channels.*' => 'required|in:email,sms,whatsapp',
@@ -407,6 +423,8 @@ class JobApplicationController extends Controller
      */
     public function addComment(Request $request, JobApplication $application): RedirectResponse
     {
+        $this->authorize('update', $application);
+
         $validated = $request->validate([
             'comment' => 'required|string|min:3',
             'parent_id' => 'nullable|exists:application_comments,id',
@@ -435,7 +453,8 @@ class JobApplicationController extends Controller
     public function deleteComment(\App\Models\ApplicationComment $comment): RedirectResponse
     {
         $application = $comment->jobApplication;
-        
+        $this->authorize('update', $application);
+
         // Only allow deletion by comment author or admin
         if ($comment->user_id !== auth()->id()) {
             return redirect()->route('admin.applications.show', $application)

@@ -8,25 +8,15 @@ use Illuminate\Validation\ValidationException;
 
 class AuthController extends Controller
 {
-    /**
-     * Show the login form
-     */
     public function showLoginForm()
     {
         if (Auth::check()) {
-            // Redirect based on user role
-            $user = Auth::user();
-            if ($user->isHrManager()) {
-                return redirect()->route('admin.positions.index');
-            }
-            return redirect()->route('admin.dashboard');
+            return $this->homeRedirect(Auth::user());
         }
+
         return view('auth.login');
     }
 
-    /**
-     * Handle login request
-     */
     public function login(Request $request)
     {
         $request->validate([
@@ -39,26 +29,21 @@ class AuthController extends Controller
 
         if (Auth::attempt($credentials, $remember)) {
             $request->session()->regenerate();
-            
-            // Clear any intended URL, especially if it points to profile
+
             $intended = $request->session()->pull('url.intended');
-            
-            // Redirect based on user role - never redirect to profile
             $user = Auth::user();
-            if ($user->isHrManager()) {
-                // HR Managers always go to positions page
+
+            if (! $user->can('dashboard.view')) {
                 return redirect()->route('admin.positions.index');
             }
-            
-            // For admins, only use intended if it's a valid admin route (not profile)
-            if ($intended && 
-                str_starts_with($intended, '/admin') && 
-                !str_contains($intended, '/profile') &&
-                !str_contains($intended, '/login')) {
+
+            if ($intended
+                && str_starts_with($intended, '/admin')
+                && ! str_contains($intended, '/profile')
+                && ! str_contains($intended, '/login')) {
                 return redirect($intended);
             }
-            
-            // Default: go to dashboard
+
             return redirect()->route('admin.dashboard');
         }
 
@@ -67,9 +52,6 @@ class AuthController extends Controller
         ]);
     }
 
-    /**
-     * Handle logout request
-     */
     public function logout(Request $request)
     {
         Auth::logout();
@@ -79,5 +61,13 @@ class AuthController extends Controller
 
         return redirect()->route('login')->with('success', 'You have been logged out successfully.');
     }
-}
 
+    private function homeRedirect($user)
+    {
+        if (! $user->can('dashboard.view')) {
+            return redirect()->route('admin.positions.index');
+        }
+
+        return redirect()->route('admin.dashboard');
+    }
+}

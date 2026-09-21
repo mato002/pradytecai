@@ -1,12 +1,12 @@
 @extends('layouts.admin')
 
-@section('title', 'Admin - Enquiry Details')
-@section('page_title', 'Enquiry Details')
+@section('title', 'Admin - Lead Details')
+@section('page_title', 'Lead Details')
 
 @section('content')
     <div class="mb-6">
         <a href="{{ route('admin.enquiries.index') }}" class="inline-flex items-center text-sm text-slate-600 hover:text-slate-900 mb-4">
-            ← Back to Enquiries
+            ← Back to Leads
         </a>
     </div>
 
@@ -31,13 +31,16 @@
                     @php
                         $statusColors = [
                             'new' => 'bg-blue-50 text-blue-700 border-blue-200',
-                            'read' => 'bg-slate-50 text-slate-700 border-slate-200',
-                            'responded' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                            'contacted' => 'bg-sky-50 text-sky-700 border-sky-200',
+                            'qualified' => 'bg-emerald-50 text-emerald-700 border-emerald-200',
+                            'demo_booked' => 'bg-indigo-50 text-indigo-700 border-indigo-200',
+                            'won' => 'bg-green-50 text-green-700 border-green-200',
+                            'lost' => 'bg-red-50 text-red-700 border-red-200',
                             'archived' => 'bg-amber-50 text-amber-700 border-amber-200',
                         ];
                     @endphp
                     <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium border {{ $statusColors[$enquiry->status] ?? 'bg-slate-50 text-slate-700' }}">
-                        {{ ucfirst($enquiry->status) }}
+                        {{ str_replace('_', ' ', $enquiry->status) }}
                     </span>
                     @if($enquiry->topic)
                         <span class="inline-flex items-center px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium">
@@ -121,11 +124,36 @@
                             <div>
                                 <label for="status" class="block text-sm font-medium text-slate-700 mb-2">Status</label>
                                 <select name="status" id="status" class="w-full rounded-lg border border-slate-300 px-4 py-2 text-base focus:border-indigo-500 focus:ring-indigo-500">
-                                    <option value="new" {{ $enquiry->status === 'new' ? 'selected' : '' }}>New</option>
-                                    <option value="read" {{ $enquiry->status === 'read' ? 'selected' : '' }}>Read</option>
-                                    <option value="responded" {{ $enquiry->status === 'responded' ? 'selected' : '' }}>Responded</option>
-                                    <option value="archived" {{ $enquiry->status === 'archived' ? 'selected' : '' }}>Archived</option>
+                                    @foreach(($statuses ?? \App\Models\ContactMessage::LEAD_STATUSES) as $status)
+                                        <option value="{{ $status }}" @selected($enquiry->status === $status)>{{ str_replace('_', ' ', ucfirst($status)) }}</option>
+                                    @endforeach
                                 </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Assignee</label>
+                                <select name="assigned_to" class="w-full rounded-lg border border-slate-300 px-4 py-2">
+                                    <option value="">Unassigned</option>
+                                    @foreach(($users ?? []) as $u)
+                                        <option value="{{ $u->id }}" @selected($enquiry->assigned_to == $u->id)>{{ $u->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Product</label>
+                                <select name="product_id" class="w-full rounded-lg border border-slate-300 px-4 py-2">
+                                    <option value="">—</option>
+                                    @foreach(($products ?? []) as $p)
+                                        <option value="{{ $p->id }}" @selected($enquiry->product_id == $p->id)>{{ $p->name }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Next follow-up</label>
+                                <input type="datetime-local" name="next_follow_up_at" value="{{ $enquiry->next_follow_up_at?->format('Y-m-d\TH:i') }}" class="w-full rounded-lg border border-slate-300 px-4 py-2">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-slate-700 mb-2">Admin notes</label>
+                                <textarea name="admin_notes" rows="3" class="w-full rounded-lg border border-slate-300 px-4 py-2">{{ $enquiry->admin_notes }}</textarea>
                             </div>
                             <button type="submit" class="btn-primary">
                                 Update Status
@@ -135,7 +163,7 @@
 
                     <!-- Reply to Enquiry -->
                     <div>
-                        <h3 class="text-lg font-semibold text-slate-900 mb-4">Reply to Enquiry</h3>
+                        <h3 class="text-lg font-semibold text-slate-900 mb-4">Reply to Lead</h3>
                         <form method="POST" action="{{ route('admin.enquiries.reply', $enquiry) }}" class="space-y-4">
                             @csrf
                             <div>
@@ -160,10 +188,9 @@
                         <h3 class="text-lg font-semibold text-slate-900 mb-4 text-red-600">Danger Zone</h3>
                         <form method="POST" action="{{ route('admin.enquiries.destroy', $enquiry) }}" class="delete-form">
                             @csrf
-                            @method('DELETE')
-                            <p class="text-sm text-slate-600 mb-4">Once deleted, this enquiry cannot be recovered.</p>
+                            <p class="text-sm text-slate-600 mb-4">Once deleted, this lead cannot be recovered.</p>
                             <button type="submit" class="inline-flex items-center px-4 py-2 rounded-lg bg-red-600 text-white text-sm font-medium hover:bg-red-700">
-                                Delete Enquiry
+                                Delete Lead
                             </button>
                         </form>
                     </div>
@@ -181,7 +208,7 @@
                             <label for="admin_notes" class="block text-sm font-medium text-slate-700 mb-2">Notes</label>
                             <textarea name="admin_notes" id="admin_notes" rows="10" 
                                       class="w-full rounded-lg border border-slate-300 px-4 py-2 text-base focus:border-indigo-500 focus:ring-indigo-500">{{ $enquiry->admin_notes }}</textarea>
-                            <p class="mt-2 text-sm text-slate-500">Add internal notes about this enquiry. These notes are only visible to admins.</p>
+                            <p class="mt-2 text-sm text-slate-500">Add internal notes about this lead. These notes are only visible to the team.</p>
                         </div>
                         <button type="submit" class="btn-primary">
                             Save Notes

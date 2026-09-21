@@ -29,6 +29,9 @@ class ActivityLogService
         if ($model) {
             $data['model_type'] = get_class($model);
             $data['model_id'] = $model->id;
+        } else {
+            $data['model_type'] = null;
+            $data['model_id'] = null;
         }
 
         return ActivityLog::create($data);

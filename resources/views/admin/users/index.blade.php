@@ -56,19 +56,14 @@
                             </a>
                         </td>
                         <td class="px-4 py-3">
-                            @if($user->role === 'admin')
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
-                                    Admin
-                                </span>
-                            @elseif($user->role === 'hr_manager')
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-emerald-100 text-emerald-700 text-xs font-semibold">
-                                    HR Manager
-                                </span>
-                            @else
-                                <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
-                                    {{ ucfirst(str_replace('_', ' ', $user->role ?? 'User')) }}
-                                </span>
-                            @endif
+                            @php
+                                $roleSlug = $user->roles->first()?->name ?? $user->role;
+                                $roleLabel = config('marketing_permissions.roles.'.$roleSlug.'.label')
+                                    ?? ucfirst(str_replace('_', ' ', $roleSlug ?? 'User'));
+                            @endphp
+                            <span class="inline-flex items-center px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 text-xs font-semibold">
+                                {{ $roleLabel }}
+                            </span>
                         </td>
                         <td class="px-4 py-3 text-sm text-slate-500">
                             {{ $user->created_at?->format('M j, Y') }}
@@ -84,7 +79,6 @@
                             </a>
                             <form action="{{ route('admin.users.destroy', $user) }}" method="POST" class="inline delete-form">
                                 @csrf
-                                @method('DELETE')
                                 <button type="submit" class="inline-flex items-center px-3 py-1.5 rounded-lg border border-red-300 bg-white text-red-600 text-xs md:text-sm hover:bg-red-50 transition">
                                     Delete
                                 </button>

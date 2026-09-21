@@ -18,7 +18,7 @@
         @endif
         
         <div style="background: white; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 4px solid #667eea;">
-            {!! nl2br(e($message)) !!}
+            {!! nl2br(e($messageBody ?? $message ?? '')) !!}
         </div>
         
         <p style="margin-bottom: 0; color: #666; font-size: 14px;">

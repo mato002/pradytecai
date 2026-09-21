@@ -55,15 +55,24 @@
                     <label for="topic" class="mkt-label">What are you interested in? *</label>
                     <select id="topic" name="topic" required class="mkt-select">
                         <option value="">Select an option</option>
-                        <option value="microfinance">Prady Microfinance</option>
-                        <option value="sacco">SACCO System</option>
-                        <option value="gps">GPS Hosting & Tracking</option>
-                        <option value="property">Property Management</option>
+                        @foreach(($products ?? \App\Models\Product::active()->ordered()->get()) as $product)
+                            <option value="{{ $product->slug }}" @selected(request('product') === $product->slug || request('product') === $product->name)>
+                                {{ $product->name }}
+                            </option>
+                        @endforeach
                         <option value="custom">Custom enterprise solution</option>
                         <option value="support">Technical support</option>
                         <option value="other">Other</option>
                     </select>
                 </div>
+
+                        <input type="hidden" name="request_type" value="{{ request()->filled('product') ? 'demo' : request('request_type', 'enquiry') }}">
+                <input type="hidden" name="utm_source" value="{{ request('utm_source') }}">
+                <input type="hidden" name="utm_medium" value="{{ request('utm_medium') }}">
+                <input type="hidden" name="utm_campaign" value="{{ request('utm_campaign') }}">
+                <input type="hidden" name="utm_content" value="{{ request('utm_content') }}">
+                <input type="hidden" name="utm_term" value="{{ request('utm_term') }}">
+                <input type="hidden" name="landing_page" value="{{ url()->previous() }}">
 
                 <div>
                     <label for="subject" class="mkt-label">Subject *</label>
