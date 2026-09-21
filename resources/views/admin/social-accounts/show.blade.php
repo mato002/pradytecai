@@ -3,7 +3,7 @@
 @section('page_title', $account->name)
 @section('header_actions')
 <a href="{{ route('admin.social-accounts.edit', $account) }}" class="btn-primary">Edit</a>
-<form method="POST" action="{{ route('admin.social-accounts.destroy', $account) }}">@csrf<button class="btn-ghost text-red-600" onclick="return confirm('Delete?')">Delete</button></form>
+<form method="POST" action="{{ route('admin.social-accounts.destroy', $account) }}">@csrf<button class="btn-ghost text-red-600">Delete</button></form>
 @endsection
 @section('content')
 <div class="glass-card space-y-2">

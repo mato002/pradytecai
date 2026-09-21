@@ -1,12 +1,12 @@
-@extends('layouts.admin')
+@extends(admin_layout())
 
 @section('title', 'Admin - Edit User')
 @section('page_title', 'Edit User')
 
 @section('content')
 <div class="max-w-4xl">
-@if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('success') }}</div>@endif
-@if(session('error'))<div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{{ session('error') }}</div>@endif
+
+
 @if($errors->any())
 <div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
 <ul class="list-disc pl-4">@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul>
@@ -60,7 +60,11 @@
 </div>
 <div class="flex gap-3">
 <button type="submit" class="btn-primary">Update user</button>
-<a href="{{ route('admin.users.index') }}" class="btn-ghost">Cancel</a>
+@if(is_admin_modal_request())
+<button type="button" class="btn-ghost" data-admin-modal-close>Cancel</button>
+@else
+<a href="{{ route('admin.users.index') }}" class="btn-ghost" data-turbo-frame="admin_main">Cancel</a>
+@endif
 </div>
 </form>
 </div>

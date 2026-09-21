@@ -6,7 +6,7 @@
     <a href="{{ route('admin.social-accounts.create') }}" class="btn-primary">Add account</a>
 @endsection
 @section('content')
-@if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('success') }}</div>@endif
+
 <div class="glass-card overflow-x-auto">
 <table class="min-w-full text-sm">
 <thead class="bg-slate-50 text-left"><tr><th class="px-4 py-3">Name</th><th class="px-4 py-3">Platform</th><th class="px-4 py-3">Product</th><th class="px-4 py-3">Status</th><th class="px-4 py-3">Last posted</th><th class="px-4 py-3 text-right">Actions</th></tr></thead>

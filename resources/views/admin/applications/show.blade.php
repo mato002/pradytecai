@@ -11,17 +11,9 @@
         <h2 class="text-xl font-semibold text-slate-900">Application Review</h2>
     </div>
 
-    @if(session('success'))
-        <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-sm">
-            {{ session('success') }}
-        </div>
-    @endif
+    
 
-    @if(session('error'))
-        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
-            {{ session('error') }}
-        </div>
-    @endif
+    
 
     <!-- Candidate Information Header -->
     <div class="bg-white border border-slate-200 rounded-xl p-6 mb-6">
@@ -450,7 +442,7 @@
                                         </div>
                                         @if($comment->user_id === auth()->id())
                                             <form action="{{ route('admin.applications.deleteComment', $comment) }}" method="POST" 
-                                                  onsubmit="return confirm('Are you sure you want to delete this comment?')">
+                                                  data-confirm="Are you sure you want to delete this comment?">
                                                 @csrf
                                                 <button type="submit" class="text-xs text-red-600 hover:text-red-800">
                                                     Delete
@@ -481,7 +473,7 @@
                                                         </div>
                                                         @if($reply->user_id === auth()->id())
                                                             <form action="{{ route('admin.applications.deleteComment', $reply) }}" method="POST" 
-                                                                  onsubmit="return confirm('Are you sure?')" class="inline">
+                                                                  data-confirm="Are you sure?" class="inline">
                                                                 @csrf
                                                                 <button type="submit" class="text-xs text-red-600 hover:text-red-800">
                                                                     Delete

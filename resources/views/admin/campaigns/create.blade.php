@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(admin_layout())
 
 @section('title', 'Create Campaign - Pradytecai')
 @section('page_title', 'Create Campaign')
@@ -57,6 +57,9 @@
             @endforeach
         </div>
     </div>
-    <button class="btn-primary">Save campaign</button>
+    <div class="flex gap-3">
+        <button class="btn-primary">Save campaign</button>
+        <a href="{{ route('admin.campaigns.index') }}" class="btn-ghost" data-admin-modal-close data-turbo-frame="admin_main">Cancel</a>
+    </div>
 </form>
 @endsection

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(admin_layout())
 @section('title', 'Edit Role')
 @section('page_title', 'Edit Role: '.$role->name)
 @section('content')
@@ -20,7 +20,11 @@
 </div>
 @endforeach
 <button class="btn-primary">Save permissions</button>
-<a href="{{ route('admin.roles.index') }}" class="btn-ghost">Cancel</a>
+@if(is_admin_modal_request())
+<button type="button" class="btn-ghost" data-admin-modal-close>Cancel</button>
+@else
+<a href="{{ route('admin.roles.index') }}" class="btn-ghost" data-turbo-frame="admin_main">Cancel</a>
+@endif
 </form>
 @endif
 @endsection

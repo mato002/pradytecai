@@ -98,21 +98,7 @@
 
 @section('content')
     <div class="glass-card">
-        @if(session('success'))
-            <div class="mb-6 rounded-2xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 px-6 py-4 shadow-lg animate-slide-down">
-                <div class="flex items-center gap-3">
-                    <div class="flex-shrink-0">
-                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-semibold text-emerald-900">Settings Saved!</p>
-                        <p class="text-sm text-emerald-700">{{ session('success') }}</p>
-                    </div>
-                </div>
-            </div>
-        @endif
+        
 
         <form action="{{ route('admin.settings.general.update') }}" method="POST" class="space-y-8">
             @csrf

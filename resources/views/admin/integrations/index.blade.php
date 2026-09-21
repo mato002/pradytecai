@@ -2,7 +2,7 @@
 @section('title', 'Integrations')
 @section('page_title', 'Integrations')
 @section('content')
-@if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('success') }}</div>@endif
+
 <div class="grid gap-6 lg:grid-cols-2">
     <div class="glass-card">
         <h2 class="text-lg font-bold mb-4">Connected</h2>
@@ -17,7 +17,7 @@
                     <div class="flex gap-2">
                         @can('integrations.manage')
                         <form method="POST" action="{{ route('admin.integrations.reconnect', $integration) }}">@csrf<button class="btn-ghost">Reconnect</button></form>
-                        <form method="POST" action="{{ route('admin.integrations.destroy', $integration) }}">@csrf<button class="btn-ghost text-red-600" onclick="return confirm('Remove?')">Remove</button></form>
+                        <form method="POST" action="{{ route('admin.integrations.destroy', $integration) }}">@csrf<button class="btn-ghost text-red-600">Remove</button></form>
                         @endcan
                     </div>
                 </div>

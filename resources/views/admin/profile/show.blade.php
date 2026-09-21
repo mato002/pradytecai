@@ -56,21 +56,7 @@
 @endpush
 
 @section('content')
-    @if(session('success'))
-        <div class="mb-6 rounded-2xl border border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 px-6 py-4 shadow-lg animate-slide-down">
-            <div class="flex items-center gap-3">
-                <div class="flex-shrink-0">
-                    <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <p class="font-semibold text-emerald-900">Success!</p>
-                    <p class="text-sm text-emerald-700">{{ session('success') }}</p>
-                </div>
-            </div>
-        </div>
-    @endif
+    
 
     <!-- Profile Header Card -->
     <div class="glass-card mb-6 overflow-hidden relative">
@@ -204,7 +190,7 @@
                     </svg>
                 </a>
                 
-                <button onclick="alert('Password reset functionality coming soon')" class="group w-full flex items-center justify-between p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all duration-300">
+                <button type="button" data-admin-notify="Password reset functionality coming soon" class="group w-full flex items-center justify-between p-4 rounded-xl border-2 border-slate-200 bg-white hover:border-slate-300 hover:bg-slate-50 transition-all duration-300">
                     <div class="flex items-center gap-3">
                         <div class="p-2 rounded-lg bg-slate-600 text-white group-hover:scale-110 transition-transform">
                             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(admin_layout())
 
 @section('title', 'Admin - Edit Blog Post')
 @section('page_title', 'Edit Blog Post')
@@ -70,7 +70,7 @@
                         class="inline-flex items-center px-6 py-3 rounded-lg bg-indigo-600 text-white text-sm md:text-base font-semibold hover:bg-indigo-700 transition">
                     Save Changes
                 </button>
-                <a href="{{ route('admin.blog.index') }}" class="text-sm text-slate-600 hover:underline">
+                <a href="{{ route('admin.blog.index') }}" class="text-sm text-slate-600 hover:underline" data-admin-modal-close data-turbo-frame="admin_main">
                     Cancel
                 </a>
             </div>

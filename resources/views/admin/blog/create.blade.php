@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(admin_layout())
 
 @section('title', 'Admin - New Blog Post')
 @section('page_title', 'New Blog Post')
@@ -7,14 +7,7 @@
 
 @section('content')
     <div class="max-w-4xl">
-        @if(session('success'))
-            <div class="mb-6 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm font-medium text-emerald-800 flex items-center gap-2">
-                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                {{ session('success') }}
-            </div>
-        @endif
+        
 
         <div class="admin-form-card">
             <form action="{{ route('admin.blog.store') }}" method="POST" class="admin-form-section">
@@ -118,7 +111,7 @@
                         </svg>
                         Save & Publish Post
                     </button>
-                    <a href="{{ route('admin.blog.index') }}" class="admin-btn-secondary">
+                    <a href="{{ route('admin.blog.index') }}" class="admin-btn-secondary" data-admin-modal-close data-turbo-frame="admin_main">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                         </svg>

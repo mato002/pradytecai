@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(admin_layout())
 
 @section('title', 'Edit Profile - Admin')
 @section('page_title', 'Edit Profile')
@@ -218,7 +218,7 @@
 
             <!-- Action Buttons -->
             <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t-2 border-slate-200">
-                <a href="{{ route('admin.profile.show') }}" class="btn-ghost w-full sm:w-auto">
+                <a href="{{ route('admin.profile.show') }}" class="btn-ghost w-full sm:w-auto" data-admin-modal-close data-turbo-frame="admin_main">
                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>

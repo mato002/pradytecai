@@ -15,11 +15,7 @@
                     data visualisations, network meshes, dashboards, or abstract circuitry usually work best.
                 </p>
 
-                @if (session('success'))
-                    <div class="mt-4 rounded-xl border border-emerald-400/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-100">
-                        {{ session('success') }}
-                    </div>
-                @endif
+                
 
                 <form method="POST" action="{{ route('admin.settings.hero.update') }}" enctype="multipart/form-data" class="mt-6 space-y-5">
                     @csrf

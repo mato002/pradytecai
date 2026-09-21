@@ -221,17 +221,9 @@
         </a>
     </div>
 
-    @if(session('success'))
-        <div class="mb-6 p-4 bg-emerald-50 border border-emerald-200 rounded-lg text-emerald-800 text-sm">
-            {{ session('success') }}
-        </div>
-    @endif
+    
 
-    @if(session('error'))
-        <div class="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg text-red-800 text-sm">
-            {{ session('error') }}
-        </div>
-    @endif
+    
 
     <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
         @if($applications->isEmpty())
@@ -381,23 +373,32 @@
             updateBulkActionsBar();
         }
 
-        function executeBulkAction() {
+        async function executeBulkAction() {
             const action = document.getElementById('bulk-action').value;
             if (!action) {
-                alert('Please select an action');
+                Swal.fire({ icon: 'warning', title: 'Please select an action' });
                 return;
             }
 
             const checkboxes = document.querySelectorAll('.application-checkbox:checked');
             if (checkboxes.length === 0) {
-                alert('Please select at least one application');
+                Swal.fire({ icon: 'warning', title: 'Please select at least one application' });
                 return;
             }
 
             const ids = Array.from(checkboxes).map(cb => cb.value);
             
-            if (action === 'delete' && !confirm(`Are you sure you want to delete ${ids.length} application(s)? This action cannot be undone.`)) {
-                return;
+            if (action === 'delete') {
+                const ok = await Swal.fire({
+                    title: 'Are you sure?',
+                    text: `Are you sure you want to delete ${ids.length} application(s)? This action cannot be undone.`,
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#dc2626',
+                    cancelButtonColor: '#6b7280',
+                    confirmButtonText: 'Yes, delete',
+                });
+                if (!ok.isConfirmed) return;
             }
 
             if (action === 'export') {

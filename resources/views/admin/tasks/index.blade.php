@@ -5,7 +5,7 @@
 @include('admin.partials.product-switcher')
 @endsection
 @section('content')
-@if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('success') }}</div>@endif
+
 <div class="grid gap-6 lg:grid-cols-3">
 @can('tasks.manage')
 <div class="glass-card">
@@ -46,7 +46,7 @@
 </select>
 <button class="btn-ghost">Save</button>
 </form>
-<form method="POST" action="{{ route('admin.tasks.destroy', $task) }}">@csrf<button class="btn-ghost text-red-600" onclick="return confirm('Delete?')">Delete</button></form>
+<form method="POST" action="{{ route('admin.tasks.destroy', $task) }}">@csrf<button class="btn-ghost text-red-600">Delete</button></form>
 @endcan
 </div>
 @empty

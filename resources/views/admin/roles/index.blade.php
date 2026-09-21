@@ -2,8 +2,8 @@
 @section('title', 'Roles')
 @section('page_title', 'Roles & Permissions')
 @section('content')
-@if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('success') }}</div>@endif
-@if(session('error'))<div class="mb-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">{{ session('error') }}</div>@endif
+
+
 <div class="glass-card overflow-x-auto">
 <table class="min-w-full text-sm">
 <thead class="bg-slate-50 text-left"><tr><th class="px-4 py-3">Role</th><th class="px-4 py-3">Permissions</th><th class="px-4 py-3 text-right">Actions</th></tr></thead>

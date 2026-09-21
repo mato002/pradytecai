@@ -8,7 +8,7 @@
 <a href="{{ route('admin.content.create') }}" class="btn-primary">New content</a>
 @endsection
 @section('content')
-@if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('success') }}</div>@endif
+
 <div class="mb-4 glass-card">
 <form method="GET" class="flex flex-wrap gap-3">
 <input name="search" value="{{ request('search') }}" placeholder="Search" class="rounded-lg border border-slate-300 px-3 py-2 text-sm">

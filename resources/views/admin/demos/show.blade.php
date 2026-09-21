@@ -2,7 +2,7 @@
 @section('title', 'Demo Request')
 @section('page_title', 'Demo Request')
 @section('content')
-@if(session('success'))<div class="mb-4 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{{ session('success') }}</div>@endif
+
 <div class="grid gap-6 lg:grid-cols-2">
 <div class="glass-card space-y-2">
 <p><span class="text-slate-500">Contact:</span> {{ $demo->contactMessage?->name }} ({{ $demo->contactMessage?->email }})</p>

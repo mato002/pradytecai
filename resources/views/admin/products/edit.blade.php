@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends(admin_layout())
 
 @section('title', 'Admin - Edit Product')
 @section('page_title', 'Edit Product')
@@ -6,27 +6,9 @@
 
 @section('content')
     <div class="max-w-4xl">
-        @if(session('success'))
-            <div class="mb-4 rounded-lg border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800">
-                {{ session('success') }}
-            </div>
-        @endif
+        
 
-        @if(session('success'))
-            <div class="mb-6 rounded-2xl border-2 border-emerald-200 bg-gradient-to-r from-emerald-50 to-green-50 px-6 py-4 shadow-lg">
-                <div class="flex items-center gap-3">
-                    <div class="flex-shrink-0">
-                        <svg class="w-6 h-6 text-emerald-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <div>
-                        <p class="font-semibold text-emerald-900">Success!</p>
-                        <p class="text-sm text-emerald-700">{{ session('success') }}</p>
-                    </div>
-                </div>
-            </div>
-        @endif
+        
 
         @if($errors->any())
             <div class="mb-6 rounded-2xl border-2 border-red-200 bg-gradient-to-r from-red-50 to-pink-50 px-6 py-4">
@@ -146,7 +128,7 @@
             </div>
 
                 <div class="flex items-center justify-between pt-6 border-t border-slate-200">
-                    <a href="{{ route('admin.products.index') }}" class="btn-ghost">
+                    <a href="{{ route('admin.products.index') }}" class="btn-ghost" data-admin-modal-close data-turbo-frame="admin_main">
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                         </svg>
