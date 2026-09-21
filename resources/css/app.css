@@ -988,8 +988,8 @@
 
     /* Brand lockup */
     .prady-brand__mark-svg {
-        width: 2.85rem;
-        height: 2.85rem;
+        width: 2.75rem;
+        height: 2.75rem;
         display: block;
     }
 
@@ -998,21 +998,21 @@
         text-transform: uppercase;
         letter-spacing: 0.04em;
         line-height: 1;
-        font-size: 1.2rem;
+        font-size: 1.32rem;
     }
 
     @media (min-width: 1024px) {
         .prady-brand__name {
-            font-size: 1.35rem;
+            font-size: 1.48rem;
         }
 
         .prady-brand__mark-svg {
-            width: 3.15rem;
-            height: 3.15rem;
+            width: 3rem;
+            height: 3rem;
         }
 
         .mkt-header__logo {
-            max-width: 340px;
+            max-width: 360px;
         }
     }
 
@@ -1030,13 +1030,13 @@
         text-transform: uppercase;
         letter-spacing: 0.12em;
         line-height: 1.2;
-        font-size: 0.6rem;
+        font-size: 0.68rem;
         margin-top: 0.28rem;
     }
 
     @media (min-width: 1024px) {
         .prady-brand__sub {
-            font-size: 0.68rem;
+            font-size: 0.78rem;
         }
     }
 
@@ -1071,13 +1071,13 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 1.25rem;
-        min-height: 5.75rem;
+        gap: 1rem;
+        min-height: 4.5rem;
     }
 
     @media (min-width: 1024px) {
         .mkt-header__bar {
-            min-height: 6.25rem;
+            min-height: 4.85rem;
         }
     }
 
@@ -1230,9 +1230,10 @@
 
     .mkt-header__cta {
         display: none;
-        min-height: 52px;
-        padding: 0.85rem 1.85rem;
-        border-radius: 9px;
+        min-height: 40px;
+        padding: 0.5rem 1.15rem;
+        border-radius: 8px;
+        font-size: 0.9rem;
     }
 
     @media (min-width: 640px) {

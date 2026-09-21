@@ -1,59 +1,385 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# PradytecAI
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Corporate website and **Marketing Command Centre** for [PradytecAI](https://pradytecai.com) — portfolio products, careers/HR, blog, lead inbox, campaigns, content calendar, social publishing shell, analytics stubs, and marketing pulse alerts.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## About the project
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Public site
+- Home, about, services, products, blog, FAQ, policies, search
+- Contact form with product + UTM attribution
+- Newsletter subscribe
+- Careers listings and job applications
+- Tracked short links (`/t/{code}`)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### Admin (`/admin`)
+Permission-gated admin for:
+- **Products** — DB-backed portfolio catalog
+- **Leads / enquiries / demos** — contact inbox and demo requests
+- **Campaigns** — product-linked campaigns with UTM context
+- **Content** — library, calendar, approvals, schedule/publish
+- **Social accounts** — Buffer-first adapter (stub-capable)
+- **Integrations** — Buffer / GA4 shell
+- **Analytics** — metric snapshots overview
+- **Careers** — positions, applications, interviews
+- **Blog, users, roles, settings, activity logs**
+- **Marketing Pulse** — health alerts on the dashboard
 
-## Learning Laravel
+### Auth & access
+- Spatie Laravel Permission (roles + permissions)
+- Product-scoped access via `user_access_scopes`
+- Seeded roles include `super_admin`, `hr_manager`, and marketing roles defined in `config/marketing_permissions.php`
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework. You can also check out [Laravel Learn](https://laravel.com/learn), where you will be guided through building a modern Laravel application.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## Tech stack
 
-## Laravel Sponsors
+| Layer | Technology |
+|--------|------------|
+| Backend | PHP 8.2+, Laravel 12 |
+| Auth / ACL | Spatie Permission |
+| Frontend | Blade, Vite 7, Tailwind CSS 4 |
+| Icons | Blade Heroicons |
+| Database | MySQL / MariaDB (production), SQLite OK for local |
+| Queues | Database queue driver |
+| Scheduler | Laravel Schedule (`marketing:pulse` hourly, metric sync jobs daily) |
+| Integrations | BulkSMS CRM, UltraMsg WhatsApp, Buffer, GA4 (env-driven; some stubs) |
+| Tests | PHPUnit 11 |
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+---
 
-### Premium Partners
+## Requirements
 
-- **[Vehikl](https://vehikl.com)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development)**
-- **[Active Logic](https://activelogic.com)**
+- PHP 8.2+ with extensions: `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`, `json`, `mbstring`, `openssl`, `pdo`, `tokenizer`, `xml`
+- Composer 2
+- Node.js 18+ and npm
+- MySQL/MariaDB (or SQLite for local)
+- Optional: [Laravel Herd](https://herd.laravel.com/) (Windows/macOS) — this project commonly runs at `http://pradytecai.test`
 
-## Contributing
+---
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## Local setup
 
-## Code of Conduct
+### 1. Clone and install
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```bash
+git clone <your-repo-url> pradytecai
+cd pradytecai
 
-## Security Vulnerabilities
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Or one-shot Composer setup (installs deps, `.env`, key, migrate, npm build):
+
+```bash
+composer run setup
+```
+
+### 2. Configure `.env`
+
+Minimum local values:
+
+```env
+APP_NAME=PradytecAI
+APP_ENV=local
+APP_DEBUG=true
+APP_URL=http://pradytecai.test
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=pradytecai
+DB_USERNAME=root
+DB_PASSWORD=
+
+QUEUE_CONNECTION=database
+CACHE_STORE=database
+SESSION_DRIVER=database
+MAIL_MAILER=log
+```
+
+For SQLite instead:
+
+```env
+DB_CONNECTION=sqlite
+# create empty file: database/database.sqlite
+```
+
+Optional integrations (see `.env.example`):
+
+```env
+BULKSMS_CRM_ENABLED=true
+BULKSMS_API_URL=https://crm.pradytecai.com/api
+BULKSMS_API_KEY=
+ULTRAMSG_INSTANCE_ID=
+ULTRAMSG_TOKEN=
+BUFFER_ENABLED=true
+BUFFER_ACCESS_TOKEN=
+GA4_PROPERTY_ID=
+GA4_CREDENTIALS_JSON=
+```
+
+### 3. Database, storage, seed
+
+```bash
+php artisan migrate
+php artisan db:seed
+php artisan storage:link
+```
+
+Seeded users (change passwords in production):
+
+| Role | Email | Password |
+|------|--------|----------|
+| Super admin | `admin@pradytecai.com` | `admin123` |
+| HR manager | `hr@pradytecai.com` | `hr123` |
+
+Also seeds permissions/roles, portfolio products, and blog posts.
+
+### 4. Frontend assets
+
+**Dev (Vite HMR):**
+
+```bash
+npm install
+npm run dev
+```
+
+**Or run everything together:**
+
+```bash
+composer run dev
+```
+
+That starts HTTP server, queue worker, log tail (`pail`), and Vite.
+
+**Herd:** point the site at this folder; open `http://pradytecai.test` (and keep `npm run dev` or a production build for assets).
+
+**Without Herd:**
+
+```bash
+php artisan serve
+```
+
+### 5. Queue + scheduler (local)
+
+```bash
+php artisan queue:work
+php artisan schedule:work
+```
+
+Scheduled jobs (from `routes/console.php`):
+
+- `marketing:pulse` — hourly
+- `SyncSocialMetricsJob` — daily 02:00
+- `SyncGa4Job` — daily 02:30
+
+Manual pulse:
+
+```bash
+php artisan marketing:pulse
+```
+
+### 6. Tests
+
+```bash
+php artisan test
+php artisan test --filter=MarketingAdminAuthTest
+```
+
+---
+
+## Production setup
+
+### Server layout (typical shared / cPanel style)
+
+This repo’s `deploy.sh` assumes:
+
+- App code: e.g. `/home/pradytec/pradytecai`
+- Web document root: e.g. `/home/pradytec/pradytecai/public_html` (or your host’s `public_html` symlink/copy of `public`)
+
+Point the vhost / domain document root at Laravel’s **`public`** directory (or keep syncing built assets into `public_html` as the script does).
+
+### 1. First-time server install
+
+```bash
+cd /home/pradytec/pradytecai   # or your path
+git clone <your-repo-url> .
+composer install --no-dev --optimize-autoloader
+cp .env.example .env
+# edit .env for production
+php artisan key:generate
+php artisan migrate --force
+php artisan storage:link
+```
+
+Production `.env` essentials:
+
+```env
+APP_NAME=PradytecAI
+APP_ENV=production
+APP_DEBUG=false
+APP_URL=https://pradytecai.com
+
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_DATABASE=...
+DB_USERNAME=...
+DB_PASSWORD=...
+
+QUEUE_CONNECTION=database
+CACHE_STORE=database
+SESSION_DRIVER=database
+
+MAIL_MAILER=smtp
+# ... real mail credentials
+```
+
+Permissions:
+
+```bash
+chmod -R 775 storage bootstrap/cache
+chown -R <web-user>:<web-user> storage bootstrap/cache
+```
+
+### 2. Build assets
+
+On the server (if Node is available) `deploy.sh` runs `npm ci` + `npm run build`.
+
+Or build locally / on CI and upload `public/build/` (must include `manifest.json`):
+
+```bash
+npm ci
+npm run build
+```
+
+Windows helper: `build-production.bat`.
+
+### 3. Cron (required)
+
+Laravel scheduler (every minute):
+
+```cron
+* * * * * cd /home/pradytec/pradytecai && php artisan schedule:run >> /dev/null 2>&1
+```
+
+Queue worker (Supervisor or equivalent):
+
+```bash
+php artisan queue:work --sleep=3 --tries=3 --max-time=3600
+```
+
+### 4. Cache for production
+
+```bash
+php artisan optimize:clear
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+```
+
+---
+
+## Deploy with `deploy.sh`
+
+`deploy.sh` is a **manual production deploy** script. It does **not** run on git push by itself — you trigger it on the server (SSH, cron, or a webhook).
+
+### What it does (7 steps)
+
+1. `git pull origin main` (or `DEPLOY_BRANCH`)
+2. `composer install --no-dev --optimize-autoloader`
+3. `php artisan migrate --force`
+4. `npm ci` / `npm install` + `npm run build` (requires Node on the server)
+5. Sync `public/build/` → `PUBLIC_HTML/build` (rsync or copy)
+6. `php artisan optimize:clear`
+7. Rebuild config / route / view caches
+
+### Run it
+
+```bash
+cd /home/pradytec/pradytecai
+chmod +x deploy.sh
+./deploy.sh
+```
+
+Optional overrides:
+
+```bash
+PUBLIC_HTML=/path/to/public_html DEPLOY_BRANCH=main ./deploy.sh
+```
+
+Defaults:
+
+- `PUBLIC_HTML=/home/pradytec/pradytecai/public_html`
+- `DEPLOY_BRANCH=main`
+
+### “Auto” deploy options
+
+**A. SSH after push (simplest)**
+
+```bash
+ssh user@server 'cd /home/pradytec/pradytecai && ./deploy.sh'
+```
+
+**B. Cron (scheduled pull — use carefully)**
+
+```cron
+# example: every night at 3:00
+0 3 * * * cd /home/pradytec/pradytecai && ./deploy.sh >> /home/pradytec/logs/deploy.log 2>&1
+```
+
+**C. Git webhook / CI**
+
+On push to `main`, CI SSHes into the server and runs `./deploy.sh`. There is no GitHub Actions workflow in this repo yet — add one if you want push-triggered deploys.
+
+**D. Local Windows build, then server deploy**
+
+If the server has no Node:
+
+1. Run `npm run build` (or `build-production.bat`) locally
+2. Commit/upload `public/build/` **or** rsync it to the server
+3. On server, temporarily skip the npm step or ensure `public/build/manifest.json` already exists before running a slimmed deploy
+
+---
+
+## Useful Artisan commands
+
+| Command | Purpose |
+|---------|---------|
+| `php artisan marketing:pulse` | Evaluate marketing health rules; upsert alerts |
+| `php artisan migrate` | Run migrations |
+| `php artisan db:seed` | Seed roles, admin/HR users, products, blog |
+| `php artisan queue:work` | Process publish / mail / sync jobs |
+| `php artisan schedule:work` | Run scheduler in the foreground (local) |
+| `php artisan optimize:clear` | Clear all caches |
+| `php artisan test --filter=MarketingAdminAuthTest` | Auth / permission regression tests |
+
+---
+
+## Project docs (extra)
+
+| File | Topic |
+|------|--------|
+| `DEPLOYMENT_CHECKLIST.md` | Production checklist & common fixes |
+| `PRODUCTION_BUILD_INSTRUCTIONS.md` | Why styling breaks without `public/build` |
+| `PRODUCTION_UPLOAD_GUIDE.md` / `PRODUCTION_UPLOAD_FIX.md` | Upload / asset sync notes |
+| `AUTHENTICATION_SETUP.md` | Login / admin auth notes |
+| `COMMUNICATION_SETUP.md` | BulkSMS / UltraMsg setup |
+
+---
+
+## Security notes
+
+- Never commit `.env`, API keys, or production passwords
+- Change seeded `admin123` / `hr123` immediately on any shared or production environment
+- Keep `APP_DEBUG=false` in production
+- Restrict `/admin` via strong passwords + least-privilege roles
+
+---
 
 ## License
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Proprietary — PradytecAI. Internal use unless otherwise agreed.
