@@ -4,13 +4,13 @@
 @section('description', 'Search results for your query')
 
 @section('content')
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80');"></div>
-        <div class="section-bg-overlay section-bg-overlay-light"></div>
-        
-        <div class="section-content w-full mx-auto max-w-6xl">
+<x-marketing.page-hero
+    title="Search Results"
+    subtitle="Find articles, products, and open roles"
+/>
+<section class="mkt-section mkt-section--light">
+        <div class="mkt-container">
             <div class="mb-8">
-                <h1 class="text-4xl font-bold text-gray-900 mb-4">Search Results</h1>
                 <form action="{{ route('search') }}" method="GET" class="max-w-2xl">
                     <div class="relative">
                         <input 
@@ -18,9 +18,10 @@
                             name="q" 
                             placeholder="Search for articles, jobs, and more..." 
                             value="{{ $query }}"
-                            class="w-full px-6 py-4 border-2 border-gray-300 rounded-lg text-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent"
+                            class="mkt-input !py-4 !text-lg"
+                            aria-label="Search"
                         >
-                        <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-indigo-600">
+                        <button type="submit" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[var(--prady-blue)]">
                             <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                             </svg>
@@ -42,7 +43,7 @@
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
                         </svg>
                         <h2 class="text-2xl font-bold text-gray-900 mb-2">No results found</h2>
-                        <p class="text-gray-600">Try different keywords or browse our <a href="/blog" class="text-indigo-600 hover:underline">blog</a> and <a href="/careers" class="text-indigo-600 hover:underline">careers</a> pages.</p>
+                        <p class="text-gray-600">Try different keywords or browse our <a href="/blog" class="text-[var(--prady-blue)] hover:underline">blog</a> and <a href="/careers" class="text-[var(--prady-blue)] hover:underline">careers</a> pages.</p>
                     </div>
                 @else
                     @if($hasBlog)
@@ -59,7 +60,7 @@
                                             @endif
                                         </div>
                                         <h3 class="text-xl font-bold text-gray-900 mb-3">
-                                            <a href="{{ route('blog.show', $post) }}" class="hover:text-indigo-600 transition">
+                                            <a href="{{ route('blog.show', $post) }}" class="hover:text-[var(--prady-blue)] transition">
                                                 {{ $post->title }}
                                             </a>
                                         </h3>
@@ -68,7 +69,7 @@
                                                 {{ Str::limit($post->excerpt, 150) }}
                                             </p>
                                         @endif
-                                        <a href="{{ route('blog.show', $post) }}" class="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                                        <a href="{{ route('blog.show', $post) }}" class="text-[var(--prady-blue)] hover:text-[var(--prady-navy)] font-semibold text-sm">
                                             Read more →
                                         </a>
                                     </article>
@@ -86,12 +87,12 @@
                                         <div class="flex items-center justify-between mb-3">
                                             <div>
                                                 <h3 class="text-lg font-semibold text-gray-900">
-                                                    <a href="/products#{{ Str::slug($product->name) }}" class="hover:text-indigo-600 transition">
+                                                    <a href="/products#{{ Str::slug($product->name) }}" class="hover:text-[var(--prady-blue)] transition">
                                                         {{ $product->name }}
                                                     </a>
                                                 </h3>
                                                 @if($product->type)
-                                                    <p class="text-xs font-medium text-indigo-600 mt-1">{{ $product->type }}</p>
+                                                    <p class="text-xs font-medium text-[var(--prady-blue)] mt-1">{{ $product->type }}</p>
                                                 @endif
                                             </div>
                                             @if($product->is_active)
@@ -108,7 +109,7 @@
                                         @endif
                                         @if($product->url)
                                             <div class="mt-auto pt-1">
-                                                <a href="{{ $product->url }}" target="_blank" class="inline-flex items-center gap-1 text-sm font-semibold text-indigo-600 hover:text-indigo-700">
+                                                <a href="{{ $product->url }}" target="_blank" class="inline-flex items-center gap-1 text-sm font-semibold text-[var(--prady-blue)] hover:text-[var(--prady-navy)]">
                                                     {{ $product->button_text ?? 'Open product' }}
                                                     <span aria-hidden="true">→</span>
                                                 </a>
@@ -127,7 +128,7 @@
                                 @foreach($results['positions'] as $position)
                                     <div class="bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                                         <h3 class="text-xl font-bold text-gray-900 mb-2">
-                                            <a href="{{ route('careers.apply', $position) }}" class="hover:text-indigo-600 transition">
+                                            <a href="{{ route('careers.apply', $position) }}" class="hover:text-[var(--prady-blue)] transition">
                                                 {{ $position->title }}
                                             </a>
                                         </h3>
@@ -136,7 +137,7 @@
                                                 {{ Str::limit(strip_tags($position->description), 200) }}
                                             </p>
                                         @endif
-                                        <a href="{{ route('careers.apply', $position) }}" class="inline-block bg-indigo-600 text-white px-6 py-2 rounded-lg font-semibold hover:bg-indigo-700 transition text-sm">
+                                        <a href="{{ route('careers.apply', $position) }}" class="inline-block bg-[var(--prady-blue)] text-white px-6 py-2 rounded-lg font-semibold hover:bg-[var(--prady-navy)] transition text-sm">
                                             Apply Now
                                         </a>
                                     </div>

@@ -4,36 +4,18 @@
 @section('description', 'Find answers to common questions about Prady Technologies products, services, pricing, and support.')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/85 via-purple-900/80 to-pink-900/85"></div>
-        {{-- Subtle pattern overlay --}}
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-
-        <div class="relative z-10 w-full mx-auto max-w-6xl hero-animate">
-            <x-breadcrumbs :items="[
-                ['label' => 'Home', 'url' => '/'],
-                ['label' => 'FAQ']
-            ]" light="true" />
-            <div class="text-center">
-                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Frequently Asked Questions</h1>
-                <p class="text-xl text-slate-200">
-                    Find answers to common questions about our products and services
-                </p>
-            </div>
-        </div>
-    </section>
+<x-marketing.page-hero
+    title="Frequently Asked Questions"
+    subtitle="Find answers to common questions about our products and services"
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'FAQ'],
+    ]"
+/>
 
     <!-- FAQ Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-light"></div>
-        <div class="section-content w-full mx-auto max-w-4xl">
+    <section class="mkt-section mkt-section--light">
+        <div class="mkt-container max-w-4xl">
             <div class="space-y-6">
                 <!-- General Questions -->
                 <div>
@@ -42,7 +24,7 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">What is Prady Technologies?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -54,7 +36,7 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">What products does Prady Technologies offer?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -71,16 +53,16 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">How can I get started?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             <div class="faq-answer hidden mt-4 text-gray-600 leading-relaxed">
                                 <p>Getting started is easy! You can:</p>
                                 <ul class="list-disc list-inside mt-2 space-y-1">
-                                    <li>Visit our <a href="/products" class="text-indigo-600 hover:underline">Products page</a> to explore our solutions</li>
-                                    <li>Try our <a href="https://demo.pradytec.com" target="_blank" class="text-indigo-600 hover:underline">live demo</a> for Prady Mfi</li>
-                                    <li><a href="/contact" class="text-indigo-600 hover:underline">Contact us</a> to discuss your specific needs</li>
+                                    <li>Visit our <a href="/products" class="text-[var(--prady-blue)] hover:underline">Products page</a> to explore our solutions</li>
+                                    <li>Try our <a href="https://demo.pradytec.com" target="_blank" class="text-[var(--prady-blue)] hover:underline">live demo</a> for Prady Mfi</li>
+                                    <li><a href="/contact" class="text-[var(--prady-blue)] hover:underline">Contact us</a> to discuss your specific needs</li>
                                 </ul>
                             </div>
                         </div>
@@ -94,7 +76,7 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">What is BulkSMS CRM?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -106,7 +88,7 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">What is Prady Mfi?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -118,12 +100,12 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">Do you offer custom development?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             <div class="faq-answer hidden mt-4 text-gray-600 leading-relaxed">
-                                <p>Yes! We offer custom enterprise software solutions tailored to your specific business needs. Our team can build bespoke applications, integrate with existing systems, and provide cloud infrastructure solutions. <a href="/contact" class="text-indigo-600 hover:underline">Contact us</a> to discuss your requirements.</p>
+                                <p>Yes! We offer custom enterprise software solutions tailored to your specific business needs. Our team can build bespoke applications, integrate with existing systems, and provide cloud infrastructure solutions. <a href="/contact" class="text-[var(--prady-blue)] hover:underline">Contact us</a> to discuss your requirements.</p>
                             </div>
                         </div>
                     </div>
@@ -136,19 +118,19 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">What are your pricing plans?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             <div class="faq-answer hidden mt-4 text-gray-600 leading-relaxed">
-                                <p>Our pricing varies based on your specific needs and usage. We offer flexible pricing plans for all our products. Please <a href="/contact" class="text-indigo-600 hover:underline">contact our sales team</a> to discuss pricing options that best fit your business requirements.</p>
+                                <p>Our pricing varies based on your specific needs and usage. We offer flexible pricing plans for all our products. Please <a href="/contact" class="text-[var(--prady-blue)] hover:underline">contact our sales team</a> to discuss pricing options that best fit your business requirements.</p>
                             </div>
                         </div>
 
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">What kind of support do you provide?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -167,7 +149,7 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">How secure are your platforms?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -192,7 +174,7 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">Do you provide API access?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -204,19 +186,19 @@
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">Can I integrate with my existing systems?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             <div class="faq-answer hidden mt-4 text-gray-600 leading-relaxed">
-                                <p>Absolutely! We offer comprehensive integration services to connect our platforms with your existing systems. Our team can help with API integration, third-party connectors, and data synchronization. <a href="/contact" class="text-indigo-600 hover:underline">Contact us</a> to discuss your integration needs.</p>
+                                <p>Absolutely! We offer comprehensive integration services to connect our platforms with your existing systems. Our team can help with API integration, third-party connectors, and data synchronization. <a href="/contact" class="text-[var(--prady-blue)] hover:underline">Contact us</a> to discuss your integration needs.</p>
                             </div>
                         </div>
 
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
                                 <span class="text-lg font-semibold text-gray-900">What is your uptime guarantee?</span>
-                                <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <svg class="faq-icon w-5 h-5 text-[var(--prady-blue)] transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
@@ -229,12 +211,10 @@
             </div>
 
             <!-- Still have questions? -->
-            <div class="mt-16 text-center bg-gradient-to-br from-indigo-50 to-sky-100 rounded-xl p-8">
+            <div class="mt-16 text-center bg-gradient-to-br from-[var(--prady-ice)] to-[var(--prady-light)] rounded-xl p-8">
                 <h3 class="text-2xl font-bold text-gray-900 mb-4">Still have questions?</h3>
                 <p class="text-gray-600 mb-6">Can't find the answer you're looking for? Our team is here to help.</p>
-                <a href="/contact" class="inline-block bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition">
-                    Contact Us
-                </a>
+                <a href="/contact" class="mkt-btn mkt-btn--primary">Contact Us</a>
             </div>
         </div>
     </section>

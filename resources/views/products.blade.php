@@ -6,44 +6,36 @@
 @section('content')
 @php $products = config('portfolio.products'); @endphp
 
-<section class="prady-page-hero py-16 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl">
-        <x-breadcrumbs :items="[
-            ['label' => 'Home', 'url' => '/'],
-            ['label' => 'Products']
-        ]" light="true" />
-        <div class="text-center max-w-3xl mx-auto mt-4">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-4">Product Portfolio</h1>
-            <p class="text-lg text-white/80">
-                The immediate Prady Technologies product portfolio — platforms built for finance, mobility, property, commerce, and tourism.
-            </p>
-        </div>
-    </div>
-</section>
+<x-marketing.page-hero
+    title="Product Portfolio"
+    subtitle="Platforms built for finance, mobility, property, commerce and tourism."
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'Products'],
+    ]"
+/>
 
-<section class="bg-[#F4F7FB] py-16 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl space-y-8">
+<section class="mkt-section mkt-section--light">
+    <div class="mkt-container space-y-6">
         @foreach($products as $index => $product)
-            <article id="{{ $product['slug'] }}" class="prady-card scroll-mt-28 {{ $index % 2 === 1 ? 'lg:bg-gradient-to-br lg:from-white lg:to-[#E8F6FC]' : '' }}">
-                <div class="grid lg:grid-cols-12 gap-8 items-start">
-                    <div class="lg:col-span-1">
-                        <div class="prady-card__icon mb-0">
-                            <x-prady-icon :name="$product['icon']" class="w-7 h-7" />
-                        </div>
-                    </div>
-                    <div class="lg:col-span-7">
-                        <p class="text-xs font-bold uppercase tracking-[0.16em] text-[#00AEEF] mb-2">
-                            {{ $index + 1 < 10 ? '0'.($index + 1) : $index + 1 }} · Product
+            <article id="{{ $product['slug'] }}" class="mkt-product-card scroll-mt-28 !flex-row !items-stretch !p-0 overflow-hidden">
+                <div class="grid lg:grid-cols-12 gap-0 w-full">
+                    <div class="lg:col-span-8 p-7 sm:p-8">
+                        <p class="text-xs font-bold uppercase tracking-[0.16em] text-[var(--prady-sky)] mb-2">
+                            {{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }} · Product
                         </p>
-                        <h2 class="text-2xl sm:text-3xl font-extrabold text-[#0B2347] mb-3">{{ $product['name'] }}</h2>
-                        <p class="text-[#1B3A5F]/80 leading-relaxed mb-4">{{ $product['description'] }}</p>
-                        <a href="/contact?product={{ urlencode($product['name']) }}" class="prady-btn-primary">Request Demo →</a>
-                    </div>
-                    <div class="lg:col-span-4">
-                        <div class="rounded-2xl bg-[#0B2347] text-white p-6 h-full">
-                            <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7DDFFF] mb-2">Main users / market</p>
-                            <p class="text-sm leading-relaxed text-white/90">{{ $product['market'] }}</p>
+                        <div class="flex items-start gap-4 mb-3">
+                            <span class="mkt-product-card__icon !mb-0 shrink-0" aria-hidden="true">
+                                <x-prady-icon :name="$product['icon']" class="w-7 h-7" />
+                            </span>
+                            <h2 class="mkt-product-card__title !mb-0 text-2xl sm:text-[1.7rem]">{{ $product['name'] }}</h2>
                         </div>
+                        <p class="mkt-product-card__text mb-5">{{ $product['description'] }}</p>
+                        <a href="/contact?product={{ urlencode($product['name']) }}" class="mkt-btn mkt-btn--primary mkt-btn--sm">Request Demo →</a>
+                    </div>
+                    <div class="lg:col-span-4 p-7 sm:p-8 text-white" style="background:#053171;">
+                        <p class="text-[11px] font-semibold uppercase tracking-[0.16em] text-[#7DDFFF] mb-2">Main users / market</p>
+                        <p class="text-sm leading-relaxed text-white/90">{{ $product['market'] }}</p>
                     </div>
                 </div>
             </article>
@@ -51,23 +43,24 @@
     </div>
 </section>
 
-{{-- Optional CMS products if present --}}
 @isset($dbProducts)
     @if($dbProducts->isNotEmpty())
-        <section class="bg-white py-16 px-4 sm:px-6 lg:px-8 border-t border-slate-100">
-            <div class="mx-auto max-w-7xl">
-                <h2 class="text-3xl font-extrabold text-[#0B2347] mb-8 text-center">Additional Listings</h2>
-                <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <section class="mkt-section mkt-section--white">
+            <div class="mkt-container">
+                <div class="mkt-section__header">
+                    <h2 class="mkt-section__title">Additional Listings</h2>
+                </div>
+                <div class="mkt-products-grid">
                     @foreach($dbProducts as $product)
-                        <div class="prady-card">
-                            <h3 class="text-xl font-bold text-[#0B2347] mb-2">{{ $product->name }}</h3>
+                        <article class="mkt-product-card">
+                            <h3 class="mkt-product-card__title">{{ $product->name }}</h3>
                             @if($product->description)
-                                <p class="text-sm text-[#1B3A5F]/75 mb-4">{{ Str::limit($product->description, 140) }}</p>
+                                <p class="mkt-product-card__text">{{ Str::limit($product->description, 140) }}</p>
                             @endif
                             @if($product->url)
-                                <a href="{{ $product->url }}" target="_blank" class="text-[#00AEEF] font-semibold text-sm">Learn more →</a>
+                                <a href="{{ $product->url }}" target="_blank" rel="noopener" class="mkt-product-card__link">Learn more <span aria-hidden="true">→</span></a>
                             @endif
-                        </div>
+                        </article>
                     @endforeach
                 </div>
             </div>
@@ -75,11 +68,8 @@
     @endif
 @endisset
 
-<section class="py-16 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(135deg, #0B2347, #1A4B8C);">
-    <div class="mx-auto max-w-3xl text-center">
-        <h2 class="text-3xl font-extrabold text-white mb-4">Interested in a platform?</h2>
-        <p class="text-white/80 mb-8">Schedule a demo and we’ll walk you through the right Prady product for your market.</p>
-        <a href="/contact" class="prady-btn-light">Get Demo →</a>
-    </div>
-</section>
+<x-marketing.cta
+    title="Interested in a platform?"
+    text="Schedule a demo and we’ll walk you through the right Prady product for your market."
+/>
 @endsection

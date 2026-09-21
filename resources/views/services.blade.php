@@ -17,68 +17,60 @@
     ];
 @endphp
 
-<section class="prady-page-hero py-16 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl">
-        <x-breadcrumbs :items="[
-            ['label' => 'Home', 'url' => '/'],
-            ['label' => 'Industries']
-        ]" light="true" />
-        <div class="text-center max-w-3xl mx-auto mt-4">
-            <h1 class="text-4xl sm:text-5xl font-extrabold text-white mb-4">Industries We Serve</h1>
-            <p class="text-lg text-white/80">
-                Purpose-built platforms for the markets where Prady Technologies is building deep domain software.
-            </p>
-        </div>
-    </div>
-</section>
+<x-marketing.page-hero
+    title="Industries We Serve"
+    subtitle="Purpose-built platforms for the markets where Prady Technologies is building deep domain software."
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'Industries'],
+    ]"
+/>
 
-<section class="bg-[#F4F7FB] py-16 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl">
-        <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+<section class="mkt-section mkt-section--light">
+    <div class="mkt-container">
+        <div class="mkt-products-grid">
             @foreach($industries as $item)
-                <div class="prady-card">
-                    <div class="prady-card__icon">
+                <article class="mkt-product-card">
+                    <span class="mkt-product-card__icon" aria-hidden="true">
                         <x-prady-icon :name="$item['icon']" class="w-7 h-7" />
-                    </div>
-                    <h3 class="text-xl font-bold text-[#0B2347] mb-2">{{ $item['title'] }}</h3>
-                    <p class="text-sm text-[#1B3A5F]/75 leading-relaxed mb-4">{{ $item['desc'] }}</p>
-                    <p class="text-xs font-semibold uppercase tracking-wide text-[#00AEEF]">{{ $item['markets'] }}</p>
-                </div>
+                    </span>
+                    <h3 class="mkt-product-card__title">{{ $item['title'] }}</h3>
+                    <p class="mkt-product-card__text">{{ $item['desc'] }}</p>
+                    <p class="mkt-product-card__market">{{ $item['markets'] }}</p>
+                </article>
             @endforeach
         </div>
     </div>
 </section>
 
-<section class="bg-white py-16 px-4 sm:px-6 lg:px-8">
-    <div class="mx-auto max-w-7xl">
-        <div class="text-center mb-12">
-            <h2 class="text-3xl font-extrabold text-[#0B2347] mb-3">How we deliver</h2>
-            <p class="text-[#1B3A5F]/75 max-w-2xl mx-auto">End-to-end services around every Prady platform.</p>
+<section class="mkt-section mkt-section--white">
+    <div class="mkt-container">
+        <div class="mkt-section__header">
+            <h2 class="mkt-section__title">How we deliver</h2>
+            <p class="mkt-section__subtitle">End-to-end services around every Prady platform.</p>
         </div>
-        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div class="mkt-solutions-grid">
             @foreach([
                 ['Custom Development', 'code', 'Bespoke modules and workflows for your institution.'],
                 ['Cloud Infrastructure', 'shield', 'Secure hosting, monitoring, and uptime operations.'],
                 ['Integrations', 'handshake', 'M-Pesa, payments, GPS devices, and third-party APIs.'],
                 ['Training & Support', 'hr', 'Onboarding, documentation, and ongoing support.'],
             ] as $svc)
-                <div class="prady-card text-center">
-                    <div class="prady-card__icon mx-auto">
-                        <x-prady-icon :name="$svc[1]" class="w-7 h-7" />
-                    </div>
-                    <h3 class="font-bold text-[#0B2347] mb-2">{{ $svc[0] }}</h3>
-                    <p class="text-sm text-[#1B3A5F]/70">{{ $svc[2] }}</p>
+                <div class="mkt-solution-card" style="cursor:default;pointer-events:none;">
+                    <span class="mkt-solution-card__icon" aria-hidden="true"><x-prady-icon :name="$svc[1]" class="w-8 h-8" /></span>
+                    <h3 class="mkt-solution-card__title">{{ $svc[0] }}</h3>
+                    <p class="mkt-solution-card__text">{{ $svc[2] }}</p>
                 </div>
             @endforeach
         </div>
     </div>
 </section>
 
-<section class="py-16 px-4 sm:px-6 lg:px-8" style="background: linear-gradient(135deg, #0B2347, #1A4B8C);">
-    <div class="mx-auto max-w-3xl text-center">
-        <h2 class="text-3xl font-extrabold text-white mb-4">Ready to get started?</h2>
-        <p class="text-white/80 mb-8">Let’s discuss how a Prady platform can fit your industry.</p>
-        <a href="/contact" class="prady-btn-light">Contact Us →</a>
-    </div>
-</section>
+<x-marketing.cta
+    title="Ready to get started?"
+    text="Let’s discuss how a Prady platform can fit your industry."
+    primary-label="Contact Us"
+    secondary-label="View Products"
+    secondary-href="/products"
+/>
 @endsection

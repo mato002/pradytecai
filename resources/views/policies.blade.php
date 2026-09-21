@@ -4,34 +4,21 @@
 @section('description', 'Read our terms of service, privacy policy, and cookie policy.')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="absolute inset-0 bg-gradient-to-br from-slate-900/85 via-indigo-900/80 to-sky-900/85"></div>
-        {{-- Subtle pattern overlay --}}
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-
-        <div class="relative z-10 w-full mx-auto text-center hero-animate">
-            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Legal Policies</h1>
-            <p class="text-xl text-slate-200">
-                Terms of Service, Privacy Policy, and Cookie Policy
-            </p>
-        </div>
-    </section>
-
-    <!-- Policies Content -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-light"></div>
-        <div class="section-content w-full mx-auto">
+<x-marketing.page-hero
+    title="Legal Policies"
+    subtitle="Terms of Service, Privacy Policy, and Cookie Policy"
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'Policies'],
+    ]"
+/>
+<!-- Policies Content -->
+    <section class="mkt-section mkt-section--light">
+        <div class="mkt-container">
             <!-- Navigation Tabs -->
             <div class="border-b border-slate-200 mb-8">
                 <nav class="flex space-x-8" aria-label="Tabs">
-                    <button onclick="showSection('terms')" class="policy-tab active border-b-2 border-indigo-600 py-4 px-1 text-sm font-medium text-indigo-600">
+                    <button onclick="showSection('terms')" class="policy-tab active border-b-2 border-[var(--prady-blue)] py-4 px-1 text-sm font-medium text-[var(--prady-blue)]">
                         Terms of Service
                     </button>
                     <button onclick="showSection('privacy')" class="policy-tab border-b-2 border-transparent py-4 px-1 text-sm font-medium text-gray-500 hover:text-gray-700 hover:border-slate-300">
@@ -177,7 +164,7 @@
                         <h3 class="text-xl font-semibold text-gray-900 mb-3">6. Contact Us</h3>
                         <p>
                             If you have questions about this Privacy Policy, please contact us at 
-                            <a href="mailto:mathiasodhis@gmail.com" class="text-indigo-600 hover:underline">mathiasodhis@gmail.com</a>
+                            <a href="mailto:mathiasodhis@gmail.com" class="text-[var(--prady-blue)] hover:underline">mathiasodhis@gmail.com</a>
                         </p>
                     </div>
 

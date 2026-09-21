@@ -6,7 +6,6 @@
 @section('content')
     <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[80vh] flex items-center">
         {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=1920&q=80');"></div>
         {{-- Overlay for readability --}}
         <div class="section-bg-overlay section-bg-overlay-light"></div>
         
@@ -20,7 +19,7 @@
             </div>
             
             <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-                <a href="/" class="bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition">
+                <a href="/" class="bg-[var(--prady-blue)] text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-[var(--prady-navy)] transition">
                     Go to Homepage
                 </a>
                 <a href="/contact" class="bg-white text-indigo-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition border-2 border-indigo-600">
@@ -30,7 +29,7 @@
             
             <div class="bg-white border-2 border-gray-200 rounded-xl p-6">
                 <p class="text-sm text-gray-600">
-                    If this problem persists, please <a href="/contact" class="text-indigo-600 hover:underline">contact our support team</a> and we'll help you right away.
+                    If this problem persists, please <a href="/contact" class="text-[var(--prady-blue)] hover:underline">contact our support team</a> and we'll help you right away.
                 </p>
             </div>
         </div>

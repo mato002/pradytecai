@@ -14,7 +14,7 @@ return [
         [
             'name' => 'Microfinance System',
             'short' => 'Lending & repayment management for microfinance institutions.',
-            'icon' => 'finance',
+            'icon' => 'piggy',
             'href' => '/products#prady-microfinance',
         ],
         [
@@ -26,11 +26,11 @@ return [
         [
             'name' => 'Custom Software',
             'short' => 'Bespoke software solutions tailored to your business needs.',
-            'icon' => 'code',
+            'icon' => 'cog',
             'href' => '/services',
         ],
         [
-            'name' => 'HR & Business Operations',
+            'name' => 'HR System',
             'short' => 'Employee management, payroll & HR operations streamlined.',
             'icon' => 'hr',
             'href' => '/products',
@@ -43,19 +43,14 @@ return [
             'icon' => 'shield',
         ],
         [
+            'label' => 'Reliable Platforms',
+            'detail' => 'Built for continuous operations',
+            'icon' => 'clock',
+        ],
+        [
             'label' => 'Built for African Businesses',
             'detail' => 'Practical systems for local markets',
             'icon' => 'building',
-        ],
-        [
-            'label' => 'Responsive Support',
-            'detail' => 'Teams ready when you need them',
-            'icon' => 'handshake',
-        ],
-        [
-            'label' => 'Scalable Platforms',
-            'detail' => 'Grow without rebuilding',
-            'icon' => 'clock',
         ],
     ],
     'products' => [

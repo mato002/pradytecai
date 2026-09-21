@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 use App\Models\User;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\Hash;
 
 class AdminUserSeeder extends Seeder
 {
@@ -13,21 +12,30 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Create default admin user
-        User::firstOrCreate(
+        User::updateOrCreate(
             ['email' => 'admin@pradytecai.com'],
             [
                 'name' => 'Admin User',
-                'email' => 'admin@pradytecai.com',
-                'password' => Hash::make('admin123'),
+                'password' => 'admin123',
+                'role' => 'admin',
                 'email_verified_at' => now(),
             ]
         );
 
-        $this->command->info('Admin user created successfully!');
-        $this->command->info('Email: admin@pradytecai.com');
-        $this->command->info('Password: admin123');
-        $this->command->warn('⚠️  Please change the password after first login!');
+        User::updateOrCreate(
+            ['email' => 'hr@pradytecai.com'],
+            [
+                'name' => 'HR Manager',
+                'password' => 'hr123',
+                'role' => 'hr_manager',
+                'email_verified_at' => now(),
+            ]
+        );
+
+        $this->command->info('Default login accounts ready:');
+        $this->command->info('  Admin → admin@pradytecai.com / admin123');
+        $this->command->info('  HR    → hr@pradytecai.com / hr123');
+        $this->command->warn('Change these passwords after first login.');
     }
 }
 

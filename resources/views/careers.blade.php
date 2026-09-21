@@ -4,36 +4,17 @@
 @section('description', 'Join the Pradytecai team. We are looking for talented individuals to help us build the future of enterprise software.')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/85 via-sky-900/80 to-blue-900/85"></div>
-        {{-- Subtle pattern overlay --}}
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
-
-        <div class="relative z-10 w-full mx-auto max-w-6xl hero-animate">
-            <x-breadcrumbs :items="[
-                ['label' => 'Home', 'url' => '/'],
-                ['label' => 'Careers']
-            ]" light="true" />
-            <div class="text-center">
-                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">Join Our Team</h1>
-                <p class="text-xl text-slate-200">
-                    Build the future of enterprise software with us
-                </p>
-            </div>
-        </div>
-    </section>
-
-    <!-- Why Work With Us -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-light"></div>
-        <div class="section-content w-full mx-auto">
+<x-marketing.page-hero
+    title="Join Our Team"
+    subtitle="Build the future of enterprise software with us"
+    :breadcrumbs="[
+        ['label' => 'Home', 'url' => '/'],
+        ['label' => 'Careers'],
+    ]"
+/>
+<!-- Why Work With Us -->
+    <section class="mkt-section mkt-section--light">
+        <div class="mkt-container">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Work at Pradytecai?</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -43,8 +24,8 @@
 
             <div class="grid md:grid-cols-3 gap-8">
                 <div class="bg-white border-2 border-gray-200 rounded-xl p-8">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-16 h-16 bg-[var(--prady-ice)] rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-[var(--prady-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
                         </svg>
                     </div>
@@ -56,8 +37,8 @@
                 </div>
 
                 <div class="bg-white border-2 border-gray-200 rounded-xl p-8">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-16 h-16 bg-[var(--prady-ice)] rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-[var(--prady-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                         </svg>
                     </div>
@@ -69,8 +50,8 @@
                 </div>
 
                 <div class="bg-white border-2 border-gray-200 rounded-xl p-8">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-16 h-16 bg-[var(--prady-ice)] rounded-full flex items-center justify-center mb-6">
+                        <svg class="w-8 h-8 text-[var(--prady-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
@@ -85,12 +66,8 @@
     </section>
 
     <!-- Open Positions -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-slate"></div>
-        <div class="section-content w-full mx-auto">
+    <section class="mkt-section mkt-section--light">
+        <div class="mkt-container">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">Open Positions</h2>
                 <p class="text-xl text-gray-600 max-w-2xl mx-auto">
@@ -104,12 +81,12 @@
                         <div class="bg-white border-2 border-slate-200 rounded-2xl p-6 hover:shadow-xl hover:shadow-slate-200/50 transition-all duration-300 hover:-translate-y-1 group">
                             <div class="flex flex-col h-full">
                                 <div class="flex-1">
-                                    <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-indigo-600 transition-colors">
+                                    <h3 class="text-xl font-bold text-slate-900 mb-3 group-hover:text-[var(--prady-blue)] transition-colors">
                                         {{ $position->title }}
                                     </h3>
                                     
                                     <div class="flex flex-wrap gap-2 mb-4">
-                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-indigo-100 text-indigo-700 rounded-full text-xs font-semibold">
+                                        <span class="inline-flex items-center gap-1.5 px-3 py-1.5 bg-[var(--prady-ice)] text-[var(--prady-navy)] rounded-full text-xs font-semibold">
                                             <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                                             </svg>
@@ -146,7 +123,7 @@
                                     @endif
                                 </div>
                                 
-                                <a href="{{ route('careers.apply', $position) }}" class="mt-4 inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-6 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40 hover:scale-[1.02] active:scale-[0.98]">
+                                <a href="{{ route('careers.apply', $position) }}" class="mt-4 inline-flex items-center justify-center gap-2 w-full bg-gradient-to-r from-[var(--prady-navy)] to-[var(--prady-blue)] text-white px-6 py-3 rounded-xl font-semibold hover:from-[var(--prady-navy)] hover:to-[var(--prady-deep-blue)] transition-all duration-200 shadow-lg shadow-[rgba(5,49,113,0.2)] hover:shadow-xl hover:shadow-[rgba(5,49,113,0.28)] hover:scale-[1.02] active:scale-[0.98]">
                                     <span>Apply Now</span>
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
@@ -166,7 +143,7 @@
                                             <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ $encodedShareUrl }}"
                                                target="_blank"
                                                rel="noopener noreferrer"
-                                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:bg-indigo-50 hover:border-indigo-300 hover:text-indigo-700 transition-colors text-sm font-medium">
+                                               class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-50 border border-slate-200 text-slate-700 hover:bg-[var(--prady-ice)] hover:border-[var(--prady-cyan)] hover:text-[var(--prady-navy)] transition-colors text-sm font-medium">
                                                 <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
                                                     <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
                                                 </svg>
@@ -210,7 +187,7 @@
                             We don't have any open positions at the moment, but we're always interested in hearing 
                             from talented individuals.
                         </p>
-                        <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-8 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40">
+                        <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[var(--prady-navy)] to-[var(--prady-blue)] text-white px-8 py-3 rounded-xl font-semibold hover:from-[var(--prady-navy)] hover:to-[var(--prady-deep-blue)] transition-all duration-200 shadow-lg shadow-[rgba(5,49,113,0.2)] hover:shadow-xl hover:shadow-[rgba(5,49,113,0.28)]">
                             Send Us Your Resume
                         </a>
                     </div>
@@ -219,10 +196,10 @@
 
             <!-- Always show general contact option -->
             @if($positions->count() > 0)
-                <div class="mt-12 bg-gradient-to-br from-indigo-50 to-sky-50 border-2 border-indigo-200 rounded-2xl p-8 text-center">
+                <div class="mt-12 bg-gradient-to-br from-[var(--prady-ice)] to-sky-50 border-2 border-[var(--border-light)] rounded-2xl p-8 text-center">
                     <div class="max-w-2xl mx-auto">
-                        <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                            <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <div class="w-16 h-16 bg-[var(--prady-ice)] rounded-full flex items-center justify-center mx-auto mb-4">
+                            <svg class="w-8 h-8 text-[var(--prady-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
                             </svg>
                         </div>
@@ -230,7 +207,7 @@
                         <p class="text-slate-600 mb-6">
                             We're always interested in hearing from talented individuals. Send us your resume and we'll keep you in mind for future opportunities.
                         </p>
-                        <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-indigo-600 to-indigo-700 text-white px-8 py-3 rounded-xl font-semibold hover:from-indigo-700 hover:to-indigo-800 transition-all duration-200 shadow-lg shadow-indigo-500/30 hover:shadow-xl hover:shadow-indigo-500/40">
+                        <a href="/contact" class="inline-flex items-center justify-center gap-2 bg-gradient-to-r from-[var(--prady-navy)] to-[var(--prady-blue)] text-white px-8 py-3 rounded-xl font-semibold hover:from-[var(--prady-navy)] hover:to-[var(--prady-deep-blue)] transition-all duration-200 shadow-lg shadow-[rgba(5,49,113,0.2)] hover:shadow-xl hover:shadow-[rgba(5,49,113,0.28)]">
                             Send Us Your Resume
                         </a>
                     </div>
@@ -240,20 +217,16 @@
     </section>
 
     <!-- Benefits Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-light"></div>
-        <div class="section-content w-full mx-auto">
+    <section class="mkt-section mkt-section--light">
+        <div class="mkt-container">
             <div class="text-center mb-16">
                 <h2 class="text-4xl font-bold text-gray-900 mb-4">Benefits & Perks</h2>
             </div>
 
             <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-16 h-16 bg-[var(--prady-ice)] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-[var(--prady-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -262,8 +235,8 @@
                 </div>
 
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-16 h-16 bg-[var(--prady-ice)] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-[var(--prady-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                         </svg>
                     </div>
@@ -272,8 +245,8 @@
                 </div>
 
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-16 h-16 bg-[var(--prady-ice)] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-[var(--prady-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path>
                         </svg>
                     </div>
@@ -282,8 +255,8 @@
                 </div>
 
                 <div class="text-center">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <div class="w-16 h-16 bg-[var(--prady-ice)] rounded-full flex items-center justify-center mx-auto mb-4">
+                        <svg class="w-8 h-8 text-[var(--prady-blue)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
                         </svg>
                     </div>
@@ -294,22 +267,13 @@
         </div>
     </section>
 
-    <!-- CTA Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-gradient"></div>
-        <div class="section-content w-full mx-auto text-center hero-animate delay-md">
-            <h2 class="text-4xl font-bold text-gray-900 mb-4">Ready to Join Us?</h2>
-            <p class="text-xl text-gray-600 mb-8">
-                Get in touch to learn more about opportunities at Pradytecai.
-            </p>
-            <a href="/contact" class="inline-block bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition">
-                Contact Us
-            </a>
-        </div>
-    </section>
+    <x-marketing.cta
+        title="Ready to Join Us?"
+        text="Get in touch to learn more about opportunities at Prady Technologies."
+        primary-label="Contact Us"
+        secondary-label="View Products"
+        secondary-href="/products"
+    />
 
     @push('scripts')
         <script>

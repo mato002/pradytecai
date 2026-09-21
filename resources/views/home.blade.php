@@ -10,19 +10,19 @@
     $trust = config('portfolio.trust', []);
 @endphp
 
-{{-- Hero --}}
-<section class="mkt-hero" aria-labelledby="home-hero-heading">
+{{-- Compact hero matching landing-reference --}}
+<section class="mkt-hero mkt-hero--compact" aria-labelledby="home-hero-heading">
     <div class="mkt-container mkt-hero__inner">
         <div class="mkt-hero__copy hero-animate">
             <h1 id="home-hero-heading" class="mkt-hero__title">
-                Smart Technology Solutions<br class="hidden sm:block"> for Ambitious Businesses
+                Smart Technology Solutions for Ambitious Businesses
             </h1>
             <p class="mkt-hero__lead">
                 We build secure, efficient software that drives growth.
             </p>
             <div class="mkt-hero__actions">
-                <a href="/contact" class="mkt-btn mkt-btn--light">Get Demo →</a>
-                <a href="/products" class="mkt-btn mkt-btn--ghost">Our Products</a>
+                <a href="/contact" class="mkt-btn mkt-btn--light mkt-btn--sm">Get Demo →</a>
+                <a href="/products" class="mkt-btn mkt-btn--ghost mkt-btn--sm">Our Products</a>
             </div>
         </div>
 
@@ -33,9 +33,9 @@
 </section>
 
 {{-- Our Solutions --}}
-<section id="solutions" class="mkt-section mkt-section--white" aria-labelledby="solutions-heading">
+<section id="solutions" class="mkt-section mkt-section--white mkt-section--tight" aria-labelledby="solutions-heading">
     <div class="mkt-container">
-        <div class="mkt-section__header">
+        <div class="mkt-section__header mkt-section__header--tight">
             <h2 id="solutions-heading" class="mkt-section__title">Our Solutions</h2>
             <p class="mkt-section__subtitle">
                 Tailored systems designed to streamline operations and scale your business.
@@ -50,6 +50,22 @@
                     :icon="$solution['icon']"
                     :href="$solution['href']"
                 />
+            @endforeach
+        </div>
+    </div>
+</section>
+
+{{-- Trust strip (immediately under solutions, as in reference) --}}
+<section class="mkt-trust" aria-label="Why Prady">
+    <div class="mkt-container">
+        <div class="mkt-trust__grid mkt-trust__grid--three">
+            @foreach(array_slice($trust, 0, 3) as $item)
+                <div class="mkt-trust__item mkt-trust__item--center">
+                    <span class="mkt-trust__icon" aria-hidden="true">
+                        <x-prady-icon :name="$item['icon']" class="w-5 h-5" />
+                    </span>
+                    <p class="mkt-trust__label">{{ $item['label'] }}</p>
+                </div>
             @endforeach
         </div>
     </div>
@@ -74,25 +90,6 @@
                     :slug="$product['slug']"
                     :market="$product['market'] ?? null"
                 />
-            @endforeach
-        </div>
-    </div>
-</section>
-
-{{-- Trust strip --}}
-<section class="mkt-trust" aria-label="Why Prady">
-    <div class="mkt-container">
-        <div class="mkt-trust__grid">
-            @foreach($trust as $item)
-                <div class="mkt-trust__item">
-                    <span class="mkt-trust__icon" aria-hidden="true">
-                        <x-prady-icon :name="$item['icon']" class="w-5 h-5" />
-                    </span>
-                    <div>
-                        <p class="mkt-trust__label">{{ $item['label'] }}</p>
-                        <p class="mkt-trust__detail">{{ $item['detail'] }}</p>
-                    </div>
-                </div>
             @endforeach
         </div>
     </div>
@@ -138,15 +135,5 @@
     </div>
 </section>
 
-{{-- Final CTA --}}
-<section class="mkt-cta" aria-labelledby="cta-heading">
-    <div class="mkt-container mkt-cta__inner">
-        <h2 id="cta-heading" class="mkt-cta__title">Ready to Transform Your Operations?</h2>
-        <p class="mkt-cta__text">Let's discuss the right technology for your business.</p>
-        <div class="mkt-cta__actions">
-            <a href="/contact" class="mkt-btn mkt-btn--light">Get Demo</a>
-            <a href="/contact" class="mkt-btn mkt-btn--ghost">Contact Us</a>
-        </div>
-    </div>
-</section>
+<x-marketing.cta />
 @endsection

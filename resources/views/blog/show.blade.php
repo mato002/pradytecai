@@ -4,46 +4,32 @@
 @section('description', $post->excerpt ?? 'Read the latest from Pradytecai')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="relative py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="absolute inset-0 bg-gradient-to-br from-indigo-900/85 via-purple-900/80 to-pink-900/85"></div>
-        
-        <div class="relative z-10 w-full mx-auto max-w-4xl">
-            <nav class="mb-6 text-sm">
-                <ol class="flex items-center space-x-2 text-slate-300">
-                    <li><a href="/" class="hover:text-white transition">Home</a></li>
-                    <li><span class="mx-2">/</span></li>
-                    <li><a href="{{ route('blog.index') }}" class="hover:text-white transition">Blog</a></li>
-                    <li><span class="mx-2">/</span></li>
-                    <li class="text-white">{{ Str::limit($post->title, 50) }}</li>
-                </ol>
-            </nav>
-            
-            <div class="text-center">
-                @if($post->category)
-                    <span class="inline-block px-4 py-2 rounded-full bg-indigo-600/30 text-indigo-200 text-sm font-semibold mb-4">
-                        {{ $post->category }}
-                    </span>
-                @endif
-                <h1 class="text-4xl md:text-5xl font-bold text-white mb-4">{{ $post->title }}</h1>
-                <div class="flex items-center justify-center space-x-4 text-slate-300 text-sm">
-                    <span>{{ optional($post->published_at ?? $post->created_at)->format('F j, Y') }}</span>
-                    <span>•</span>
-                    <span>{{ ceil(str_word_count(strip_tags($post->body)) / 200) }} min read</span>
-                </div>
-            </div>
+<section class="mkt-page-hero">
+    <div class="mkt-container mkt-page-hero__inner">
+        <nav class="mb-4 text-sm" aria-label="Breadcrumb">
+            <ol class="flex flex-wrap items-center justify-center gap-2 text-white/75">
+                <li><a href="/" class="hover:text-white transition">Home</a></li>
+                <li aria-hidden="true">/</li>
+                <li><a href="{{ route('blog.index') }}" class="hover:text-white transition">Blog</a></li>
+                <li aria-hidden="true">/</li>
+                <li class="text-white">{{ Str::limit($post->title, 40) }}</li>
+            </ol>
+        </nav>
+        <div class="mkt-page-hero__copy">
+            @if($post->category)
+                <p class="inline-block px-3 py-1 rounded-lg bg-white/15 text-white text-xs font-semibold mb-3">{{ $post->category }}</p>
+            @endif
+            <h1 class="mkt-page-hero__title">{{ $post->title }}</h1>
+            <p class="mkt-page-hero__subtitle">
+                {{ optional($post->published_at ?? $post->created_at)->format('F j, Y') }}
+                · {{ ceil(str_word_count(strip_tags($post->body)) / 200) }} min read
+            </p>
         </div>
-    </section>
-
-    <!-- Blog Content -->
-    <article class="relative py-12 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1455390582262-044cdead277a?w=1920&q=80');"></div>
-        <div class="section-bg-overlay section-bg-overlay-light"></div>
-        
-        <div class="section-content w-full mx-auto max-w-4xl">
+    </div>
+</section>
+<!-- Blog Content -->
+    <article class="mkt-section mkt-section--light">
+        <div class="mkt-container max-w-4xl">
             <div class="bg-white rounded-xl shadow-lg p-8 md:p-12">
                 <div class="prose prose-lg max-w-none">
                     {!! nl2br(e($post->body)) !!}
@@ -69,7 +55,7 @@
                         </a>
                         <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(request()->fullUrl()) }}" 
                            target="_blank" 
-                           class="flex items-center justify-center w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 hover:bg-indigo-200 transition">
+                           class="flex items-center justify-center w-10 h-10 rounded-full bg-[var(--prady-ice)] text-[var(--prady-blue)] hover:bg-indigo-200 transition">
                             <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
                                 <path d="M13 10h2.5l-.3 3H13v7h-3v-7H8v-3h2V8.5C10 6.57 11.57 5 13.5 5H17v3h-2c-.55 0-1 .45-1 1V10z" />
                             </svg>
@@ -85,13 +71,13 @@
                     <div class="grid md:grid-cols-3 gap-8">
                         @foreach($relatedPosts as $relatedPost)
                             <article class="bg-white border-2 border-gray-200 rounded-xl overflow-hidden hover:shadow-xl transition-shadow">
-                                <div class="h-48 bg-gradient-to-br from-indigo-100 to-sky-200"></div>
+                                <div class="h-48 bg-gradient-to-br from-[var(--prady-ice)] to-[#D6EAF8]"></div>
                                 <div class="p-6">
                                     <div class="flex items-center text-sm text-gray-500 mb-3">
                                         <span>{{ optional($relatedPost->published_at ?? $relatedPost->created_at)->format('F j, Y') }}</span>
                                     </div>
                                     <h3 class="text-xl font-bold text-gray-900 mb-3">
-                                        <a href="{{ route('blog.show', $relatedPost) }}" class="hover:text-indigo-600 transition">
+                                        <a href="{{ route('blog.show', $relatedPost) }}" class="hover:text-[var(--prady-blue)] transition">
                                             {{ $relatedPost->title }}
                                         </a>
                                     </h3>
@@ -100,7 +86,7 @@
                                             {{ Str::limit($relatedPost->excerpt, 100) }}
                                         </p>
                                     @endif
-                                    <a href="{{ route('blog.show', $relatedPost) }}" class="text-indigo-600 hover:text-indigo-700 font-semibold text-sm">
+                                    <a href="{{ route('blog.show', $relatedPost) }}" class="text-[var(--prady-blue)] hover:text-[var(--prady-navy)] font-semibold text-sm">
                                         Read more →
                                     </a>
                                 </div>
@@ -112,7 +98,7 @@
             
             <!-- Back to Blog -->
             <div class="mt-12 text-center">
-                <a href="{{ route('blog.index') }}" class="inline-flex items-center text-indigo-600 hover:text-indigo-700 font-semibold">
+                <a href="{{ route('blog.index') }}" class="inline-flex items-center text-[var(--prady-blue)] hover:text-[var(--prady-navy)] font-semibold">
                     <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
                     </svg>

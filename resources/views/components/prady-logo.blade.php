@@ -20,17 +20,13 @@
     </span>
 
     @if($variant !== 'mark')
-        <span class="flex flex-col min-w-0">
+        <span class="prady-brand__text flex flex-col min-w-0">
             <span class="prady-brand__name" style="color: {{ $navy }};">
                 PR<span class="relative inline-block">A<span class="prady-brand__a-bar" style="background:{{ $cyan }};"></span></span>DY
             </span>
-            <span class="prady-brand__sub" style="color: {{ $muted }};">
-                Technologies Ltd
-            </span>
+            <span class="prady-brand__sub" style="color: {{ $muted }};">Technologies Ltd</span>
             @if($variant === 'nav')
-                <span class="prady-brand__tagline" style="color: {{ $muted }};">
-                    Doing It Differently
-                </span>
+                <span class="prady-brand__tagline" style="color: {{ $muted }};">Doing It Differently</span>
             @endif
         </span>
     @endif
