@@ -102,21 +102,23 @@
             <div class="mkt-product-card">
                 <h3 class="mkt-product-card__title text-lg">Direct contact</h3>
                 <div class="space-y-4 mt-4">
-                    <div class="flex items-start gap-3">
-                        <span class="mkt-about__point-icon" aria-hidden="true"><x-prady-icon name="chat" class="w-5 h-5" /></span>
-                        <div>
-                            <p class="mkt-label !mb-1">Email</p>
-                            <a href="{{ $contact['email_href'] ?? 'mailto:mathiasodhis@gmail.com' }}" class="text-[var(--prady-blue)] font-medium hover:underline">
-                                {{ $contact['email'] ?? 'mathiasodhis@gmail.com' }}
-                            </a>
+                    @foreach(($contact['emails'] ?? [['label' => 'Email', 'email' => $contact['email'] ?? 'marketing@pradytecai.com']]) as $item)
+                        <div class="flex items-start gap-3">
+                            <span class="mkt-about__point-icon" aria-hidden="true"><x-prady-icon name="chat" class="w-5 h-5" /></span>
+                            <div>
+                                <p class="mkt-label !mb-1">{{ $item['label'] }}</p>
+                                <a href="mailto:{{ $item['email'] }}" class="text-[var(--prady-blue)] font-medium hover:underline">
+                                    {{ $item['email'] }}
+                                </a>
+                            </div>
                         </div>
-                    </div>
+                    @endforeach
                     <div class="flex items-start gap-3">
                         <span class="mkt-about__point-icon" aria-hidden="true"><x-prady-icon name="support" class="w-5 h-5" /></span>
                         <div>
                             <p class="mkt-label !mb-1">Phone</p>
-                            <a href="{{ $contact['phone_href'] ?? 'tel:+254728883160' }}" class="text-[var(--prady-blue)] font-medium hover:underline">
-                                {{ $contact['phone'] ?? '+254 728 883 160' }}
+                            <a href="{{ $contact['phone_href'] ?? 'tel:+254722295194' }}" class="text-[var(--prady-blue)] font-medium hover:underline">
+                                {{ $contact['phone'] ?? '+254 722 295 194' }}
                             </a>
                         </div>
                     </div>
@@ -131,7 +133,7 @@
                         <span class="mkt-about__point-icon" aria-hidden="true"><x-prady-icon name="clock" class="w-5 h-5" /></span>
                         <div>
                             <p class="mkt-label !mb-1">Business Hours</p>
-                            <p class="text-[var(--text-primary)] text-sm">Mon – Fri: 8:00 AM – 6:00 PM EAT</p>
+                            <p class="text-[var(--text-primary)] text-sm">{{ $contact['hours'] ?? 'Mon – Fri: 8:00 AM – 6:00 PM EAT' }}</p>
                         </div>
                     </div>
                 </div>

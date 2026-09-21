@@ -4,11 +4,19 @@ return [
     'company' => 'Prady Technologies Ltd',
     'tagline' => 'Doing It Differently',
     'contact' => [
-        'phone' => '+254 728 883 160',
-        'phone_href' => 'tel:+254728883160',
-        'email' => 'mathiasodhis@gmail.com',
-        'email_href' => 'mailto:mathiasodhis@gmail.com',
+        // Hardcoded for now — later replace with admin General Settings values.
+        'phone' => '+254 722 295 194',
+        'phone_href' => 'tel:+254722295194',
+        'email' => 'marketing@pradytecai.com',
+        'email_href' => 'mailto:marketing@pradytecai.com',
+        'emails' => [
+            [
+                'label' => 'Marketing',
+                'email' => 'marketing@pradytecai.com',
+            ],
+        ],
         'location' => 'Nairobi, Kenya',
+        'hours' => 'Mon – Fri: 8:00 AM – 6:00 PM EAT',
     ],
     'solutions' => [
         [

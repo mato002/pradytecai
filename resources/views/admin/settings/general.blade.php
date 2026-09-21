@@ -199,7 +199,7 @@
                                 type="email" 
                                 id="contact_email" 
                                 name="contact_email" 
-                                value="{{ old('contact_email', 'mathiasodhis@gmail.com') }}" 
+                                value="{{ old('contact_email', 'marketing@pradytecai.com') }}" 
                                 required
                                 class="form-input-enhanced w-full px-4 py-3 pl-12 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none"
                             >
@@ -220,7 +220,7 @@
                                 type="tel" 
                                 id="contact_phone" 
                                 name="contact_phone" 
-                                value="{{ old('contact_phone', '+254 728 883 160') }}" 
+                                value="{{ old('contact_phone', '+254 722 295 194') }}" 
                                 class="form-input-enhanced w-full px-4 py-3 pl-12 border-2 border-slate-200 rounded-xl focus:ring-2 focus:ring-indigo-200 outline-none"
                             >
                             <div class="absolute left-4 top-1/2 transform -translate-y-1/2">
