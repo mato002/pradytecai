@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'About Us - Pradytecai')
-@section('description', 'Learn about Pradytecai, a leading provider of enterprise software solutions specializing in communication platforms and financial management systems.')
+@section('title', 'About Us — Prady Technologies Ltd')
+@section('description', 'Learn about Prady Technologies Ltd — doing it differently with secure, efficient software for ambitious businesses.')
 
 @section('content')
     <!-- Hero Section -->
@@ -19,9 +19,9 @@
                 ['label' => 'About Us']
             ]" light="true" />
             <div class="text-center">
-                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">About Pradytecai</h1>
+                <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">About Prady Technologies</h1>
                 <p class="text-xl text-slate-200">
-                    Empowering businesses with innovative software solutions since our inception
+                    Doing it differently — smart technology solutions for ambitious businesses
                 </p>
             </div>
         </div>
@@ -38,7 +38,7 @@
                 <div>
                     <h2 class="text-4xl font-bold text-gray-900 mb-6">Our Mission</h2>
                     <p class="text-lg text-gray-600 mb-4">
-                        At Pradytecai, we are committed to delivering cutting-edge software solutions that 
+                        At Prady Technologies Ltd, we are committed to delivering cutting-edge software solutions that 
                         empower businesses to achieve their goals. We combine innovative technology with 
                         deep industry expertise to create platforms that drive real business value.
                     </p>

@@ -6,8 +6,14 @@
 @source '../**/*.js';
 
 @theme {
-    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    --font-sans: 'Montserrat', 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
         'Segoe UI Symbol', 'Noto Color Emoji';
+    --color-prady-navy: #0B2347;
+    --color-prady-blue: #1A4B8C;
+    --color-prady-mid: #2B6CB0;
+    --color-prady-cyan: #00AEEF;
+    --color-prady-sky: #E8F6FC;
+    --color-prady-mist: #F4F7FB;
 }
 
 @layer base {
@@ -947,5 +953,159 @@
 
     .admin-form-section-title {
         @apply text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2;
+    }
+
+    /* ── Prady Technologies marketing brand ── */
+    .prady-site {
+        --prady-navy: #0B2347;
+        --prady-blue: #1A4B8C;
+        --prady-mid: #2B6CB0;
+        --prady-cyan: #00AEEF;
+        --prady-sky: #E8F6FC;
+        --prady-mist: #F4F7FB;
+        font-family: 'Montserrat', ui-sans-serif, system-ui, sans-serif;
+        color: var(--prady-navy);
+        background: var(--prady-mist);
+    }
+
+    .prady-nav {
+        background: rgba(255, 255, 255, 0.96);
+        border-bottom: 1px solid rgba(11, 35, 71, 0.08);
+        backdrop-filter: blur(12px);
+    }
+
+    .prady-nav-link {
+        @apply text-sm font-semibold transition;
+        color: #1B3A5F;
+    }
+
+    .prady-nav-link:hover,
+    .prady-nav-link.is-active {
+        color: var(--prady-cyan);
+    }
+
+    .prady-btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition;
+        background: var(--prady-navy);
+        color: #fff;
+        box-shadow: 0 10px 24px rgba(11, 35, 71, 0.22);
+    }
+
+    .prady-btn-primary:hover {
+        background: #071a36;
+        transform: translateY(-1px);
+    }
+
+    .prady-btn-light {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition;
+        background: #fff;
+        color: var(--prady-navy);
+    }
+
+    .prady-btn-light:hover {
+        background: var(--prady-sky);
+    }
+
+    .prady-btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-sm font-bold transition border-2;
+        border-color: rgba(255, 255, 255, 0.85);
+        color: #fff;
+        background: transparent;
+    }
+
+    .prady-btn-ghost:hover {
+        background: rgba(255, 255, 255, 0.12);
+    }
+
+    .prady-hero {
+        position: relative;
+        overflow: hidden;
+        background:
+            radial-gradient(circle at 18% 20%, rgba(0, 174, 239, 0.22), transparent 42%),
+            radial-gradient(circle at 82% 12%, rgba(43, 108, 176, 0.35), transparent 40%),
+            linear-gradient(135deg, #0B2347 0%, #143A6B 45%, #1A4B8C 100%);
+        color: #fff;
+    }
+
+    .prady-hero::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background-image:
+            radial-gradient(circle at 20% 30%, rgba(255, 255, 255, 0.12) 0 1.5px, transparent 2px),
+            radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.1) 0 1.5px, transparent 2px),
+            linear-gradient(rgba(255, 255, 255, 0.04) 1px, transparent 1px),
+            linear-gradient(90deg, rgba(255, 255, 255, 0.04) 1px, transparent 1px);
+        background-size: 120px 120px, 160px 160px, 48px 48px, 48px 48px;
+        opacity: 0.55;
+        pointer-events: none;
+    }
+
+    .prady-hero__glow {
+        position: absolute;
+        width: 420px;
+        height: 420px;
+        border-radius: 9999px;
+        background: radial-gradient(circle, rgba(0, 174, 239, 0.35), transparent 70%);
+        filter: blur(20px);
+        animation: pradyFloat 8s ease-in-out infinite;
+        pointer-events: none;
+    }
+
+    @keyframes pradyFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-18px); }
+    }
+
+    .prady-card {
+        @apply rounded-2xl bg-white p-7 transition duration-300;
+        border: 1px solid rgba(11, 35, 71, 0.06);
+        box-shadow: 0 12px 30px rgba(11, 35, 71, 0.06);
+    }
+
+    .prady-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 40px rgba(11, 35, 71, 0.12);
+        border-color: rgba(0, 174, 239, 0.35);
+    }
+
+    .prady-card__icon {
+        @apply w-14 h-14 rounded-xl flex items-center justify-center mb-5;
+        background: linear-gradient(145deg, #E8F6FC, #D6EEFA);
+        color: var(--prady-blue);
+    }
+
+    .prady-trust {
+        background: #EEF2F7;
+        border-top: 1px solid rgba(11, 35, 71, 0.06);
+    }
+
+    .prady-footer {
+        background: linear-gradient(160deg, #07182F 0%, #0B2347 55%, #12335F 100%);
+        color: rgba(255, 255, 255, 0.78);
+    }
+
+    .prady-illustration {
+        position: relative;
+        animation: pradyFloat 7s ease-in-out infinite;
+    }
+
+    .prady-illustration__float {
+        position: absolute;
+        width: 44px;
+        height: 44px;
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.95);
+        box-shadow: 0 10px 24px rgba(7, 24, 47, 0.25);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--prady-blue);
+        animation: pradyFloat 5.5s ease-in-out infinite;
+    }
+
+    .prady-page-hero {
+        background: linear-gradient(135deg, #0B2347 0%, #1A4B8C 100%);
+        color: #fff;
     }
 }

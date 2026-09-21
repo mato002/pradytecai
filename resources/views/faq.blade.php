@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Frequently Asked Questions - Pradytecai')
-@section('description', 'Find answers to common questions about Pradytecai products, services, pricing, and support.')
+@section('title', 'Frequently Asked Questions — Prady Technologies Ltd')
+@section('description', 'Find answers to common questions about Prady Technologies products, services, pricing, and support.')
 
 @section('content')
     <!-- Hero Section -->
@@ -41,29 +41,29 @@
                     <div class="space-y-4">
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
-                                <span class="text-lg font-semibold text-gray-900">What is Pradytecai?</span>
+                                <span class="text-lg font-semibold text-gray-900">What is Prady Technologies?</span>
                                 <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             <div class="faq-answer hidden mt-4 text-gray-600 leading-relaxed">
-                                <p>Pradytecai is a leading provider of enterprise software solutions specializing in communication platforms and financial management systems. We offer products like BulkSMS CRM for multi-channel messaging and Prady Mfi for microfinance management.</p>
+                                <p>Prady Technologies Ltd builds secure, efficient software for ambitious businesses — including Prady Microfinance, SACCO System, GPS Hosting, Property Management, SpareMe, Live Commerce, Chama System, Rafiki Loan, and Mtalii Travel Wallet.</p>
                             </div>
                         </div>
 
                         <div class="faq-item bg-white border-2 border-gray-200 rounded-xl p-6 hover:shadow-lg transition-shadow">
                             <button class="faq-question w-full text-left flex items-center justify-between focus:outline-none" onclick="toggleFaq(this)">
-                                <span class="text-lg font-semibold text-gray-900">What products does Pradytecai offer?</span>
+                                <span class="text-lg font-semibold text-gray-900">What products does Prady Technologies offer?</span>
                                 <svg class="faq-icon w-5 h-5 text-indigo-600 transform transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
                                 </svg>
                             </button>
                             <div class="faq-answer hidden mt-4 text-gray-600 leading-relaxed">
-                                <p>We offer several products including:</p>
+                                <p>Our immediate portfolio includes:</p>
                                 <ul class="list-disc list-inside mt-2 space-y-1">
-                                    <li><strong>BulkSMS CRM:</strong> Multi-channel messaging platform for SMS, WhatsApp, and Email</li>
-                                    <li><strong>Prady Mfi:</strong> Comprehensive microfinance management system</li>
-                                    <li><strong>Enterprise Solutions:</strong> Custom software development and cloud infrastructure</li>
+                                    <li><strong>Prady Microfinance</strong> &amp; <strong>SACCO System</strong> for institutional finance</li>
+                                    <li><strong>Rafiki Loan</strong>, <strong>Chama System</strong>, and <strong>Mtalii Travel Wallet</strong></li>
+                                    <li><strong>GPS Hosting</strong>, <strong>Property Management</strong>, <strong>SpareMe</strong>, and <strong>Live Commerce</strong></li>
                                 </ul>
                             </div>
                         </div>

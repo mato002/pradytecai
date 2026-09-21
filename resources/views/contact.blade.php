@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Contact Us - Pradytecai')
-@section('description', 'Get in touch with Pradytecai. We are here to help you find the right solution for your business needs.')
+@section('title', 'Contact Us — Prady Technologies Ltd')
+@section('description', 'Get in touch with Prady Technologies Ltd. We are here to help you find the right solution for your business needs.')
 
 @section('content')
     <!-- Hero Section -->
@@ -120,7 +120,7 @@
                             Submit Request
                         </button>
                         <p class="text-[11px] text-gray-500 max-w-xs">
-                            By submitting, you agree that we may contact you about Pradytecai products and services.
+                            By submitting, you agree that we may contact you about Prady Technologies products and services.
                         </p>
                     </div>
                 </form>

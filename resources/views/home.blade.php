@@ -1,383 +1,182 @@
 @extends('layouts.app')
 
-@section('title', 'Pradytecai - Enterprise Software Solutions')
-@section('description', 'Pradytecai offers cutting-edge software solutions including BulkSMS CRM, Microfinance Management, and more. Transform your business with our innovative platforms.')
+@section('title', 'Prady Technologies Ltd — Smart Technology Solutions')
+@section('description', 'Prady Technologies Ltd builds secure, efficient software that drives growth. Microfinance, SACCO, GPS, property, SpareMe, and more.')
 
 @section('content')
-    <!-- Hero Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="absolute inset-0 bg-cover bg-center bg-no-repeat" style="background-image: url('https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="absolute inset-0 bg-gradient-to-br from-sky-900/80 via-indigo-900/70 to-slate-900/80"></div>
-        {{-- Subtle pattern overlay --}}
-        <div class="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0VjIySDI0djEySDEyVjM0aDEyVjQ2aDEyVjM0em0wLTEyVjEwSDI0djEySDEyVjIySDBWMTBoMTJWMEgyNHYxMHoiLz48L2c+PC9nPjwvc3ZnPg==')] opacity-20"></div>
+@php
+    $products = config('portfolio.products');
+    $featured = collect($products)->where('featured', true)->values();
+@endphp
 
-        <div class="relative z-10 w-full mx-auto max-w-6xl text-center hero-animate">
-            <h1 class="text-5xl md:text-6xl font-bold text-white mb-6">
-                <span class="hero-word">Enterprise</span>
-                <span class="hero-word">Software</span>
-                <span class="hero-word">Solutions</span>
-                <br class="md:hidden">
-                <span class="text-indigo-600">
-                    <span class="hero-word">That</span>
-                    <span class="hero-word">Drive</span>
-                    <span class="hero-word">Success</span>
-                </span>
-            </h1>
-            <p class="hero-description text-xl text-slate-200 mb-8 max-w-3xl mx-auto">
-                Transform your business with our comprehensive suite of software platforms. 
-                From multi-channel messaging to microfinance management, we've got you covered.
+{{-- Hero --}}
+<section class="prady-hero">
+    <div class="prady-hero__glow" style="top: -80px; right: 8%;"></div>
+    <div class="prady-hero__glow" style="bottom: -120px; left: -60px; animation-delay: -3s;"></div>
+
+    <div class="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
+        <div class="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center">
+            <div class="hero-animate">
+                <p class="inline-flex items-center gap-2 rounded-full bg-white/10 border border-white/15 px-3 py-1 text-[11px] font-semibold uppercase tracking-[0.18em] text-[#7DDFFF] mb-5">
+                    Doing It Differently
+                </p>
+                <h1 class="text-4xl sm:text-5xl lg:text-[3.25rem] font-extrabold text-white leading-[1.12] tracking-tight mb-5">
+                    Smart Technology Solutions for Ambitious Businesses
+                </h1>
+                <p class="text-lg text-white/80 max-w-xl mb-8 leading-relaxed">
+                    We build secure, efficient software that drives growth.
+                </p>
+                <div class="flex flex-col sm:flex-row gap-3">
+                    <a href="/contact" class="prady-btn-light">Get Demo →</a>
+                    <a href="/products" class="prady-btn-ghost">Our Products</a>
+                </div>
+            </div>
+
+            <div class="hero-animate delay-md relative flex justify-center lg:justify-end">
+                <div class="prady-illustration w-full max-w-md">
+                    {{-- Laptop mock --}}
+                    <div class="relative mx-auto">
+                        <div class="rounded-2xl bg-white/10 border border-white/20 p-3 backdrop-blur-sm shadow-2xl">
+                            <div class="rounded-xl bg-white overflow-hidden">
+                                <div class="h-8 bg-[#0B2347] flex items-center gap-1.5 px-3">
+                                    <span class="w-2 h-2 rounded-full bg-[#00AEEF]"></span>
+                                    <span class="w-2 h-2 rounded-full bg-white/40"></span>
+                                    <span class="w-2 h-2 rounded-full bg-white/25"></span>
+                                </div>
+                                <div class="p-4 grid grid-cols-3 gap-3 bg-gradient-to-br from-[#F4F7FB] to-[#E8F6FC]">
+                                    <div class="col-span-2 rounded-lg bg-white p-3 shadow-sm border border-slate-100">
+                                        <div class="h-2 w-16 bg-[#0B2347]/20 rounded mb-3"></div>
+                                        <div class="flex items-end gap-1.5 h-20">
+                                            <div class="flex-1 bg-[#00AEEF]/30 rounded-t" style="height:40%"></div>
+                                            <div class="flex-1 bg-[#00AEEF]/55 rounded-t" style="height:65%"></div>
+                                            <div class="flex-1 bg-[#1A4B8C] rounded-t" style="height:85%"></div>
+                                            <div class="flex-1 bg-[#00AEEF]/70 rounded-t" style="height:55%"></div>
+                                            <div class="flex-1 bg-[#0B2347] rounded-t" style="height:95%"></div>
+                                        </div>
+                                    </div>
+                                    <div class="space-y-3">
+                                        <div class="rounded-lg bg-white p-3 shadow-sm border border-slate-100">
+                                            <div class="h-2 w-10 bg-[#0B2347]/20 rounded mb-2"></div>
+                                            <div class="text-lg font-extrabold text-[#0B2347]">98%</div>
+                                        </div>
+                                        <div class="rounded-lg bg-white p-3 shadow-sm border border-slate-100">
+                                            <div class="h-2 w-8 bg-[#0B2347]/20 rounded mb-2"></div>
+                                            <div class="h-8 w-8 rounded-full border-4 border-[#00AEEF] border-r-transparent"></div>
+                                        </div>
+                                    </div>
+                                    <div class="col-span-3 rounded-lg bg-white p-3 shadow-sm border border-slate-100 flex gap-2">
+                                        <div class="h-2 flex-1 bg-[#E8F6FC] rounded"></div>
+                                        <div class="h-2 flex-1 bg-[#00AEEF]/40 rounded"></div>
+                                        <div class="h-2 flex-1 bg-[#0B2347]/15 rounded"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mx-auto h-3 w-[72%] rounded-b-xl bg-[#07182F]"></div>
+                        <div class="mx-auto h-1.5 w-[40%] rounded-b bg-[#0B2347]"></div>
+                    </div>
+
+                    <div class="prady-illustration__float" style="top: 8%; left: -4%; animation-delay: -1s;">
+                        <x-prady-icon name="shield" class="w-5 h-5" />
+                    </div>
+                    <div class="prady-illustration__float" style="top: 18%; right: -2%; animation-delay: -2.5s;">
+                        <x-prady-icon name="users" class="w-5 h-5" />
+                    </div>
+                    <div class="prady-illustration__float" style="bottom: 22%; left: -6%; animation-delay: -4s;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z"/></svg>
+                    </div>
+                    <div class="prady-illustration__float" style="bottom: 12%; right: 0; animation-delay: -0.8s;">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+{{-- Solutions --}}
+<section id="solutions" class="bg-[#F4F7FB] py-20 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+        <div class="text-center mb-14 hero-animate">
+            <h2 class="text-3xl sm:text-4xl font-extrabold text-[#0B2347] mb-3">Our Solutions</h2>
+            <p class="text-lg text-[#1B3A5F]/75 max-w-2xl mx-auto">
+                Tailored systems designed to streamline operations and scale your business.
             </p>
-            <div class="hero-buttons flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/products" class="bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition shadow-lg">
-                    Explore Solutions
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+            @foreach($featured as $product)
+                <a href="/products#{{ $product['slug'] }}" class="prady-card block group">
+                    <div class="prady-card__icon">
+                        <x-prady-icon :name="$product['icon']" class="w-7 h-7" />
+                    </div>
+                    <h3 class="text-lg font-bold text-[#0B2347] mb-2 group-hover:text-[#1A4B8C] transition">{{ $product['name'] }}</h3>
+                    <p class="text-sm text-[#1B3A5F]/70 leading-relaxed">{{ $product['short'] }}</p>
                 </a>
-                <a href="/contact" class="bg-white text-indigo-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition border-2 border-indigo-600">
-                    Contact Us
+            @endforeach
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            @foreach(collect($products)->where('featured', false) as $product)
+                <a href="/products#{{ $product['slug'] }}" class="prady-card block group">
+                    <div class="prady-card__icon">
+                        <x-prady-icon :name="$product['icon']" class="w-7 h-7" />
+                    </div>
+                    <h3 class="text-lg font-bold text-[#0B2347] mb-2 group-hover:text-[#1A4B8C] transition">{{ $product['name'] }}</h3>
+                    <p class="text-sm text-[#1B3A5F]/70 leading-relaxed mb-3">{{ $product['short'] }}</p>
+                    <p class="text-xs font-semibold uppercase tracking-wide text-[#00AEEF]">{{ $product['market'] }}</p>
                 </a>
-            </div>
+            @endforeach
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Solutions Section -->
-    <section id="solutions" class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1551434678-e076c223a692?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-light"></div>
-        <div class="section-content w-full mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Our Solutions</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Discover our powerful software platforms designed to streamline your operations
-                </p>
+{{-- Trust bar --}}
+<section class="prady-trust py-8 px-4 sm:px-6 lg:px-8">
+    <div class="mx-auto max-w-7xl">
+        <div class="grid sm:grid-cols-3 gap-6 text-center sm:text-left">
+            <div class="flex items-center justify-center sm:justify-start gap-3">
+                <div class="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-[#0B2347] shadow-sm">
+                    <x-prady-icon name="shield" class="w-5 h-5" />
+                </div>
+                <div>
+                    <p class="font-bold text-[#0B2347]">ISO 27001 Ready</p>
+                    <p class="text-xs text-[#1B3A5F]/65">Security-first platforms</p>
+                </div>
             </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- BulkSMS CRM -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-xl transition-shadow">
-                    <div class="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">BulkSMS CRM</h3>
-                    <p class="text-gray-600 mb-6">
-                        Multi-channel messaging platform for SMS, WhatsApp, and Email. Manage contacts, create campaigns, 
-                        and track delivery with comprehensive analytics.
-                    </p>
-                    <ul class="space-y-2 mb-6 text-gray-600">
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Multi-channel messaging
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Contact management
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Real-time analytics
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            API integration
-                        </li>
-                    </ul>
-                    <a href="https://crm.pradytecai.com" target="_blank" class="block w-full bg-blue-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-blue-700 transition">
-                        Open BulkSMS CRM →
-                    </a>
+            <div class="flex items-center justify-center sm:justify-start gap-3">
+                <div class="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-[#0B2347] shadow-sm">
+                    <x-prady-icon name="clock" class="w-5 h-5" />
                 </div>
-
-                <!-- Microfinance System -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-xl transition-shadow">
-                    <div class="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Prady Mfi</h3>
-                    <p class="text-gray-600 mb-6">
-                        Comprehensive microfinance management system for loan processing, client management, 
-                        and financial reporting. Streamline your MFI operations.
-                    </p>
-                    <ul class="space-y-2 mb-6 text-gray-600">
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Loan management
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Client database
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Financial reporting
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Payment tracking
-                        </li>
-                    </ul>
-                    <a href="https://demo.pradytec.com" target="_blank" class="block w-full bg-green-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-green-700 transition">
-                        View Demo →
-                    </a>
+                <div>
+                    <p class="font-bold text-[#0B2347]">99.9% Uptime</p>
+                    <p class="text-xs text-[#1B3A5F]/65">Reliable cloud operations</p>
                 </div>
-
-                <!-- Additional Platform -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-xl transition-shadow">
-                    <div class="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mb-6">
-                        <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-2xl font-bold text-gray-900 mb-4">Enterprise Solutions</h3>
-                    <p class="text-gray-600 mb-6">
-                        Custom enterprise software solutions tailored to your business needs. 
-                        Scalable, secure, and built for growth.
-                    </p>
-                    <ul class="space-y-2 mb-6 text-gray-600">
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Custom development
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Cloud infrastructure
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            Security & compliance
-                        </li>
-                        <li class="flex items-center">
-                            <svg class="w-5 h-5 text-green-500 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"></path>
-                            </svg>
-                            24/7 support
-                        </li>
-                    </ul>
-                    <a href="/products" class="block w-full bg-purple-600 text-white text-center py-3 rounded-lg font-semibold hover:bg-purple-700 transition">
-                        Learn More →
-                    </a>
+            </div>
+            <div class="flex items-center justify-center sm:justify-start gap-3">
+                <div class="w-11 h-11 rounded-xl bg-white flex items-center justify-center text-[#0B2347] shadow-sm">
+                    <x-prady-icon name="building" class="w-5 h-5" />
+                </div>
+                <div>
+                    <p class="font-bold text-[#0B2347]">Built for Growth</p>
+                    <p class="text-xs text-[#1B3A5F]/65">Trusted by ambitious teams</p>
                 </div>
             </div>
         </div>
-    </section>
+    </div>
+</section>
 
-    <!-- Features Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1552664730-d307ca884978?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-slate"></div>
-        <div class="section-content w-full mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">Why Choose Pradytecai?</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    We deliver reliable, scalable solutions that grow with your business
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Lightning Fast</h3>
-                    <p class="text-gray-600">Optimized performance and quick setup. Get started in minutes, not days.</p>
-                </div>
-
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">Secure & Reliable</h3>
-                    <p class="text-gray-600">Enterprise-grade security with 99.9% uptime guarantee. Your data is safe with us.</p>
-                </div>
-
-                <div class="text-center">
-                    <div class="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <svg class="w-8 h-8 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 5.636l-3.536 3.536m0 5.656l3.536 3.536M9.172 9.172L5.636 5.636m3.536 9.192l-3.536 3.536M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-5 0a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                        </svg>
-                    </div>
-                    <h3 class="text-xl font-bold text-gray-900 mb-2">24/7 Support</h3>
-                    <p class="text-gray-600">Dedicated support team available around the clock to help you succeed.</p>
-                </div>
-            </div>
+{{-- CTA --}}
+<section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden" style="background: linear-gradient(135deg, #0B2347 0%, #1A4B8C 55%, #00AEEF 160%);">
+    <div class="relative z-10 mx-auto max-w-3xl text-center">
+        <h2 class="text-3xl sm:text-4xl font-extrabold text-white mb-4">Ready to do it differently?</h2>
+        <p class="text-lg text-white/80 mb-8">
+            Tell us about your institution or product idea — we'll show you the right Prady platform.
+        </p>
+        <div class="flex flex-col sm:flex-row gap-3 justify-center">
+            <a href="/contact" class="prady-btn-light">Get Demo →</a>
+            <a href="/products" class="prady-btn-ghost">Browse Products</a>
         </div>
-    </section>
-
-    <!-- Testimonials Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-slate"></div>
-        <div class="section-content w-full mx-auto">
-            <div class="text-center mb-16">
-                <h2 class="text-4xl font-bold text-gray-900 mb-4">What Our Clients Say</h2>
-                <p class="text-xl text-gray-600 max-w-2xl mx-auto">
-                    Don't just take our word for it - hear from businesses that have transformed their operations with our solutions
-                </p>
-            </div>
-
-            <div class="grid md:grid-cols-3 gap-8">
-                <!-- Testimonial 1 -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-xl transition-shadow">
-                    <div class="flex items-center mb-4">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 mb-6 italic">
-                        "BulkSMS CRM has completely transformed how we communicate with our customers. The multi-channel approach and real-time analytics have increased our engagement rates by 40%."
-                    </p>
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-indigo-100 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-indigo-600 font-semibold">JD</span>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900">John Doe</p>
-                            <p class="text-sm text-gray-600">CEO, Tech Solutions Ltd</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Testimonial 2 -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-xl transition-shadow">
-                    <div class="flex items-center mb-4">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 mb-6 italic">
-                        "Prady Mfi has streamlined our entire loan management process. What used to take days now takes minutes. The reporting features are exceptional and help us make better decisions."
-                    </p>
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-green-600 font-semibold">SM</span>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900">Sarah Mwangi</p>
-                            <p class="text-sm text-gray-600">Operations Manager, MicroFinance Co.</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Testimonial 3 -->
-                <div class="bg-white border-2 border-gray-200 rounded-xl p-8 hover:shadow-xl transition-shadow">
-                    <div class="flex items-center mb-4">
-                        <div class="flex text-yellow-400">
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                            <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"></path>
-                            </svg>
-                        </div>
-                    </div>
-                    <p class="text-gray-600 mb-6 italic">
-                        "The support team at Pradytecai is outstanding. They're always available when we need them and have helped us customize the platform to fit our unique workflow perfectly."
-                    </p>
-                    <div class="flex items-center">
-                        <div class="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center mr-4">
-                            <span class="text-purple-600 font-semibold">RK</span>
-                        </div>
-                        <div>
-                            <p class="font-semibold text-gray-900">Robert Kimani</p>
-                            <p class="text-sm text-gray-600">CTO, Enterprise Solutions</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- CTA Section -->
-    <section class="relative py-20 px-4 sm:px-6 lg:px-8 overflow-hidden">
-        {{-- Background image --}}
-        <div class="section-bg-image" style="background-image: url('https://images.unsplash.com/photo-1557804506-669a67965ba0?w=1920&q=80');"></div>
-        {{-- Overlay for readability --}}
-        <div class="section-bg-overlay section-bg-overlay-gradient"></div>
-        <div class="section-content w-full mx-auto text-center">
-            <h2 class="text-4xl font-bold text-gray-900 mb-4">Ready to Get Started?</h2>
-            <p class="text-xl text-gray-600 mb-8">
-                Join hundreds of businesses already using our platforms to transform their operations.
-            </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="/contact" class="bg-indigo-600 text-white px-8 py-4 rounded-lg text-lg font-semibold hover:bg-indigo-700 transition">
-                    Contact Us
-                </a>
-                <a href="https://crm.pradytecai.com" target="_blank" class="bg-white text-indigo-700 px-8 py-4 rounded-lg text-lg font-semibold hover:bg-gray-50 transition border-2 border-indigo-600">
-                    Open CRM
-                </a>
-            </div>
-        </div>
-    </section>
-
+    </div>
+</section>
 @endsection

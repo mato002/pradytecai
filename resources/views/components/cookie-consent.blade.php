@@ -1,4 +1,4 @@
-<div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-[10000] bg-white border-t-2 border-indigo-600 shadow-2xl">
+<div id="cookie-consent-banner" class="hidden fixed bottom-0 left-0 right-0 z-[10000] bg-white border-t-2 border-[#0B2347] shadow-2xl">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
         <div class="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div class="flex-1">
@@ -6,19 +6,19 @@
                 <p class="text-sm text-gray-600">
                     We use cookies to enhance your browsing experience, analyze site traffic, and personalize content. 
                     By clicking "Accept All", you consent to our use of cookies. 
-                    <a href="/policies#cookies-section" class="text-indigo-600 hover:underline">Learn more</a> about our cookie policy.
+                    <a href="/policies#cookies-section" class="text-[#00AEEF] hover:underline">Learn more</a> about our cookie policy.
                 </p>
             </div>
             <div class="flex flex-col sm:flex-row gap-3">
                 <button 
                     id="cookie-consent-accept" 
-                    class="bg-indigo-600 text-white px-6 py-2 rounded-lg text-sm font-semibold hover:bg-indigo-700 transition whitespace-nowrap"
+                    class="bg-[#0B2347] text-white px-6 py-2 rounded-full text-sm font-semibold hover:bg-[#1A4B8C] transition whitespace-nowrap"
                 >
                     Accept All
                 </button>
                 <button 
                     id="cookie-consent-decline" 
-                    class="bg-white text-gray-700 px-6 py-2 rounded-lg text-sm font-semibold hover:bg-gray-50 transition border-2 border-gray-300 whitespace-nowrap"
+                    class="bg-white text-gray-700 px-6 py-2 rounded-full text-sm font-semibold hover:bg-gray-50 transition border-2 border-gray-300 whitespace-nowrap"
                 >
                     Decline
                 </button>

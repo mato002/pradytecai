@@ -20,10 +20,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    $heroImagePath = \App\Models\SiteSetting::get('hero_background_image');
-    $heroImageUrl = $heroImagePath ? asset('storage/' . ltrim($heroImagePath, '/')) : null;
-
-    return view('home', compact('heroImageUrl'));
+    return view('home');
 });
 
 Route::get('/about', function () {
@@ -35,11 +32,15 @@ Route::get('/services', function () {
 });
 
 Route::get('/products', function () {
-    $products = \App\Models\Product::where('is_active', true)
-        ->ordered()
-        ->get();
-    
-    return view('products', compact('products'));
+    try {
+        $dbProducts = \App\Models\Product::where('is_active', true)
+            ->ordered()
+            ->get();
+    } catch (\Throwable $e) {
+        $dbProducts = collect();
+    }
+
+    return view('products', compact('dbProducts'));
 });
 
 Route::get('/careers', function () {
