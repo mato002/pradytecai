@@ -35,9 +35,9 @@
         <x-prady-icon name="shield" class="w-5 h-5" />
     </span>
     <span class="mkt-hero-visual__float mkt-hero-visual__float--users">
-        <x-prady-icon name="users" class="w-5 h-5" />
+        <x-prady-icon name="cloud" class="w-5 h-5" />
     </span>
     <span class="mkt-hero-visual__float mkt-hero-visual__float--live">
-        <x-prady-icon name="live" class="w-5 h-5" />
+        <x-prady-icon name="hr" class="w-5 h-5" />
     </span>
 </div>

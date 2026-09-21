@@ -15,8 +15,11 @@
     @if($market)
         <p class="mkt-product-card__market">{{ $market }}</p>
     @endif
-    <a href="/products#{{ $slug }}" class="mkt-product-card__link">
-        Learn More
-        <span aria-hidden="true">→</span>
-    </a>
+    <div class="mkt-product-card__actions">
+        <a href="/products#{{ $slug }}" class="mkt-product-card__link">
+            Explore Product
+            <span aria-hidden="true">→</span>
+        </a>
+        <a href="/contact?product={{ urlencode($name) }}" class="mkt-product-card__demo">Request Demo</a>
+    </div>
 </article>

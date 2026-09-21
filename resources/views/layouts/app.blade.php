@@ -13,18 +13,6 @@
 
     <style>
         body { font-family: 'Poppins', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
-
-        @keyframes heroFadeUp {
-            from { opacity: 0; transform: translateY(18px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .hero-animate {
-            opacity: 0;
-            transform: translateY(18px);
-            animation: heroFadeUp 0.65s ease-out forwards;
-        }
-        .hero-animate.delay-md { animation-delay: 0.15s; }
     </style>
     @stack('styles')
 </head>
@@ -34,52 +22,7 @@
     $footerProducts = array_slice(config('portfolio.products', []), 0, 6);
 @endphp
 
-    <header class="mkt-header">
-        <div class="mkt-container">
-            <div class="mkt-header__bar">
-                <x-prady-logo variant="nav" />
-
-                <nav class="mkt-nav" aria-label="Primary">
-                    <a href="/" class="mkt-nav__link {{ request()->is('/') ? 'is-active' : '' }}">Home</a>
-                    <a href="/#solutions" class="mkt-nav__link">Solutions</a>
-                    <a href="/products" class="mkt-nav__link {{ request()->is('products') ? 'is-active' : '' }}">Products</a>
-                    <a href="/services" class="mkt-nav__link {{ request()->is('services') ? 'is-active' : '' }}">Industries</a>
-                    <a href="/about" class="mkt-nav__link {{ request()->is('about') ? 'is-active' : '' }}">About</a>
-                    <a href="/contact" class="mkt-nav__link {{ request()->is('contact') ? 'is-active' : '' }}">Contact</a>
-                </nav>
-
-                <div class="mkt-header__actions">
-                    <a href="/contact" class="mkt-btn mkt-btn--primary mkt-header__cta">Get Demo</a>
-                    <button
-                        id="mobile-menu-button"
-                        class="mkt-menu-toggle"
-                        type="button"
-                        aria-label="Open menu"
-                        aria-controls="mobile-menu"
-                        aria-expanded="false"
-                    >
-                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
-                        </svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-
-        <div id="mobile-menu" class="mkt-mobile-menu hidden" hidden>
-            <nav class="mkt-mobile-menu__inner" aria-label="Mobile">
-                <a href="/" class="mkt-mobile-menu__link">Home</a>
-                <a href="/#solutions" class="mkt-mobile-menu__link">Solutions</a>
-                <a href="/products" class="mkt-mobile-menu__link">Products</a>
-                <a href="/services" class="mkt-mobile-menu__link">Industries</a>
-                <a href="/about" class="mkt-mobile-menu__link">About</a>
-                <a href="/careers" class="mkt-mobile-menu__link">Careers</a>
-                <a href="/blog" class="mkt-mobile-menu__link">Blog</a>
-                <a href="/contact" class="mkt-mobile-menu__link">Contact</a>
-                <a href="/contact" class="mkt-btn mkt-btn--primary mkt-mobile-menu__cta">Get Demo</a>
-            </nav>
-        </div>
-    </header>
+    <x-marketing.header />
 
     <main>
         @yield('content')
@@ -211,6 +154,47 @@
                     });
                 });
             }
+
+            // Desktop mega menus
+            const triggers = document.querySelectorAll('[data-mega-trigger]');
+            function closeAllMegas(except) {
+                triggers.forEach(function(btn) {
+                    if (except && btn === except) return;
+                    btn.setAttribute('aria-expanded', 'false');
+                    const panel = btn.parentElement.querySelector('.mkt-mega');
+                    if (panel) panel.hidden = true;
+                });
+            }
+            triggers.forEach(function(btn) {
+                const panel = btn.parentElement.querySelector('.mkt-mega');
+                if (!panel) return;
+                btn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const open = btn.getAttribute('aria-expanded') === 'true';
+                    closeAllMegas(btn);
+                    btn.setAttribute('aria-expanded', String(!open));
+                    panel.hidden = open;
+                });
+                btn.parentElement.addEventListener('mouseenter', function() {
+                    if (window.matchMedia('(min-width: 1024px)').matches) {
+                        closeAllMegas();
+                        btn.setAttribute('aria-expanded', 'true');
+                        panel.hidden = false;
+                    }
+                });
+                btn.parentElement.addEventListener('mouseleave', function() {
+                    if (window.matchMedia('(min-width: 1024px)').matches) {
+                        btn.setAttribute('aria-expanded', 'false');
+                        panel.hidden = true;
+                    }
+                });
+            });
+            document.addEventListener('click', function(e) {
+                if (!e.target.closest('.mkt-nav__item')) closeAllMegas();
+            });
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape') closeAllMegas();
+            });
 
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
