@@ -13,14 +13,25 @@ const NAV = [
     ],
   },
   {
+    section: "Social Media",
+    items: [
+      { to: "/admin/social", label: "Overview", perm: "social_accounts.view", end: true, icon: "social" },
+      { to: "/admin/social/create", label: "Create Post", perm: "content.view", icon: "compose" },
+      { to: "/admin/social/calendar", label: "Calendar", perm: "content.view", icon: "calendar" },
+      { to: "/admin/social/queue", label: "Queue", perm: "content.view", icon: "queue" },
+      { to: "/admin/social/content", label: "Content", perm: "content.view", icon: "content" },
+      { to: "/admin/social/approvals", label: "Approvals", perm: "content.view", icon: "approvals" },
+      { to: "/admin/social/accounts", label: "Social Accounts", perm: "social_accounts.view", icon: "accounts" },
+      { to: "/admin/social/analytics", label: "Analytics", perm: "analytics.view", icon: "analytics" },
+      { to: "/admin/social/inbox", label: "Inbox", perm: "social_accounts.view", icon: "inbox" },
+      { to: "/admin/social/health", label: "Integration Health", perm: "social_accounts.view", icon: "health" },
+    ],
+  },
+  {
     section: "Marketing",
     items: [
       { to: "/admin/campaigns", label: "Campaigns", perm: "campaigns.view", icon: "campaigns" },
-      { to: "/admin/content/calendar", label: "Calendar", perm: "content.view", icon: "calendar" },
-      { to: "/admin/content", label: "Content Library", perm: "content.view", icon: "content" },
-      { to: "/admin/content/approvals", label: "Approvals", perm: "content.view", icon: "approvals" },
-      { to: "/admin/social-accounts", label: "Social Accounts", perm: "social_accounts.view", icon: "social" },
-      { to: "/admin/analytics", label: "Analytics", perm: "analytics.view", icon: "analytics" },
+      { to: "/admin/analytics", label: "Marketing Analytics", perm: "analytics.view", icon: "analytics" },
     ],
   },
   {
@@ -88,6 +99,8 @@ export default function AdminLayout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [collapsed, setCollapsed] = useState(false);
+
+  const isSocialWorkspace = location.pathname.startsWith("/admin/social");
 
   const [title, description] = useMemo(() => {
     const exact = TITLES[location.pathname];
@@ -164,7 +177,7 @@ export default function AdminLayout() {
                     <NavLink
                       key={item.to}
                       to={item.to}
-                      end={item.end}
+                      end={item.end || item.to === "/admin/social"}
                       className={({ isActive }) => `nav-pill ${isActive ? "nav-pill--active" : ""}`}
                       onClick={() => setSidebarOpen(false)}
                     >
@@ -239,14 +252,16 @@ export default function AdminLayout() {
           </div>
         </header>
 
-        <div className="admin-page-head">
-          <span className="admin-page-head__eyebrow">
-            <span style={{ width: 8, height: 8, borderRadius: 99, background: "#43a047" }} />
-            Live sync
-          </span>
-          <h1>{title}</h1>
-          <p>{description}</p>
-        </div>
+        {!isSocialWorkspace && (
+          <div className="admin-page-head">
+            <span className="admin-page-head__eyebrow">
+              <span style={{ width: 8, height: 8, borderRadius: 99, background: "#43a047" }} />
+              Live sync
+            </span>
+            <h1>{title}</h1>
+            <p>{description}</p>
+          </div>
+        )}
 
         <main className="admin-content">
           <Outlet />

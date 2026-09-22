@@ -165,6 +165,7 @@ sudo systemctl enable --now pradytec-gunicorn pradytec-celery-worker pradytec-ce
 ```
 
 Deploy helper: `./deploy.sh` (uses `env` + Python 3.12 on this host).
+If you see `Permission denied`, run `chmod +x deploy.sh` once (or `bash deploy.sh`).
 
 ---
 
