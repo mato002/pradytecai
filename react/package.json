@@ -1,0 +1,23 @@
+{
+  "name": "pradytecai-react",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "build:check": "vite build && node -e \"const fs=require('fs'); const ok=fs.existsSync('dist/assets/index.js')&&fs.existsSync('dist/assets/index.css'); if(!ok){console.error('Missing dist assets'); process.exit(1)}; console.log('React build ready for Django at /static/assets/*')\""
+  },
+  "dependencies": {
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.1.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "^4.0.0",
+    "@vitejs/plugin-react": "^4.3.4",
+    "tailwindcss": "^4.0.0",
+    "vite": "^6.0.0"
+  }
+}

@@ -1,0 +1,27 @@
+@import "tailwindcss";
+@import "./styles/prady-marketing.css";
+@import "./styles/admin.css";
+@import "./styles/react-extras.css";
+
+@theme {
+  --color-prady-navy: #053171;
+  --color-prady-blue: #0a4e99;
+  --color-prady-primary: #0557a6;
+  --color-prady-deep: #00398c;
+  --color-prady-cyan: #19a7ef;
+  --color-prady-sky: #0487cd;
+  --color-prady-ice: #edf6fc;
+  --color-prady-light: #f7f9fc;
+  --font-sans: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+html,
+body,
+#root {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+}

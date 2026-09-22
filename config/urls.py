@@ -1,0 +1,28 @@
+from django.conf import settings
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.urls import include, path, re_path
+
+from apps.analytics.api.views import tracked_link_redirect
+from apps.core.public_forms import careers_apply_dispatch, contact_dispatch, newsletter_dispatch
+from apps.core.spa import spa_index
+from apps.core.views import health
+
+urlpatterns = [
+    path("admin-django/", admin.site.urls),
+    path("up", health),
+    path("health", health),
+    path("api/v1/", include("config.api_urls")),
+    path("t/<str:code>", tracked_link_redirect, name="tracked.show"),
+    path("contact", contact_dispatch),
+    path("newsletter/subscribe", newsletter_dispatch),
+    path("careers/apply", careers_apply_dispatch),
+    re_path(
+        r"^(?!api/|media/|static/|t/|up$|health$|admin-django/).*$",
+        spa_index,
+        name="spa",
+    ),
+]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

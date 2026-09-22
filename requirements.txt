@@ -1,0 +1,19 @@
+﻿# PradytecAI Django dependencies (pinned from verified install)
+Django==5.2.17
+djangorestframework==3.15.2
+celery==5.6.3
+django-celery-beat==2.9.0
+redis==6.4.0
+gunicorn==26.2.0
+python-dotenv==1.2.3
+PyMySQL==1.2.3
+cryptography==50.0.1
+Pillow==12.3.0
+bcrypt==5.0.0
+django-timezone-field==7.2.2
+amqp==5.4.0
+billiard==4.3.0
+click==8.5.0
+kombu==5.6.2
+vine==5.1.0
+tzdata==2026.4

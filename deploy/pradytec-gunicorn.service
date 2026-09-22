@@ -1,0 +1,21 @@
+[Unit]
+Description=PradytecAI Gunicorn (port 8100)
+After=network.target
+
+[Service]
+User=pradytec
+Group=pradytec
+WorkingDirectory=/home/pradytec/pradytecai
+EnvironmentFile=/home/pradytec/pradytecai/.env
+# Production venv is "env" built with /usr/local/bin/python3.12 — never system python3.9
+ExecStart=/home/pradytec/pradytecai/env/bin/gunicorn \
+  --config /home/pradytec/pradytecai/gunicorn.conf.py \
+  config.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=5
+KillMode=mixed
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target
