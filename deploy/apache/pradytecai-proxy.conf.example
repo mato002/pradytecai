@@ -6,38 +6,21 @@
 # DocumentRoot should be the React build output:
 #   /home/pradytec/pradytecai/public_html
 #
-# Backend: Docker Compose `web` publishes Gunicorn only on 127.0.0.1:8000
-# (container binds 0.0.0.0:8100). Do NOT expose 8000 publicly.
-
-# --- Prefer ProxyPass in VirtualHost (requires mod_proxy, mod_proxy_http) ---
-
-# ProxyPreserveHost On
-# RequestHeader set X-Forwarded-Proto "https"
-# RequestHeader set X-Forwarded-Port "443"
+# Backend: Docker Compose `web` publishes Gunicorn only on 127.0.0.1:8100
+# (container binds 0.0.0.0:8100). Host :8000 is used by another app.
+# Do NOT expose 8100 publicly.
 #
-# ProxyPass        /api/v1/  http://127.0.0.1:8000/api/v1/
-# ProxyPassReverse /api/v1/  http://127.0.0.1:8000/api/v1/
+# ProxyPass        /api/v1/  http://127.0.0.1:8100/api/v1/
+# ProxyPassReverse /api/v1/  http://127.0.0.1:8100/api/v1/
 #
-# ProxyPass        /up       http://127.0.0.1:8000/up
-# ProxyPassReverse /up       http://127.0.0.1:8000/up
+# ProxyPass        /up       http://127.0.0.1:8100/up
+# ProxyPassReverse /up       http://127.0.0.1:8100/up
 #
-# ProxyPass        /health   http://127.0.0.1:8000/health
-# ProxyPassReverse /health   http://127.0.0.1:8000/health
+# ProxyPass        /health   http://127.0.0.1:8100/health
+# ProxyPassReverse /health   http://127.0.0.1:8100/health
 #
-# ProxyPass        /t/       http://127.0.0.1:8000/t/
-# ProxyPassReverse /t/      http://127.0.0.1:8000/t/
-#
-# Optional Django admin (if used):
-# ProxyPass        /admin-django/  http://127.0.0.1:8000/admin-django/
-# ProxyPassReverse /admin-django/  http://127.0.0.1:8000/admin-django/
-#
-# Contact / newsletter / careers form posts (Django handlers):
-# ProxyPass        /contact              http://127.0.0.1:8000/contact
-# ProxyPassReverse /contact              http://127.0.0.1:8000/contact
-# ProxyPass        /newsletter/subscribe http://127.0.0.1:8000/newsletter/subscribe
-# ProxyPassReverse /newsletter/subscribe http://127.0.0.1:8000/newsletter/subscribe
-# ProxyPass        /careers/apply        http://127.0.0.1:8000/careers/apply
-# ProxyPassReverse /careers/apply        http://127.0.0.1:8000/careers/apply
+# ProxyPass        /t/       http://127.0.0.1:8100/t/
+# ProxyPassReverse /t/      http://127.0.0.1:8100/t/
 
 # Serve React + static + media from disk (DocumentRoot), not via Gunicorn:
 #   /           → public_html/index.html (SPA)

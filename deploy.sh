@@ -373,8 +373,8 @@ else
   CELERY_STATUS="OFF (Redis down / skipped)"
 fi
 
-log "Internal health http://127.0.0.1:8000/up"
-curl -fsS "http://127.0.0.1:8000/up" >/dev/null \
+log "Internal health http://127.0.0.1:8100/up"
+curl -fsS "http://127.0.0.1:8100/up" >/dev/null \
   || fail "internal /up failed"
 
 log "Public health ${PUBLIC_HEALTH_URL}"
@@ -389,7 +389,7 @@ cat <<EOF
   image:       pradytecai-app:${IMAGE_TAG}
   services:    web postgres (+ Celery: ${CELERY_STATUS})
   gunicorn:    inside Docker service \`web\` (no host systemd)
-  listen:      127.0.0.1:8000 → container :8100
+  listen:      127.0.0.1:8100 → container :8100
   frontend:    ${PUBLIC_HTML}
   celery:      ${CELERY_STATUS}
   enable later: fix Redis, then: docker compose up -d worker beat
