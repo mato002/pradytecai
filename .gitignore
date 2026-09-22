@@ -15,15 +15,6 @@ media/
 node_modules/
 react/node_modules/
 react/dist/
-/public/build
-/public/hot
-
-# Laravel legacy (still present during dual-run)
-/vendor
-/storage/*.key
-/storage/pail
-.phpunit.result.cache
-.phpactor.json
 
 # Env / IDE
 .env
@@ -37,7 +28,3 @@ Thumbs.db
 /.fleet
 /.zed
 /auth.json
-Homestead.json
-Homestead.yaml
-node_modules.zip
-vendor.zip

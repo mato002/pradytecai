@@ -1,4 +1,4 @@
-# Django run helper — keeps Laravel (artisan / public/) out of the way.
+# Django run helper
 param(
   [int]$Port = 8000
 )
@@ -12,7 +12,6 @@ if (-not (Test-Path $VenvActivate)) {
   exit 1
 }
 
-# Fail fast if Laravel's artisan serve (or anything) already owns the port
 $busy = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
 if ($busy) {
   Write-Host "Port $Port is already in use (PID $($busy.OwningProcess))."
@@ -29,5 +28,5 @@ if (-not (Test-Path (Join-Path $Root "react\dist\assets\index.js"))) {
 }
 
 $env:DJANGO_SETTINGS_MODULE = "config.settings"
-Write-Host "Starting Django at http://127.0.0.1:$Port/  (Laravel artisan is not used)"
+Write-Host "Starting Django at http://127.0.0.1:$Port/"
 python manage.py runserver $Port

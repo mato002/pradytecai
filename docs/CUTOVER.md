@@ -1,4 +1,6 @@
-# Production cutover & rollback
+# Production cutover notes
+
+Laravel application sources are removed from this repo. Production still uses the **existing MySQL schema** and may keep `APP_KEY` for decrypting Integration tokens.
 
 ## Before production
 
@@ -7,23 +9,20 @@
 3. Rehearse on DB clone with `--fake-initial`
 4. Confirm Redis and systemd/Supervisor units
 5. Keep `APP_KEY` for Integration token decrypt
-6. Confirm Celery Beat schedules match Laravel UTC times
+6. Confirm Celery Beat schedules (UTC)
 
-## Scheduler cutover
+## Scheduler
 
 1. Celery Worker healthy
-2. Beat configured but disabled / stopped
-3. Disable Laravel cron `schedule:run`
-4. Enable Celery Beat (single instance)
-5. Verify pulse / metrics / GA4 ticks
-6. Watch for duplicate external actions
+2. Enable Celery Beat (single instance)
+3. Verify pulse / metrics / GA4 ticks
+4. Watch for duplicate external actions
 
-## Rollback to Laravel
+## Rollback (app only)
 
 1. Stop Celery Beat first
 2. Drain or revoke outbound Celery tasks (publish / SMS / WhatsApp)
-3. Stop Celery Worker
-4. Point vhost back to Laravel
-5. Re-enable Laravel scheduler only after Beat is fully stopped
+3. Stop Celery Worker / Gunicorn
+4. Redeploy previous Django git tag (or restore DB backup if schema changed)
 
 Idempotency: published destinations skipped; `lead_communications.status=sent` skips resend; metric unique keys; pulse open-alert upsert.

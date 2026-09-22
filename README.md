@@ -55,16 +55,18 @@ python manage.py runserver 8000
 
 Local port **8000** is fine on your laptop. Production must use **8100**.
 
-## Dual-run with Laravel
+## Local notes
 
-See [docs/COEXISTENCE.md](docs/COEXISTENCE.md). Root `npm run build` → React; `npm run build:laravel` → legacy Vite.
+See [docs/COEXISTENCE.md](docs/COEXISTENCE.md). Root `npm run build` → React (`react/`).
+
+Laravel sources have been removed; see [docs/LARAVEL_RETIREMENT.md](docs/LARAVEL_RETIREMENT.md).
 
 ## API / auth
 
 - `/api/v1/…` session + CSRF
 - `/login` → `/admin`
 - Health: `/up`
-- Laravel bcrypt passwords work on MySQL adoption (`ensure_admin` only for fresh/local users)
+- Existing Laravel bcrypt password hashes still verify (`ensure_admin` only for fresh/local users)
 
 ## Celery / Redis
 
@@ -76,3 +78,4 @@ Redis default **6379**. Worker concurrency defaults to **1** — see `.env.examp
 - [docs/MYSQL_ADOPTION.md](docs/MYSQL_ADOPTION.md)
 - [docs/CUTOVER.md](docs/CUTOVER.md)
 - [docs/COEXISTENCE.md](docs/COEXISTENCE.md)
+- [docs/LARAVEL_RETIREMENT.md](docs/LARAVEL_RETIREMENT.md)

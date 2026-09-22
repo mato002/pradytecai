@@ -1,6 +1,6 @@
 # MySQL adoption (fake-initial)
 
-Production database (same as Laravel): **`pradytec_prady`** on `127.0.0.1:3306` (user `pradytec_prady`). Do not create a separate Django database.
+Production database: **`pradytec_prady`** on `127.0.0.1:3306` (user `pradytec_prady`). Do not create a separate Django database.
 
 On a **clone** of production MySQL:
 
@@ -14,7 +14,7 @@ python manage.py migrate  # applies only new Django tables (sessions, celery bea
 ```
 
 4. Verify row counts for key tables (`users`, `products`, `contact_messages`, …).
-5. Do **not** drop Laravel `migrations` table; Django uses `django_migrations`.
+5. Do **not** drop the legacy PHP `migrations` table if it still exists; Django uses `django_migrations`.
 
 ## Controlled schema additions
 
@@ -24,4 +24,4 @@ python manage.py migrate  # applies only new Django tables (sessions, celery bea
 
 ## Rollback
 
-Keep Laravel code and vhost until the rollback window expires. Stop Celery Beat before re-enabling Laravel `schedule:run`.
+Restore MySQL + media from backup and redeploy the previous Django git tag. Stop Celery Beat before draining workers.

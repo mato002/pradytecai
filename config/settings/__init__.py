@@ -1,10 +1,9 @@
 """
 Django settings for PradytecAI.
 
-Coexistence with Laravel in the same repo:
-- Prefer DJANGO_* env vars over Laravel DB_* / APP_* where they conflict.
-- Never open Laravel's database/database.sqlite unless explicitly forced.
-- Use distinct session/CSRF cookie names so Laravel and Django do not clobber each other.
+Env notes:
+- Prefer DJANGO_* keys; fall back to legacy DB_* / APP_KEY where useful for MySQL cutover
+  and decrypting Integration tokens encrypted under Laravel APP_KEY.
 """
 import os
 from pathlib import Path
@@ -89,10 +88,8 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ---------------------------------------------------------------------------
-# Database isolation from Laravel
-# Prefer DJANGO_DB_* ; fall back to Laravel DB_* only for MySQL cutover.
+# Database — prefer DJANGO_DB_*; fall back to DB_* for MySQL cutover.
 # ---------------------------------------------------------------------------
-_LARAVEL_SQLITE = (BASE_DIR / "database" / "database.sqlite").resolve()
 _db_engine = (
     os.getenv("DJANGO_DB_CONNECTION")
     or os.getenv("DB_CONNECTION")
@@ -107,13 +104,6 @@ if not _use_mysql:
     _sqlite_path = Path(_sqlite_name)
     if not _sqlite_path.is_absolute():
         _sqlite_path = BASE_DIR / _sqlite_path
-    # Refuse Laravel's sqlite file unless explicitly allowed
-    if (
-        _sqlite_path.resolve() == _LARAVEL_SQLITE
-        and os.getenv("DJANGO_USE_LARAVEL_SQLITE", "").lower()
-        not in ("1", "true", "yes")
-    ):
-        _sqlite_path = BASE_DIR / "db.sqlite3"
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
@@ -176,7 +166,6 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-# Distinct cookies so a concurrent Laravel session cannot collide
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 SESSION_COOKIE_NAME = os.getenv("SESSION_COOKIE_NAME", "pradytecai_django_session")
 CSRF_COOKIE_NAME = os.getenv("CSRF_COOKIE_NAME", "pradytecai_django_csrftoken")
