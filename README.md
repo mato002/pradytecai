@@ -203,7 +203,8 @@ Gunicorn/Celery/Postgres for this app are Compose-only going forward.
 
 Apply rules from `deploy/apache/pradytecai-proxy.conf.example` (WHM Include Editor / VirtualHost):
 
-* DocumentRoot → `/home/pradytec/pradytecai/public_html`
+* DocumentRoot → `/home/pradytec/pradytecai/public_html`  
+  (`deploy.sh` creates this folder if missing. Override with `PUBLIC_HTML=/path ./deploy.sh` if the cPanel docroot differs — do **not** point at the account-wide `/home/pradytec/public_html` if other apps live there.)
 * Proxy `/api/v1/*`, `/up`, `/health`, `/t/*` → `http://127.0.0.1:8100`
 * Serve `/`, `/assets/*`, `/static/*`, `/media/*` from disk (not Gunicorn)
 

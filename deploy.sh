@@ -202,50 +202,62 @@ fi
 # ---------------------------------------------------------------------------
 # 14. Safe React → public_html (never rsync --delete the whole document root)
 # ---------------------------------------------------------------------------
-if [[ -d "$PUBLIC_HTML" ]]; then
-  log "Deploying React to ${PUBLIC_HTML} (preserving .well-known, static, media)"
-  mkdir -p "$PUBLIC_HTML/assets" "$PUBLIC_HTML/static"
-  mkdir -p media
-
-  if [[ -L "$PUBLIC_HTML/media" ]]; then
-    log "public_html/media already symlinked"
-  elif [[ ! -e "$PUBLIC_HTML/media" ]]; then
-    ln -sfn "$(pwd)/media" "$PUBLIC_HTML/media"
-    log "Linked public_html/media → $(pwd)/media"
-  elif [[ -d "$PUBLIC_HTML/media" ]]; then
-    rsync -a "$PUBLIC_HTML/media/" media/ || true
-    rsync -a media/ "$PUBLIC_HTML/media/" || true
-    log "Synced ./media ↔ public_html/media (directory already present)"
+# Create document root if missing (first deploy). Override with PUBLIC_HTML=...
+if [[ ! -d "$PUBLIC_HTML" ]]; then
+  log "Creating PUBLIC_HTML=${PUBLIC_HTML}"
+  mkdir -p "$PUBLIC_HTML" || fail "Could not create PUBLIC_HTML=${PUBLIC_HTML}"
+  if [[ "$(id -u)" -eq 0 ]]; then
+    # Prefer account owner when deploying as root on WHM
+    if id pradytec >/dev/null 2>&1; then
+      chown pradytec:pradytec "$PUBLIC_HTML" 2>/dev/null || true
+    fi
   fi
-
-  rsync -a react/dist/assets/ "$PUBLIC_HTML/assets/"
-
-  while IFS= read -r -d '' f; do
-    rel="${f#react/dist/}"
-    case "$rel" in
-      index.html|assets|assets/*) continue ;;
-      .well-known|.well-known/*|static|static/*|media|media/*) continue ;;
-    esac
-    dest="$PUBLIC_HTML/$rel"
-    mkdir -p "$(dirname "$dest")"
-    cp -a "$f" "$dest"
-  done < <(find react/dist -type f -print0)
-
-  cp -a react/dist/index.html "$PUBLIC_HTML/index.html.new"
-  mv -f "$PUBLIC_HTML/index.html.new" "$PUBLIC_HTML/index.html"
-  log "React index.html replaced atomically"
-else
-  log "WARN: PUBLIC_HTML=$PUBLIC_HTML missing — skipped frontend copy"
 fi
+
+log "Deploying React to ${PUBLIC_HTML} (preserving .well-known, static, media)"
+mkdir -p "$PUBLIC_HTML/assets" "$PUBLIC_HTML/static" "$PUBLIC_HTML/media"
+mkdir -p media
+
+if [[ -L "$PUBLIC_HTML/media" ]]; then
+  log "public_html/media already symlinked"
+elif [[ ! -e "$PUBLIC_HTML/media" ]]; then
+  ln -sfn "$(pwd)/media" "$PUBLIC_HTML/media"
+  log "Linked public_html/media → $(pwd)/media"
+elif [[ -d "$PUBLIC_HTML/media" ]]; then
+  rsync -a "$PUBLIC_HTML/media/" media/ || true
+  rsync -a media/ "$PUBLIC_HTML/media/" || true
+  log "Synced ./media ↔ public_html/media (directory already present)"
+fi
+
+rsync -a react/dist/assets/ "$PUBLIC_HTML/assets/"
+
+while IFS= read -r -d '' f; do
+  rel="${f#react/dist/}"
+  case "$rel" in
+    index.html|assets|assets/*) continue ;;
+    .well-known|.well-known/*|static|static/*|media|media/*) continue ;;
+  esac
+  dest="$PUBLIC_HTML/$rel"
+  mkdir -p "$(dirname "$dest")"
+  cp -a "$f" "$dest"
+done < <(find react/dist -type f -print0)
+
+cp -a react/dist/index.html "$PUBLIC_HTML/index.html.new"
+mv -f "$PUBLIC_HTML/index.html.new" "$PUBLIC_HTML/index.html"
+log "React index.html replaced atomically"
 
 # ---------------------------------------------------------------------------
 # 15. Django static → public_html/static
 # ---------------------------------------------------------------------------
-if [[ -d "$PUBLIC_HTML" && -d staticfiles ]]; then
+if [[ -d staticfiles ]]; then
   mkdir -p "$PUBLIC_HTML/static"
   rsync -a --delete staticfiles/ "$PUBLIC_HTML/static/" \
     || cp -a staticfiles/. "$PUBLIC_HTML/static/"
   log "Django static synced to ${PUBLIC_HTML}/static/"
+  if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
+    chown -R pradytec:pradytec "$PUBLIC_HTML/assets" "$PUBLIC_HTML/static" \
+      "$PUBLIC_HTML/index.html" 2>/dev/null || true
+  fi
 fi
 
 # ---------------------------------------------------------------------------
