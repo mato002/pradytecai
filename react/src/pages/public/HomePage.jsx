@@ -41,19 +41,19 @@ export default function HomePage() {
 
   return (
     <>
-      <section className="mkt-hero" aria-labelledby="home-hero-heading">
-        <div className="mkt-container mkt-hero__inner">
-          <div className="mkt-hero__copy">
-            <h1 id="home-hero-heading" className="mkt-hero__title">
-              <span className="mkt-hero__title-line">Smart Technology Solutions</span>
-              <span className="mkt-hero__title-line">for Ambitious Businesses</span>
+      <section className="mkt-hero" aria-labelledby="home-hero-heading" style={{ backgroundColor: '#0A4E99' }}>
+        <div className="mkt-container mkt-hero__inner relative z-10 pt-16">
+          <div className="mkt-hero__copy relative">
+            <h1 id="home-hero-heading" className="mkt-hero__title" style={{ color: '#ffffff', fontWeight: '800', fontSize: '3rem', lineHeight: '1.2' }}>
+              <span className="mkt-hero__title-line block">Smart Technology Solutions</span>
+              <span className="mkt-hero__title-line block">for Ambitious Businesses</span>
             </h1>
-            <p className="mkt-hero__lead">We build secure, efficient software that drives growth.</p>
-            <div className="mkt-hero__actions">
-              <Link to="/contact" className="mkt-btn mkt-btn--light mkt-btn--hero">
+            <p className="mkt-hero__lead mt-4 text-xl font-medium" style={{ color: '#ffffff' }}>We build secure, efficient software that drives growth.</p>
+            <div className="mkt-hero__actions mt-8 flex gap-4">
+              <Link to="/contact" className="mkt-btn bg-white font-bold transition-colors mkt-btn--hero shadow-md" style={{ color: '#0A4E99', borderRadius: '8px' }}>
                 Get Demo →
               </Link>
-              <Link to="/products" className="mkt-btn mkt-btn--ghost mkt-btn--hero">
+              <Link to="/products" className="mkt-btn border-2 border-white text-white font-bold transition-colors mkt-btn--hero hover:bg-white/10" style={{ borderRadius: '8px' }}>
                 Our Products
               </Link>
             </div>
@@ -64,37 +64,37 @@ export default function HomePage() {
         </div>
       </section>
 
-      <section id="solutions" className="mkt-section mkt-section--solutions">
+      <section id="solutions" className="mkt-section mkt-section--solutions py-16 bg-white relative z-10" style={{ backgroundColor: '#ffffff' }}>
         <div className="mkt-container">
-          <div className="mkt-section__header mkt-section__header--solutions">
-            <h2 className="mkt-section__title">Our Solutions</h2>
-            <p className="mkt-section__subtitle">
+          <div className="mkt-section__header mkt-section__header--solutions mb-12 text-center max-w-4xl mx-auto">
+            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#0A4E99' }}>Our Solutions</h2>
+            <p className="text-lg md:text-xl font-medium" style={{ color: '#535B67' }}>
               Tailored systems designed to streamline operations and scale your business
             </p>
           </div>
-          <div className="mkt-solutions-grid">
+          <div className="mkt-solutions-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {portfolio.solutions.map((s) => (
-              <Link key={s.name} to={s.href} className="mkt-solution-card">
-                <span className="mkt-solution-card__icon">
-                  <PradyIcon name={s.icon} className="w-7 h-7" />
+              <Link key={s.name} to={s.href} className="mkt-solution-card group bg-white rounded-xl p-8 shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300 flex flex-col items-center text-center" style={{ border: 'none', backgroundColor: '#ffffff' }}>
+                <span className="mkt-solution-card__icon inline-flex items-center justify-center w-20 h-20 rounded-full mb-6" style={{ backgroundColor: '#EDF6FC', color: '#0A4E99' }}>
+                  <PradyIcon name={s.icon} className="w-10 h-10" />
                 </span>
-                <h3 className="mkt-solution-card__title">{s.name}</h3>
-                <p className="mkt-solution-card__text">{s.short}</p>
+                <h3 className="mkt-solution-card__title text-xl font-bold mb-3" style={{ color: '#053171' }}>{s.name}</h3>
+                <p className="mkt-solution-card__text text-sm leading-relaxed" style={{ color: '#535B67' }}>{s.short}</p>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section className="mkt-trust" aria-label="Why Prady">
+      <section className="mkt-trust py-6" aria-label="Why Prady" style={{ backgroundColor: '#F0F2F5', borderTop: '1px solid #E5EAF0' }}>
         <div className="mkt-container">
-          <div className="mkt-trust__grid mkt-trust__grid--three">
+          <div className="mkt-trust__grid flex flex-col md:flex-row justify-center gap-12 md:gap-24">
             {portfolio.trust.map((t) => (
-              <div key={t.label} className="mkt-trust__item mkt-trust__item--center">
-                <span className="mkt-trust__icon">
-                  <PradyIcon name={t.icon} className="w-5 h-5" />
+              <div key={t.label} className="mkt-trust__item flex items-center gap-3 font-bold" style={{ color: '#053171' }}>
+                <span className="mkt-trust__icon" style={{ color: '#0A4E99' }}>
+                  <PradyIcon name={t.icon} className="w-6 h-6" />
                 </span>
-                <p className="mkt-trust__label">{t.label}</p>
+                <p className="mkt-trust__label text-sm tracking-wide">{t.label}</p>
               </div>
             ))}
           </div>

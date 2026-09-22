@@ -1,4 +1,4 @@
-﻿/* â”€â”€ Prady Technologies marketing brand â”€â”€ */
+/* â”€â”€ Prady Technologies marketing brand â”€â”€ */
 .prady-site {
     --prady-navy: #053171;
     --prady-blue: #0A4E99;
@@ -1136,7 +1136,7 @@
     line-height: 1.5;
 }
 
-.mkt-featured__outcomes li > span:first-child {
+.mkt-featured__outcomes li>span:first-child {
     color: var(--prady-blue);
     flex-shrink: 0;
     margin-top: 0.1rem;
@@ -1684,4 +1684,3 @@ img {
     max-width: 100%;
     height: auto;
 }
-

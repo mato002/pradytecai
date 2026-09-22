@@ -68,24 +68,6 @@ export default function SiteHeader() {
             </NavLink>
             <div
               className="mkt-nav__item"
-              onMouseEnter={() => setOpenMega("products")}
-              onMouseLeave={() => setOpenMega(null)}
-            >
-              <button type="button" className="mkt-nav__link mkt-nav__link--btn">
-                Products
-              </button>
-              {openMega === "products" && (
-                <div className="mkt-mega">
-                  <div className="mkt-mega__grid">
-                    {productMega.map((col) => (
-                      <MegaColumn key={col.title} title={col.title} items={col.items} />
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
-            <div
-              className="mkt-nav__item"
               onMouseEnter={() => setOpenMega("solutions")}
               onMouseLeave={() => setOpenMega(null)}
             >
@@ -103,6 +85,24 @@ export default function SiteHeader() {
                         href: c.href,
                       }))}
                     />
+                  </div>
+                </div>
+              )}
+            </div>
+            <div
+              className="mkt-nav__item"
+              onMouseEnter={() => setOpenMega("products")}
+              onMouseLeave={() => setOpenMega(null)}
+            >
+              <button type="button" className="mkt-nav__link mkt-nav__link--btn">
+                Products
+              </button>
+              {openMega === "products" && (
+                <div className="mkt-mega">
+                  <div className="mkt-mega__grid">
+                    {productMega.map((col) => (
+                      <MegaColumn key={col.title} title={col.title} items={col.items} />
+                    ))}
                   </div>
                 </div>
               )}

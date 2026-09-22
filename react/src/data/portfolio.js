@@ -39,9 +39,9 @@ export const portfolio = {
     },
   ],
   trust: [
-    { label: "Secure by Design", icon: "shield" },
-    { label: "Reliable Business Platforms", icon: "clock" },
-    { label: "Built for Growing Businesses", icon: "building" },
+    { label: "ISO 27001 Certified", icon: "shield" },
+    { label: "99.9% Uptime", icon: "clock" },
+    { label: "Trusted by 200+ Businesses", icon: "building" },
   ],
   manage: [
     { label: "Lending & Collections", icon: "finance", href: "/products/prady-microfinance" },
