@@ -1,0 +1,23 @@
+# NOT USED BY DOCKER PRODUCTION DEPLOYMENT.
+# Celery Worker runs inside Docker Compose service `worker`.
+[Unit]
+Description=PradytecAI Celery Worker — LEGACY NON-DOCKER
+After=network.target redis.service
+
+[Service]
+User=pradytec
+Group=pradytec
+WorkingDirectory=/home/pradytec/pradytecai
+EnvironmentFile=/home/pradytec/pradytecai/.env
+ExecStart=/home/pradytec/pradytecai/env/bin/celery -A config worker \
+  --loglevel=INFO \
+  --concurrency=${CELERY_WORKER_CONCURRENCY:-1} \
+  --prefetch-multiplier=${CELERY_WORKER_PREFETCH_MULTIPLIER:-1} \
+  --max-tasks-per-child=${CELERY_WORKER_MAX_TASKS_PER_CHILD:-50}
+Restart=always
+RestartSec=5
+TimeoutStopSec=120
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=multi-user.target

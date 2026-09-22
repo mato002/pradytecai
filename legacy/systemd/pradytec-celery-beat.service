@@ -1,0 +1,21 @@
+# NOT USED BY DOCKER PRODUCTION DEPLOYMENT.
+# Celery Beat runs inside Docker Compose service `beat`.
+[Unit]
+Description=PradytecAI Celery Beat — LEGACY NON-DOCKER
+After=network.target redis.service
+# Only ONE beat instance in production
+
+[Service]
+User=pradytec
+Group=pradytec
+WorkingDirectory=/home/pradytec/pradytecai
+EnvironmentFile=/home/pradytec/pradytecai/.env
+ExecStart=/home/pradytec/pradytecai/env/bin/celery -A config beat \
+  --loglevel=INFO \
+  --scheduler django_celery_beat.schedulers:DatabaseScheduler
+Restart=always
+RestartSec=5
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

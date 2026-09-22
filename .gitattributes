@@ -1,11 +1,18 @@
 * text=auto eol=lf
 
-*.blade.php diff=html
 *.css diff=css
 *.html diff=html
 *.md diff=markdown
-*.php diff=php
+*.py diff=python
+*.jsx diff=javascript
+*.js diff=javascript
 
 /.github export-ignore
 CHANGELOG.md export-ignore
-.styleci.yml export-ignore
+
+# Env files must be LF on Linux hosts
+.env text eol=lf
+.env.* text eol=lf
+production.env text eol=lf
+*.env text eol=lf
+

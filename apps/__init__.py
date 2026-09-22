@@ -1,0 +1,1 @@
+# PradytecAI Django applications package.

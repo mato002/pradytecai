@@ -1,0 +1,211 @@
+/* React-only extras that complement extracted Blade marketing CSS */
+.mkt-nav {
+  display: none;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+@media (min-width: 1024px) {
+  .mkt-nav {
+    display: flex;
+  }
+}
+
+.mkt-nav__item {
+  position: relative;
+}
+
+.mkt-nav__link,
+.mkt-nav__link--btn {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.55rem 0.75rem;
+  font-size: 0.92rem;
+  font-weight: 600;
+  color: #151a23;
+  text-decoration: none;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  border-radius: 0.5rem;
+}
+
+.mkt-nav__link:hover,
+.mkt-nav__link--btn:hover,
+.mkt-nav__link.active {
+  color: #0a4e99;
+  background: #edf6fc;
+}
+
+.mkt-mega {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-30%);
+  min-width: 520px;
+  max-width: 760px;
+  padding: 1.25rem;
+  background: #fff;
+  border: 1px solid #e5eaf0;
+  border-radius: 1rem;
+  box-shadow: 0 18px 40px rgba(5, 49, 113, 0.12);
+  z-index: 60;
+}
+
+.mkt-mega__grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.mkt-mega__grid--2 {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.mkt-mega__heading {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: #535b67;
+  margin-bottom: 0.75rem;
+}
+
+.mkt-mega__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0.65rem;
+}
+
+.mkt-mega__list a {
+  font-weight: 600;
+  color: #053171;
+  text-decoration: none;
+}
+
+.mkt-mega__desc {
+  display: block;
+  margin-top: 0.15rem;
+  font-size: 0.78rem;
+  color: #535b67;
+  line-height: 1.35;
+}
+
+.mkt-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.mkt-btn--sm {
+  min-height: 42px;
+  padding: 0.55rem 1.1rem;
+  font-size: 0.88rem;
+}
+
+.mkt-header__burger {
+  display: inline-flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 42px;
+  height: 42px;
+  border: 1px solid #e5eaf0;
+  border-radius: 0.65rem;
+  background: #fff;
+  cursor: pointer;
+  padding: 0 11px;
+}
+
+.mkt-header__burger span {
+  display: block;
+  height: 2px;
+  background: #053171;
+  border-radius: 2px;
+}
+
+@media (min-width: 1024px) {
+  .mkt-header__burger {
+    display: none;
+  }
+}
+
+.mkt-mobile {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 1rem 1.25rem 1.25rem;
+  border-top: 1px solid #e5eaf0;
+  background: #fff;
+}
+
+.mkt-mobile a {
+  padding: 0.75rem 0.35rem;
+  font-weight: 600;
+  color: #151a23;
+  text-decoration: none;
+}
+
+.mkt-hero-visual {
+  position: relative;
+  min-height: 280px;
+}
+
+.mkt-hero-visual__glow {
+  position: absolute;
+  inset: 10% 5%;
+  border-radius: 2rem;
+  background: radial-gradient(circle at 30% 30%, rgba(25, 167, 239, 0.45), transparent 55%),
+    radial-gradient(circle at 70% 60%, rgba(255, 255, 255, 0.25), transparent 50%);
+  filter: blur(2px);
+}
+
+.mkt-hero-visual__panel {
+  position: relative;
+  height: 100%;
+  min-height: 280px;
+  border-radius: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(8px);
+  overflow: hidden;
+}
+
+.mkt-hero-visual__dots {
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.35) 1px, transparent 1px);
+  background-size: 18px 18px;
+  opacity: 0.35;
+}
+
+.mkt-hero-visual__card {
+  position: absolute;
+  border-radius: 1rem;
+  background: rgba(255, 255, 255, 0.92);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.18);
+}
+
+.mkt-hero-visual__card--a {
+  width: 42%;
+  height: 38%;
+  top: 14%;
+  left: 12%;
+}
+
+.mkt-hero-visual__card--b {
+  width: 36%;
+  height: 28%;
+  right: 12%;
+  top: 28%;
+  background: linear-gradient(135deg, #19a7ef, #0557a6);
+}
+
+.mkt-hero-visual__card--c {
+  width: 48%;
+  height: 22%;
+  left: 18%;
+  bottom: 14%;
+}

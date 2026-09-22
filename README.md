@@ -1,385 +1,373 @@
 # PradytecAI
 
-Corporate website and **Marketing Command Centre** for [PradytecAI](https://pradytecai.com) — portfolio products, careers/HR, blog, lead inbox, campaigns, content calendar, social publishing shell, analytics stubs, and marketing pulse alerts.
+Django 5.2 + DRF + React (Vite) marketing site and Marketing Command Centre.
+
+**Authoritative production runtime is Docker Compose.** Full host guide: [docs/PRODUCTION_SERVER.md](docs/PRODUCTION_SERVER.md).
+
+## Architecture
+
+```text
+HOST
+├── WHM / Apache          (TLS, React public_html, reverse proxy)
+├── existing Redis        (host :6379 — not a Compose service)
+└── Docker Engine
+      │
+      └── Compose: pradytecai
+             ├── web
+             │    └── Gunicorn + Django   → host 127.0.0.1:8100
+             ├── worker
+             │    └── Celery Worker
+             ├── beat
+             │    └── Celery Beat (DatabaseScheduler → PostgreSQL)
+             └── postgres
+                  └── PostgreSQL 17 (volume: pradytecai_postgres_data)
+```
+
+Frontend:
+
+```text
+Vite build → public_html → Apache
+  /assets/*  React hashed bundles
+  /static/*  Django collectstatic
+```
+
+Backend:
+
+```text
+/api/v1 /up /health /t/*  → Apache → 127.0.0.1:8100 → Docker web → Gunicorn :8100 → Django
+```
+
+> **`pradytec-gunicorn.service` is not used.**
+> **`pradytecai-gunicorn.service` is not used.**
+> **Gunicorn runs inside the Docker Compose `web` service. PradytecAI does not use a host-level Gunicorn systemd service.**
+> Gunicorn is managed exclusively by Docker Compose through the `web` service.
+
+Legacy host systemd unit files (historical only): `legacy/systemd/`.
+
+## Requirements (production)
+
+* WHM / cPanel + Apache
+* Git
+* Docker Engine + Docker Compose v2 (`docker compose`)
+* Existing host Redis
+* Document root: `/home/pradytec/pradytecai/public_html`
 
 ---
 
-## About the project
+## First-time production setup
 
-### Public site
-- Home, about, services, products, blog, FAQ, policies, search
-- Contact form with product + UTM attribution
-- Newsletter subscribe
-- Careers listings and job applications
-- Tracked short links (`/t/{code}`)
+Do this **once** on a new WHM host (or when moving from the old host systemd/Gunicorn stack to Docker).
 
-### Admin (`/admin`)
-Permission-gated admin for:
-- **Products** — DB-backed portfolio catalog
-- **Leads / enquiries / demos** — contact inbox and demo requests
-- **Campaigns** — product-linked campaigns with UTM context
-- **Content** — library, calendar, approvals, schedule/publish
-- **Social accounts** — Buffer-first adapter (stub-capable)
-- **Integrations** — Buffer / GA4 shell
-- **Analytics** — metric snapshots overview
-- **Careers** — positions, applications, interviews
-- **Blog, users, roles, settings, activity logs**
-- **Marketing Pulse** — health alerts on the dashboard
+### 1. Install Docker Engine + Compose v2
 
-### Auth & access
-- Spatie Laravel Permission (roles + permissions)
-- Product-scoped access via `user_access_scopes`
-- Seeded roles include `super_admin`, `hr_manager`, and marketing roles defined in `config/marketing_permissions.php`
+Run as root (or with `sudo`). Prefer the official Docker packages — **not** the outdated `docker` package from some OS defaults.
 
----
-
-## Tech stack
-
-| Layer | Technology |
-|--------|------------|
-| Backend | PHP 8.2+, Laravel 12 |
-| Auth / ACL | Spatie Permission |
-| Frontend | Blade, Vite 7, Tailwind CSS 4 |
-| Icons | Blade Heroicons |
-| Database | MySQL / MariaDB (production), SQLite OK for local |
-| Queues | Database queue driver |
-| Scheduler | Laravel Schedule (`marketing:pulse` hourly, metric sync jobs daily) |
-| Integrations | BulkSMS CRM, UltraMsg WhatsApp, Buffer, GA4 (env-driven; some stubs) |
-| Tests | PHPUnit 11 |
-
----
-
-## Requirements
-
-- PHP 8.2+ with extensions: `bcmath`, `ctype`, `curl`, `dom`, `fileinfo`, `json`, `mbstring`, `openssl`, `pdo`, `tokenizer`, `xml`
-- Composer 2
-- Node.js 18+ and npm
-- MySQL/MariaDB (or SQLite for local)
-- Optional: [Laravel Herd](https://herd.laravel.com/) (Windows/macOS) — this project commonly runs at `http://pradytecai.test`
-
----
-
-## Local setup
-
-### 1. Clone and install
+**AlmaLinux / Rocky / RHEL / CloudLinux (typical WHM):**
 
 ```bash
-git clone <your-repo-url> pradytecai
-cd pradytecai
+# Remove conflicting packages if present
+sudo dnf remove -y docker docker-client docker-client-latest docker-common \
+  docker-latest docker-latest-logrotate docker-logrotate docker-engine \
+  podman runc 2>/dev/null || true
 
-composer install
-cp .env.example .env
-php artisan key:generate
+sudo dnf -y install dnf-plugins-core
+sudo dnf config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo
+
+sudo dnf -y install docker-ce docker-ce-cli containerd.io \
+  docker-buildx-plugin docker-compose-plugin
+
+sudo systemctl enable --now docker
+sudo usermod -aG docker pradytec   # log out/in (or newgrp docker) afterward
 ```
 
-Or one-shot Composer setup (installs deps, `.env`, key, migrate, npm build):
+**Ubuntu / Debian:**
 
 ```bash
-composer run setup
+sudo apt-get update
+sudo apt-get install -y ca-certificates curl
+sudo install -m 0755 -d /etc/apt/keyrings
+sudo curl -fsSL https://download.docker.com/linux/ubuntu/gpg \
+  -o /etc/apt/keyrings/docker.asc
+sudo chmod a+r /etc/apt/keyrings/docker.asc
+
+# Adjust "ubuntu" → "debian" and the codename if needed
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.asc] \
+https://download.docker.com/linux/ubuntu $(. /etc/os-release && echo "$VERSION_CODENAME") stable" \
+  | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+
+sudo apt-get update
+sudo apt-get install -y docker-ce docker-ce-cli containerd.io \
+  docker-buildx-plugin docker-compose-plugin
+
+sudo systemctl enable --now docker
+sudo usermod -aG docker "$USER"
 ```
 
-### 2. Configure `.env`
-
-Minimum local values:
-
-```env
-APP_NAME=PradytecAI
-APP_ENV=local
-APP_DEBUG=true
-APP_URL=http://pradytecai.test
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=pradytecai
-DB_USERNAME=root
-DB_PASSWORD=
-
-QUEUE_CONNECTION=database
-CACHE_STORE=database
-SESSION_DRIVER=database
-MAIL_MAILER=log
-```
-
-For SQLite instead:
-
-```env
-DB_CONNECTION=sqlite
-# create empty file: database/database.sqlite
-```
-
-Optional integrations (see `.env.example`):
-
-```env
-BULKSMS_CRM_ENABLED=true
-BULKSMS_API_URL=https://crm.pradytecai.com/api
-BULKSMS_API_KEY=
-ULTRAMSG_INSTANCE_ID=
-ULTRAMSG_TOKEN=
-BUFFER_ENABLED=true
-BUFFER_ACCESS_TOKEN=
-GA4_PROPERTY_ID=
-GA4_CREDENTIALS_JSON=
-```
-
-### 3. Database, storage, seed
+**Verify:**
 
 ```bash
-php artisan migrate
-php artisan db:seed
-php artisan storage:link
+docker --version
+docker compose version
+docker info
+sudo systemctl status docker --no-pager
 ```
 
-Seeded users (change passwords in production):
+You need Compose **v2** (`docker compose …`), not the old Python `docker-compose` v1 binary.
 
-| Role | Email | Password |
-|------|--------|----------|
-| Super admin | `admin@pradytecai.com` | `admin123` |
-| HR manager | `hr@pradytecai.com` | `hr123` |
-
-Also seeds permissions/roles, portfolio products, and blog posts.
-
-### 4. Frontend assets
-
-**Dev (Vite HMR):**
+### 2. Clone the repository
 
 ```bash
-npm install
-npm run dev
+# Example production path
+sudo mkdir -p /home/pradytec/pradytecai
+sudo chown -R pradytec:pradytec /home/pradytec/pradytecai
+su - pradytec
+cd /home/pradytec
+git clone -b django https://github.com/mato002/pradytecai.git pradytecai
+cd /home/pradytec/pradytecai
 ```
 
-**Or run everything together:**
-
-```bash
-composer run dev
-```
-
-That starts HTTP server, queue worker, log tail (`pail`), and Vite.
-
-**Herd:** point the site at this folder; open `http://pradytecai.test` (and keep `npm run dev` or a production build for assets).
-
-**Without Herd:**
-
-```bash
-php artisan serve
-```
-
-### 5. Queue + scheduler (local)
-
-```bash
-php artisan queue:work
-php artisan schedule:work
-```
-
-Scheduled jobs (from `routes/console.php`):
-
-- `marketing:pulse` — hourly
-- `SyncSocialMetricsJob` — daily 02:00
-- `SyncGa4Job` — daily 02:30
-
-Manual pulse:
-
-```bash
-php artisan marketing:pulse
-```
-
-### 6. Tests
-
-```bash
-php artisan test
-php artisan test --filter=MarketingAdminAuthTest
-```
-
----
-
-## Production setup
-
-### Server layout (typical shared / cPanel style)
-
-This repo’s `deploy.sh` assumes:
-
-- App code: e.g. `/home/pradytec/pradytecai`
-- Web document root: e.g. `/home/pradytec/pradytecai/public_html` (or your host’s `public_html` symlink/copy of `public`)
-
-Point the vhost / domain document root at Laravel’s **`public`** directory (or keep syncing built assets into `public_html` as the script does).
-
-### 1. First-time server install
-
-```bash
-cd /home/pradytec/pradytecai   # or your path
-git clone <your-repo-url> .
-composer install --no-dev --optimize-autoloader
-cp .env.example .env
-# edit .env for production
-php artisan key:generate
-php artisan migrate --force
-php artisan storage:link
-```
-
-Production `.env` essentials:
-
-```env
-APP_NAME=PradytecAI
-APP_ENV=production
-APP_DEBUG=false
-APP_URL=https://pradytecai.com
-
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_DATABASE=...
-DB_USERNAME=...
-DB_PASSWORD=...
-
-QUEUE_CONNECTION=database
-CACHE_STORE=database
-SESSION_DRIVER=database
-
-MAIL_MAILER=smtp
-# ... real mail credentials
-```
-
-Permissions:
-
-```bash
-chmod -R 775 storage bootstrap/cache
-chown -R <web-user>:<web-user> storage bootstrap/cache
-```
-
-### 2. Build assets
-
-On the server (if Node is available) `deploy.sh` runs `npm ci` + `npm run build`.
-
-Or build locally / on CI and upload `public/build/` (must include `manifest.json`):
-
-```bash
-npm ci
-npm run build
-```
-
-Windows helper: `build-production.bat`.
-
-### 3. Cron (required)
-
-Laravel scheduler (every minute):
-
-```cron
-* * * * * cd /home/pradytec/pradytecai && php artisan schedule:run >> /dev/null 2>&1
-```
-
-Queue worker (Supervisor or equivalent):
-
-```bash
-php artisan queue:work --sleep=3 --tries=3 --max-time=3600
-```
-
-### 4. Cache for production
-
-```bash
-php artisan optimize:clear
-php artisan config:cache
-php artisan route:cache
-php artisan view:cache
-```
-
----
-
-## Deploy with `deploy.sh`
-
-`deploy.sh` is a **manual production deploy** script. It does **not** run on git push by itself — you trigger it on the server (SSH, cron, or a webhook).
-
-### What it does (7 steps)
-
-1. `git pull origin main` (or `DEPLOY_BRANCH`)
-2. `composer install --no-dev --optimize-autoloader`
-3. `php artisan migrate --force`
-4. `npm ci` / `npm install` + `npm run build` (requires Node on the server)
-5. Sync `public/build/` → `PUBLIC_HTML/build` (rsync or copy)
-6. `php artisan optimize:clear`
-7. Rebuild config / route / view caches
-
-### Run it
+If the tree already exists:
 
 ```bash
 cd /home/pradytec/pradytecai
-chmod +x deploy.sh
+git fetch origin
+git checkout django
+git pull origin django
+```
+
+### 3. Configure `.env`
+
+```bash
+cd /home/pradytec/pradytecai
+cp -n .env.example .env
+# Or use your prepared production file:
+# cp -n production.env .env
+chmod 600 .env
+nano .env   # or: vi .env
+```
+
+Minimum production values:
+
+```env
+COMPOSE_PROJECT_NAME=pradytecai
+DEBUG=false
+ALLOWED_HOSTS=www.pradytecai.com,pradytecai.com,127.0.0.1
+CSRF_TRUSTED_ORIGINS=https://www.pradytecai.com,https://pradytecai.com
+SESSION_SECURE_COOKIE=true
+
+DJANGO_SECRET_KEY=…long-random…
+POSTGRES_DB=pradytecai
+POSTGRES_USER=pradytecai
+POSTGRES_PASSWORD=…strong…
+DJANGO_DB_ENGINE=postgresql
+DJANGO_DB_NAME=pradytecai
+DJANGO_DB_USER=pradytecai
+DJANGO_DB_PASSWORD=…same-as-POSTGRES_PASSWORD…
+DJANGO_DB_HOST=postgres
+DJANGO_DB_PORT=5432
+
+REDIS_HOST=host.docker.internal
+REDIS_PORT=6379
+CELERY_BROKER_URL=redis://host.docker.internal:6379/2
+CELERY_RESULT_BACKEND=redis://host.docker.internal:6379/3
+
+GUNICORN_BIND=0.0.0.0:8100
+GUNICORN_WORKERS=2
+VITE_API_BASE_URL=/api/v1
+```
+
+Keep legacy MySQL credentials in `.env` only for migration/rollback until PostgreSQL cutover is accepted. Do **not** delete MySQL yet. See [docs/POSTGRES_MIGRATION.md](docs/POSTGRES_MIGRATION.md).
+
+### 4. Inspect host Redis (required)
+
+```bash
+ss -ltnp | grep 6379
+redis-cli ping
+redis-cli INFO keyspace
+```
+
+Confirm logical DBs **2** and **3** are free (or pick unused numbers). Do **not** bind Redis to `0.0.0.0` without firewall + auth.
+
+If Redis only listens on `127.0.0.1`, Docker cannot reach it via `host.docker.internal` until you allow the docker bridge safely (see [docs/PRODUCTION_SERVER.md](docs/PRODUCTION_SERVER.md)). Fix that **before** the first successful deploy.
+
+### 5. Disable obsolete host systemd app units (if installed)
+
+```bash
+sudo systemctl disable --now pradytec-gunicorn pradytec-celery-worker pradytec-celery-beat 2>/dev/null || true
+sudo systemctl disable --now pradytecai-gunicorn 2>/dev/null || true
+```
+
+Gunicorn/Celery/Postgres for this app are Compose-only going forward.
+
+### 6. Configure Apache proxy
+
+Apply rules from `deploy/apache/pradytecai-proxy.conf.example` (WHM Include Editor / VirtualHost):
+
+* DocumentRoot → `/home/pradytec/pradytecai/public_html`  
+  (`deploy.sh` creates this folder if missing. Override with `PUBLIC_HTML=/path ./deploy.sh` if the cPanel docroot differs — do **not** point at the account-wide `/home/pradytec/public_html` if other apps live there.)
+* Proxy `/api/v1/*`, `/up`, `/health`, `/t/*` → `http://127.0.0.1:8100`
+* Serve `/`, `/assets/*`, `/static/*`, `/media/*` from disk (not Gunicorn)
+
+Reload Apache after changes (`/scripts/rebuildhttpdconf` + restart via WHM, or your usual reload).
+
+### 7. Script permissions + first deploy
+
+```bash
+cd /home/pradytec/pradytecai
+chmod +x deploy.sh docker/entrypoint.sh \
+  scripts/postgres-backup.sh scripts/postgres-restore.sh
+
 ./deploy.sh
 ```
 
-Optional overrides:
+`deploy.sh` will: verify Docker/Compose/`.env`/Redis → `git pull` → build `pradytecai-app` → ephemeral React build → start Postgres → migrate → collectstatic → safe `public_html` sync → `docker compose up -d` → health checks.
+
+### 8. Verify
 
 ```bash
-PUBLIC_HTML=/path/to/public_html DEPLOY_BRANCH=main ./deploy.sh
+docker compose ps
+curl -fsS http://127.0.0.1:8100/up
+curl -fsS https://pradytecai.com/up
+docker compose logs --tail=50 web
+docker compose exec web python manage.py showmigrations
 ```
 
-Defaults:
+Expected: `web` / `worker` / `beat` running, `postgres` healthy, `/up` returns JSON `{"status":"ok",…}`.
 
-- `PUBLIC_HTML=/home/pradytec/pradytecai/public_html`
-- `DEPLOY_BRANCH=main`
-
-### “Auto” deploy options
-
-**A. SSH after push (simplest)**
+Optional after first migrate:
 
 ```bash
-ssh user@server 'cd /home/pradytec/pradytecai && ./deploy.sh'
+docker compose exec web python manage.py seed_products
+docker compose exec web python manage.py ensure_admin \
+  --email admin@pradytecai.com --password 'ChooseAStrongPassword'
 ```
 
-**B. Cron (scheduled pull — use carefully)**
+## Normal update
 
-```cron
-# example: every night at 3:00
-0 3 * * * cd /home/pradytec/pradytecai && ./deploy.sh >> /home/pradytec/logs/deploy.log 2>&1
+```bash
+# laptop
+git add . && git commit -m "Description" && git push origin django
+
+# server
+cd /home/pradytec/pradytecai
+./deploy.sh
 ```
 
-**C. Git webhook / CI**
+Do not use FTP as the normal release process. Do not restart host Gunicorn/Celery systemd units.
 
-On push to `main`, CI SSHes into the server and runs `./deploy.sh`. There is no GitHub Actions workflow in this repo yet — add one if you want push-triggered deploys.
+## Daily operations
 
-**D. Local Windows build, then server deploy**
+```bash
+docker compose ps
+docker compose logs -f
+docker compose logs -f web
+docker compose logs -f worker
+docker compose logs -f beat
+docker compose logs -f postgres
+docker compose restart web
+docker compose restart worker
+docker compose exec web python manage.py shell
+docker compose exec web python manage.py showmigrations
+docker compose exec web python manage.py check
+docker stats
+```
 
-If the server has no Node:
+After a normal host reboot, Docker restart policies bring `postgres` → `web` / `worker` / `beat` back. You do **not** manually start Gunicorn, Celery, or PostgreSQL.
 
-1. Run `npm run build` (or `build-production.bat`) locally
-2. Commit/upload `public/build/` **or** rsync it to the server
-3. On server, temporarily skip the npm step or ensure `public/build/manifest.json` already exists before running a slimmed deploy
+## Resource monitoring
 
----
+Use `docker stats` and adjust `.env` limits (`DOCKER_WEB_MEMORY`, etc.), then `docker compose up -d`. Do **not** remove limits as the default fix — this is a shared WHM host.
 
-## Useful Artisan commands
+## Backups
 
-| Command | Purpose |
-|---------|---------|
-| `php artisan marketing:pulse` | Evaluate marketing health rules; upsert alerts |
-| `php artisan migrate` | Run migrations |
-| `php artisan db:seed` | Seed roles, admin/HR users, products, blog |
-| `php artisan queue:work` | Process publish / mail / sync jobs |
-| `php artisan schedule:work` | Run scheduler in the foreground (local) |
-| `php artisan optimize:clear` | Clear all caches |
-| `php artisan test --filter=MarketingAdminAuthTest` | Auth / permission regression tests |
+```bash
+./scripts/postgres-backup.sh
+# restore to staging first:
+./scripts/postgres-restore.sh backups/pradytecai-….dump pradytecai_restore_test
+```
 
----
+## Production warnings
 
-## Project docs (extra)
+Never casually run:
 
-| File | Topic |
-|------|--------|
-| `DEPLOYMENT_CHECKLIST.md` | Production checklist & common fixes |
-| `PRODUCTION_BUILD_INSTRUCTIONS.md` | Why styling breaks without `public/build` |
-| `PRODUCTION_UPLOAD_GUIDE.md` / `PRODUCTION_UPLOAD_FIX.md` | Upload / asset sync notes |
-| `AUTHENTICATION_SETUP.md` | Login / admin auth notes |
-| `COMMUNICATION_SETUP.md` | BulkSMS / UltraMsg setup |
+* `python manage.py runserver` (production)
+* `npm run dev` (production)
+* `docker compose down -v` — **destroys the PostgreSQL volume**
+* `docker system prune --volumes` — can delete `postgres_data`
 
----
+## Local Windows (dev)
 
-## Security notes
+```powershell
+python -m venv .venv
+.\.venv\Scripts\Activate.ps1
+pip install -r requirements.txt
+copy .env.example .env
+python manage.py migrate
+python manage.py ensure_admin --email admin@pradytecai.com --password "YourPassword"
+cd react; npm ci; npm run build; cd ..
+python manage.py runserver 8000
+```
 
-- Never commit `.env`, API keys, or production passwords
-- Change seeded `admin123` / `hr123` immediately on any shared or production environment
-- Keep `APP_DEBUG=false` in production
-- Restrict `/admin` via strong passwords + least-privilege roles
+Local port **8000** is fine on your laptop (`runserver`). Production Docker publishes host **127.0.0.1:8100** → container Gunicorn **:8100** (host `:8000` is used by another app).
 
----
+## API / auth
 
-## License
+* `/api/v1/…` session + CSRF (`VITE_API_BASE_URL=/api/v1`)
+* `/login` → `/admin`
+* Health: `/up`
+* Laravel bcrypt hashes still verify where adopted
 
-Proprietary — PradytecAI. Internal use unless otherwise agreed.
+## Product catalog & enquiries
+
+The **database** is the single source of truth for products. Admin CRUD updates Django → public React pages read the same catalog via `/api/v1/public/products/`.
+
+### Product initialization
+
+After migrations (also run automatically by `./deploy.sh`):
+
+```bash
+# local
+python manage.py seed_products
+
+# production (Docker)
+docker compose exec web python manage.py seed_products
+```
+
+Idempotent: creates the 9 default Pradytec products by **stable slug** only. Re-running does **not** duplicate rows or overwrite admin edits.
+
+### Product management
+
+* Admin UI: `/admin/products` (requires `products.view` / `products.manage`)
+* API: `/api/v1/products/` (authenticated) — create, update, delete, poster upload
+* Public list: `/api/v1/public/products/` (active only, ordered)
+* Public detail: `/api/v1/public/products/<slug>/` and React route `/products/<slug>`
+
+### Product images
+
+* Stored under `MEDIA_ROOT/products/posters/` (repo `./media`, Docker volume `./media:/app/media`)
+* Served at `/media/…` (Apache from `public_html/media`, preferably symlinked to `./media`; Django also serves `/media/` as fallback)
+* JPEG / PNG / WebP / GIF, max 5 MB
+* Public cards use `poster_url` from the API (icon fallback when missing)
+
+### Enquiries
+
+* Public forms (`/contact`, product detail CTAs) POST `/api/v1/public/contact/`
+* Product-originated requests attach `product` (+ optional `DemoRequest` / preferred date)
+* Admin UI: `/admin/enquiries` — view details and update status (`new`, `contacted`, `in_progress`, `completed`, `closed`)
+
+### Deployment
+
+```bash
+./deploy.sh   # migrate → seed_products → collectstatic → React → restart
+```
+
+Safe to re-run. Manual seed after a partial deploy: `docker compose exec web python manage.py seed_products`
+
+## Docs
+
+* [docs/PRODUCTION_SERVER.md](docs/PRODUCTION_SERVER.md)
+* [docs/POSTGRES_MIGRATION.md](docs/POSTGRES_MIGRATION.md)
+* [docs/MYSQL_ADOPTION.md](docs/MYSQL_ADOPTION.md) (historical MySQL adoption)
+* [docs/CUTOVER.md](docs/CUTOVER.md)
+* [docs/COEXISTENCE.md](docs/COEXISTENCE.md)
+* [docs/LARAVEL_RETIREMENT.md](docs/LARAVEL_RETIREMENT.md)
