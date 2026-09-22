@@ -1,8 +1,10 @@
 # MySQL adoption (fake-initial)
 
+Production database (same as Laravel): **`pradytec_prady`** on `127.0.0.1:3306` (user `pradytec_prady`). Do not create a separate Django database.
+
 On a **clone** of production MySQL:
 
-1. Point `.env` at the clone (`DB_CONNECTION=mysql`, `DB_HOST`, etc.).
+1. Point `.env` at the clone (`DJANGO_DB_CONNECTION=mysql` or `DB_CONNECTION=mysql`, `DB_HOST`, `DB_DATABASE=pradytec_prady`, etc.).
 2. Ensure Django models' `Meta.db_table` match existing tables (already done).
 3. Run:
 

@@ -127,8 +127,8 @@ else:
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("DJANGO_DB_NAME") or os.getenv("DB_DATABASE", "pradytecai"),
-            "USER": os.getenv("DJANGO_DB_USER") or os.getenv("DB_USERNAME", "root"),
+            "NAME": os.getenv("DJANGO_DB_NAME") or os.getenv("DB_DATABASE", "pradytec_prady"),
+            "USER": os.getenv("DJANGO_DB_USER") or os.getenv("DB_USERNAME", "pradytec_prady"),
             "PASSWORD": os.getenv("DJANGO_DB_PASSWORD") or os.getenv("DB_PASSWORD", ""),
             "HOST": os.getenv("DJANGO_DB_HOST") or os.getenv("DB_HOST", "127.0.0.1"),
             "PORT": os.getenv("DJANGO_DB_PORT") or os.getenv("DB_PORT", "3306"),
@@ -214,7 +214,12 @@ REST_FRAMEWORK = {
 
 REDIS_HOST = os.getenv("REDIS_HOST", "127.0.0.1")
 REDIS_PORT = os.getenv("REDIS_PORT", "6379")
-REDIS_PASSWORD = os.getenv("REDIS_PASSWORD") or None
+_raw_redis_pw = (os.getenv("REDIS_PASSWORD") or "").strip()
+REDIS_PASSWORD = (
+    None
+    if not _raw_redis_pw or _raw_redis_pw.lower() in ("null", "none", "nil")
+    else _raw_redis_pw
+)
 _redis_auth = f":{REDIS_PASSWORD}@" if REDIS_PASSWORD else ""
 CELERY_BROKER_URL = os.getenv(
     "CELERY_BROKER_URL",

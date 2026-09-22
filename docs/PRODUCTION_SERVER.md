@@ -8,13 +8,15 @@
 
 ## 1. Server environment overview
 
-| Item | Value |
-|------|--------|
-| Project root | `/home/pradytec/pradytecai` |
-| Assigned port | **8100** |
-| System Python (WHM) | `/usr/bin/python3` → **3.9.25** |
-| App Python | `/usr/local/bin/python3.12` → **3.12.0** |
-| Production venv | `/home/pradytec/pradytecai/env` |
+
+| Item                | Value                                    |
+| ------------------- | ---------------------------------------- |
+| Project root        | `/home/pradytec/pradytecai`              |
+| Assigned port       | **8100**                                 |
+| System Python (WHM) | `/usr/bin/python3` → **3.9.25**          |
+| App Python          | `/usr/local/bin/python3.12` → **3.12.0** |
+| Production venv     | `/home/pradytec/pradytecai/env`          |
+
 
 ### Critical system notice
 
@@ -31,11 +33,15 @@ Do **not** `pip install` packages globally as root.
 
 ---
 
+
+
 ## 2. Django / Python compatibility
 
 Django 5.x requires Python ≥ 3.10. This app runs in an isolated **Python 3.12** venv named `env`.
 
 ---
+
+
 
 ## 3. First-time setup checklist
 
@@ -49,12 +55,16 @@ cd /home/pradytec/pradytecai
 source env/bin/activate
 ```
 
+
+
 ### Step 2 — Install dependencies
 
 ```bash
 pip install --upgrade pip
 pip install -r requirements.txt
 ```
+
+
 
 ### Step 3 — Env, migrate, static
 
@@ -67,12 +77,16 @@ python manage.py collectstatic --noinput
 # python manage.py seed_marketing
 ```
 
+
+
 ### Step 4 — Build React
 
 ```bash
 cd react && npm ci && npm run build && cd ..
 python manage.py collectstatic --noinput
 ```
+
+
 
 ### Step 5 — Launch Gunicorn on **8100**
 
@@ -106,6 +120,8 @@ Or:
 
 ---
 
+
+
 ## 4. CSF firewall (direct IP:8100 only)
 
 If accessing `http://YOUR_SERVER_IP:8100` without a reverse proxy:
@@ -119,6 +135,8 @@ If Apache/Nginx proxies HTTPS → `127.0.0.1:8100`, you usually **do not** need 
 
 ---
 
+
+
 ## 5. Verify
 
 ```bash
@@ -129,6 +147,8 @@ curl -fsS http://127.0.0.1:8100/up
 Expect a listener on `127.0.0.1:8100` or `0.0.0.0:8100`, and JSON `{"status":"ok",...}` from `/up`.
 
 ---
+
+
 
 ## 6. systemd units
 
@@ -148,30 +168,65 @@ Deploy helper: `./deploy.sh` (uses `env` + Python 3.12 on this host).
 
 ---
 
+
+
 ## 7. Production `.env` essentials
+
+Same MySQL database as Laravel — **do not create a new DB**:
+
+| Key | Value |
+|-----|--------|
+| Database | `pradytec_prady` |
+| User | `pradytec_prady` |
+| Host | `127.0.0.1:3306` |
 
 ```env
 DEBUG=false
-ALLOWED_HOSTS=pradytecai.com,www.pradytecai.com,YOUR_SERVER_IP
-CSRF_TRUSTED_ORIGINS=https://pradytecai.com,https://www.pradytecai.com
+ALLOWED_HOSTS=www.pradytecai.com,pradytecai.com,127.0.0.1
+CSRF_TRUSTED_ORIGINS=https://www.pradytecai.com,https://pradytecai.com
 SESSION_SECURE_COOKIE=true
 GUNICORN_BIND=127.0.0.1:8100
 GUNICORN_WORKERS=2
+
+# Same MySQL as Laravel (required)
+DJANGO_DB_CONNECTION=mysql
+DJANGO_DB_HOST=127.0.0.1
+DJANGO_DB_PORT=3306
+DJANGO_DB_NAME=pradytec_prady
+DJANGO_DB_USER=pradytec_prady
+DJANGO_DB_PASSWORD=…same as Laravel…
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=pradytec_prady
+DB_USERNAME=pradytec_prady
+DB_PASSWORD=…same as Laravel…
+
+APP_KEY=base64:…same as Laravel…
+APP_URL=https://www.pradytecai.com
+
 REDIS_HOST=127.0.0.1
 REDIS_PORT=6379
+REDIS_PASSWORD=
 CELERY_BROKER_URL=redis://127.0.0.1:6379/0
 CELERY_WORKER_CONCURRENCY=1
 ```
 
-MySQL: set `DJANGO_DB_HOST` / `DB_*` and adopt existing tables with `--fake-initial` on a clone first (see `docs/MYSQL_ADOPTION.md`).
+Do **not** set `DJANGO_DB_CONNECTION=sqlite` on this server.  
+Adopt existing tables with `--fake-initial` on a clone first (see `docs/MYSQL_ADOPTION.md`).
 
 ---
 
+
+
 ## 8. Local Windows vs production Linux
 
-| | Local (dev) | Production (this server) |
-|--|-------------|---------------------------|
-| Python | whatever `.venv` was created with | **`/usr/local/bin/python3.12` only** |
-| Venv folder | `.venv` | **`env`** |
-| HTTP | `runserver` :8000 | **Gunicorn :8100** |
-| Never touch | — | **`/usr/bin/python3` (3.9 / WHM)** |
+
+|             | Local (dev)                       | Production (this server)             |
+| ----------- | --------------------------------- | ------------------------------------ |
+| Python      | whatever `.venv` was created with | `/usr/local/bin/python3.12` **only** |
+| Venv folder | `.venv`                           | `env`                                |
+| HTTP        | `runserver` :8000                 | **Gunicorn :8100**                   |
+| Never touch | —                                 | `/usr/bin/python3` **(3.9 / WHM)**   |
+
+
