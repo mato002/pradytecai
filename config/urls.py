@@ -1,7 +1,10 @@
+from pathlib import Path
+
 from django.conf import settings
 from django.conf.urls.static import static
 from django.contrib import admin
 from django.urls import include, path, re_path
+from django.views.static import serve
 
 from apps.analytics.api.views import tracked_link_redirect
 from apps.core.public_forms import careers_apply_dispatch, contact_dispatch, newsletter_dispatch
@@ -18,7 +21,7 @@ urlpatterns = [
     path("newsletter/subscribe", newsletter_dispatch),
     path("careers/apply", careers_apply_dispatch),
     re_path(
-        r"^(?!api/|media/|static/|t/|up$|health$|admin-django/).*$",
+        r"^(?!api/|media/|static/|assets/|t/|up$|health$|admin-django/).*$",
         spa_index,
         name="spa",
     ),
@@ -26,3 +29,12 @@ urlpatterns = [
 
 if settings.DEBUG:
     urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+    _react_assets = Path(settings.BASE_DIR) / "react" / "dist" / "assets"
+    if _react_assets.exists():
+        urlpatterns += [
+            re_path(
+                r"^assets/(?P<path>.*)$",
+                serve,
+                {"document_root": str(_react_assets)},
+            ),
+        ]

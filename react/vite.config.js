@@ -3,9 +3,10 @@ import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
+// Production: build → public_html (Apache). base "/" with hashed assets.
 export default defineConfig({
   plugins: [react(), tailwindcss()],
-  base: "/static/",
+  base: "/",
   build: {
     outDir: "dist",
     emptyOutDir: true,
@@ -13,14 +14,9 @@ export default defineConfig({
     rollupOptions: {
       input: path.resolve(__dirname, "index.html"),
       output: {
-        entryFileNames: "assets/index.js",
+        entryFileNames: "assets/[name]-[hash].js",
         chunkFileNames: "assets/[name]-[hash].js",
-        assetFileNames: (assetInfo) => {
-          if (assetInfo.name && assetInfo.name.endsWith(".css")) {
-            return "assets/index.css";
-          }
-          return "assets/[name]-[hash][extname]";
-        },
+        assetFileNames: "assets/[name]-[hash][extname]",
       },
     },
   },
@@ -30,6 +26,8 @@ export default defineConfig({
       "/api": "http://127.0.0.1:8000",
       "/t": "http://127.0.0.1:8000",
       "/media": "http://127.0.0.1:8000",
+      "/up": "http://127.0.0.1:8000",
+      "/health": "http://127.0.0.1:8000",
     },
   },
 });

@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "build:check": "vite build && node -e \"const fs=require('fs'); const ok=fs.existsSync('dist/assets/index.js')&&fs.existsSync('dist/assets/index.css'); if(!ok){console.error('Missing dist assets'); process.exit(1)}; console.log('React build ready for Django at /static/assets/*')\""
+    "build:check": "vite build && node -e \"const fs=require('fs');const path=require('path');const dist='dist';if(!fs.existsSync(path.join(dist,'index.html'))){console.error('Missing dist/index.html');process.exit(1);}const assets=path.join(dist,'assets');if(!fs.existsSync(assets)||!fs.readdirSync(assets).some(f=>f.endsWith('.js'))){console.error('Missing hashed JS under dist/assets');process.exit(1);}console.log('React build ready for public_html (base /)')\""
   },
   "dependencies": {
     "react": "^19.0.0",

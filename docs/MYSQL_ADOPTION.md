@@ -1,6 +1,9 @@
 # MySQL adoption (fake-initial)
 
-Production database: **`pradytec_prady`** on `127.0.0.1:3306` (user `pradytec_prady`). Do not create a separate Django database.
+> **Note:** Docker production targets **PostgreSQL** (see [POSTGRES_MIGRATION.md](POSTGRES_MIGRATION.md)).
+> This document remains for historical MySQL adoption / rollback. Do not delete MySQL until Postgres cutover is accepted.
+
+Production MySQL (legacy authority until Postgres verified): **`pradytec_prady`** on `127.0.0.1:3306` (user `pradytec_prady`).
 
 On a **clone** of production MySQL:
 

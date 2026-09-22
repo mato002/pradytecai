@@ -1,5 +1,8 @@
+# NOT USED BY DOCKER PRODUCTION DEPLOYMENT.
+# Gunicorn runs inside Docker Compose service `web`.
+# Do NOT systemctl enable/start this unit on Docker production.
 [Unit]
-Description=PradytecAI Gunicorn (port 8100)
+Description=PradytecAI Gunicorn (port 8100) — LEGACY NON-DOCKER
 After=network.target
 
 [Service]

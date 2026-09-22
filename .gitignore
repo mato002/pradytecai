@@ -10,6 +10,9 @@ __pycache__/
 db.sqlite3
 staticfiles/
 media/
+logs/
+backups/
+*.dump
 
 # Node / React
 node_modules/

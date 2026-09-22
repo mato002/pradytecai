@@ -1,5 +1,7 @@
+# NOT USED BY DOCKER PRODUCTION DEPLOYMENT.
+# Celery Worker runs inside Docker Compose service `worker`.
 [Unit]
-Description=PradytecAI Celery Worker
+Description=PradytecAI Celery Worker — LEGACY NON-DOCKER
 After=network.target redis.service
 
 [Service]

@@ -6,7 +6,7 @@ Laravel has been removed from this repo. Django + React is the only app stack.
 
 | Environment | App | Port |
 |-------------|-----|------|
-| **Production (WHM)** | Django Gunicorn | **8100** |
+| **Production (WHM + Docker)** | Compose `web` (Gunicorn) published as | **127.0.0.1:8100** |
 | Production | Other app on same host | 8000 (taken — do not use) |
 | Local Windows | Django `runserver` | **8000** |
 
@@ -15,46 +15,41 @@ Laravel has been removed from this repo. Django + React is the only app stack.
 # or: python manage.py runserver 8000
 ```
 
-Never bind production Gunicorn to **8000**.
+Never publish production Gunicorn on **8000**. Inside the container it binds `0.0.0.0:8000`; the host maps only `127.0.0.1:8100:8000`.
 
 Full host guide: [PRODUCTION_SERVER.md](PRODUCTION_SERVER.md).
 
-## Python / venv
+## Python / runtime
 
-| Environment | Python | Venv folder |
-|-------------|--------|-------------|
-| Production | `/usr/local/bin/python3.12` only | **`env/`** |
-| Local Windows | your Python 3.12+ | **`.venv/`** |
+| Environment | Runtime |
+|-------------|---------|
+| Production | Docker image `pradytecai-app` (Python 3.12) |
+| Local Windows | `.venv/` with Python 3.12+ |
 
-Do **not** use `/usr/bin/python3` (WHM 3.9) for this app.
+Do **not** use `/usr/bin/python3` (WHM 3.9) for this app. Host `env/` venv is obsolete under Docker production.
 
 ## Database
 
 | Environment | Default |
 |-------------|---------|
-| Local | `db.sqlite3` at repo root (`DJANGO_DB_NAME`) |
-| Production | MySQL `pradytec_prady` (existing schema) |
+| Local | `db.sqlite3` at repo root |
+| Production (target) | PostgreSQL in Compose (`postgres` service) |
+| Production (legacy until cutover) | MySQL `pradytec_prady` |
 
-See [MYSQL_ADOPTION.md](MYSQL_ADOPTION.md).
+See [POSTGRES_MIGRATION.md](POSTGRES_MIGRATION.md) and [MYSQL_ADOPTION.md](MYSQL_ADOPTION.md).
 
 ## Cookies
 
-- `pradytecai_django_session`
-- `pradytecai_django_csrftoken`
+Django uses isolated cookie names (`SESSION_COOKIE_NAME`, `CSRF_COOKIE_NAME`) so they do not collide with any leftover PHP session cookies.
+
+## Env keys
+
+- `DJANGO_SECRET_KEY`, `DEBUG`, `ALLOWED_HOSTS`, `CSRF_TRUSTED_ORIGINS`
+- `DJANGO_DB_ENGINE` / `DJANGO_DB_*` (sqlite locally; postgresql in Docker)
+- Redis / Celery URLs (`REDIS_HOST=host.docker.internal` in Docker)
+- `DOCKER_*` resource limits
+- Keep `APP_KEY` while Laravel-encrypted Integration tokens matter
 
 ## Frontend
 
-| Command | Builds |
-|---------|--------|
-| `npm run build` (repo root) | React (`react/`) |
-| `cd react && npm run build` | Same |
-
-## Env
-
-Keep legacy `APP_KEY` if you still decrypt Integration tokens encrypted by Laravel. Also set:
-
-- `DJANGO_SECRET_KEY`
-- `DJANGO_DB_NAME=db.sqlite3` (local) or MySQL keys (production)
-- `GUNICORN_BIND=127.0.0.1:8100` (production)
-
-See `.env.example` and [PRODUCTION_SERVER.md](PRODUCTION_SERVER.md).
+Production: Vite `base: "/"` → `public_html` (hashed `/assets/*`). Django `collectstatic` → `public_html/static/`.

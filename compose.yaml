@@ -1,0 +1,196 @@
+# PradytecAI production Compose stack
+# Project name: pradytecai (also set COMPOSE_PROJECT_NAME in .env)
+#
+# Gunicorn runs ONLY inside the `web` service.
+# There is NO host systemd unit for Gunicorn, Celery, or PostgreSQL.
+#
+# WARNING: never run `docker compose down -v` in production — it destroys
+# the postgres_data volume.
+
+name: pradytecai
+
+services:
+  postgres:
+    image: postgres:17.4-alpine
+    restart: unless-stopped
+    init: true
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB:-pradytecai}
+      POSTGRES_USER: ${POSTGRES_USER:-pradytecai}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - pradytecai_internal
+    # No host port publish — reachable only as postgres:5432 on the Compose network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    cpus: ${DOCKER_POSTGRES_CPUS:-1.00}
+    mem_limit: ${DOCKER_POSTGRES_MEMORY:-768m}
+    mem_reservation: ${DOCKER_POSTGRES_MEM_RESERVATION:-384m}
+    pids_limit: ${DOCKER_POSTGRES_PIDS_LIMIT:-200}
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  web:
+    image: pradytecai-app:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      GUNICORN_BIND: "0.0.0.0:8000"
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-postgresql}
+      DJANGO_DB_HOST: ${DJANGO_DB_HOST:-postgres}
+      DJANGO_DB_PORT: ${DJANGO_DB_PORT:-5432}
+      DJANGO_DB_NAME: ${DJANGO_DB_NAME:-pradytecai}
+      DJANGO_DB_USER: ${DJANGO_DB_USER:-pradytecai}
+      DJANGO_DB_PASSWORD: ${DJANGO_DB_PASSWORD:-${POSTGRES_PASSWORD}}
+      REDIS_HOST: ${REDIS_HOST:-host.docker.internal}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    ports:
+      - "127.0.0.1:8100:8000"
+    volumes:
+      - ./media:/app/media
+      - ./staticfiles:/app/staticfiles
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - pradytecai_internal
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "curl",
+          "-fsS",
+          "http://127.0.0.1:8000/up",
+        ]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 40s
+    cpus: ${DOCKER_WEB_CPUS:-0.75}
+    mem_limit: ${DOCKER_WEB_MEMORY:-512m}
+    mem_reservation: ${DOCKER_WEB_MEM_RESERVATION:-256m}
+    pids_limit: ${DOCKER_WEB_PIDS_LIMIT:-150}
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  worker:
+    image: pradytecai-app:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-postgresql}
+      DJANGO_DB_HOST: ${DJANGO_DB_HOST:-postgres}
+      DJANGO_DB_PORT: ${DJANGO_DB_PORT:-5432}
+      DJANGO_DB_NAME: ${DJANGO_DB_NAME:-pradytecai}
+      DJANGO_DB_USER: ${DJANGO_DB_USER:-pradytecai}
+      DJANGO_DB_PASSWORD: ${DJANGO_DB_PASSWORD:-${POSTGRES_PASSWORD}}
+      REDIS_HOST: ${REDIS_HOST:-host.docker.internal}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./media:/app/media
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      web:
+        condition: service_started
+    networks:
+      - pradytecai_internal
+    command:
+      - /bin/sh
+      - -c
+      - |
+        exec celery -A config worker --loglevel=INFO \
+          --concurrency="$${CELERY_WORKER_CONCURRENCY:-1}" \
+          --prefetch-multiplier="$${CELERY_WORKER_PREFETCH_MULTIPLIER:-1}" \
+          --max-tasks-per-child="$${CELERY_WORKER_MAX_TASKS_PER_CHILD:-50}" \
+          --max-memory-per-child="$${CELERY_WORKER_MAX_MEMORY_PER_CHILD:-200000}"
+    cpus: ${DOCKER_WORKER_CPUS:-0.50}
+    mem_limit: ${DOCKER_WORKER_MEMORY:-384m}
+    mem_reservation: ${DOCKER_WORKER_MEM_RESERVATION:-192m}
+    pids_limit: ${DOCKER_WORKER_PIDS_LIMIT:-100}
+    stop_grace_period: 60s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+  beat:
+    image: pradytecai-app:${IMAGE_TAG:-latest}
+    restart: unless-stopped
+    init: true
+    env_file:
+      - .env
+    environment:
+      DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-postgresql}
+      DJANGO_DB_HOST: ${DJANGO_DB_HOST:-postgres}
+      DJANGO_DB_PORT: ${DJANGO_DB_PORT:-5432}
+      DJANGO_DB_NAME: ${DJANGO_DB_NAME:-pradytecai}
+      DJANGO_DB_USER: ${DJANGO_DB_USER:-pradytecai}
+      DJANGO_DB_PASSWORD: ${DJANGO_DB_PASSWORD:-${POSTGRES_PASSWORD}}
+      REDIS_HOST: ${REDIS_HOST:-host.docker.internal}
+      REDIS_PORT: ${REDIS_PORT:-6379}
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    volumes:
+      - ./logs:/app/logs
+    depends_on:
+      postgres:
+        condition: service_healthy
+      web:
+        condition: service_started
+    networks:
+      - pradytecai_internal
+    command:
+      - celery
+      - -A
+      - config
+      - beat
+      - --loglevel=INFO
+      - --scheduler
+      - django_celery_beat.schedulers:DatabaseScheduler
+    cpus: ${DOCKER_BEAT_CPUS:-0.20}
+    mem_limit: ${DOCKER_BEAT_MEMORY:-192m}
+    mem_reservation: ${DOCKER_BEAT_MEM_RESERVATION:-96m}
+    pids_limit: ${DOCKER_BEAT_PIDS_LIMIT:-50}
+    stop_grace_period: 30s
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "5"
+
+volumes:
+  postgres_data:
+    name: pradytecai_postgres_data
+
+networks:
+  pradytecai_internal:
+    name: pradytecai_internal
+    driver: bridge

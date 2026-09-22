@@ -2,8 +2,10 @@
 Django settings for PradytecAI.
 
 Env notes:
-- Prefer DJANGO_* keys; fall back to legacy DB_* / APP_KEY where useful for MySQL cutover
-  and decrypting Integration tokens encrypted under Laravel APP_KEY.
+- Prefer DJANGO_* keys; fall back to legacy DB_* / APP_KEY where useful for
+  MySQL→PostgreSQL cutover and decrypting Integration tokens under Laravel APP_KEY.
+- Production Docker: DJANGO_DB_ENGINE=postgresql, DJANGO_DB_HOST=postgres,
+  REDIS_HOST=host.docker.internal (host Redis — no Redis Compose service).
 """
 import os
 from pathlib import Path
@@ -88,19 +90,52 @@ TEMPLATES = [
 WSGI_APPLICATION = "config.wsgi.application"
 
 # ---------------------------------------------------------------------------
-# Database — prefer DJANGO_DB_*; fall back to DB_* for MySQL cutover.
+# Database — prefer DJANGO_DB_ENGINE / DJANGO_DB_*; fall back to DB_*.
+# Production Docker: postgresql → service hostname `postgres`.
+# Local Windows: sqlite. MySQL retained only for migration tooling / rollback.
 # ---------------------------------------------------------------------------
 _db_engine = (
-    os.getenv("DJANGO_DB_CONNECTION")
+    os.getenv("DJANGO_DB_ENGINE")
+    or os.getenv("DJANGO_DB_CONNECTION")
     or os.getenv("DB_CONNECTION")
     or "sqlite"
 ).lower()
-_use_mysql = _db_engine in ("mysql", "mariadb") and bool(
-    os.getenv("DJANGO_DB_HOST") or os.getenv("DB_HOST")
-)
 
-if not _use_mysql:
-    _sqlite_name = os.getenv("DJANGO_DB_NAME") or "db.sqlite3"
+_db_name = os.getenv("DJANGO_DB_NAME") or os.getenv("DB_DATABASE")
+_db_user = os.getenv("DJANGO_DB_USER") or os.getenv("DB_USERNAME")
+_db_password = os.getenv("DJANGO_DB_PASSWORD") or os.getenv("DB_PASSWORD", "")
+_db_host = os.getenv("DJANGO_DB_HOST") or os.getenv("DB_HOST")
+_db_port = os.getenv("DJANGO_DB_PORT") or os.getenv("DB_PORT")
+
+if _db_engine in ("postgresql", "postgres"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.postgresql",
+            "NAME": _db_name or "pradytecai",
+            "USER": _db_user or "pradytecai",
+            "PASSWORD": _db_password,
+            "HOST": _db_host or "postgres",
+            "PORT": _db_port or "5432",
+            "CONN_MAX_AGE": int(os.getenv("DJANGO_DB_CONN_MAX_AGE", "60")),
+        }
+    }
+elif _db_engine in ("mysql", "mariadb") and _db_host:
+    import pymysql
+
+    pymysql.install_as_MySQLdb()
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": _db_name or "pradytec_prady",
+            "USER": _db_user or "pradytec_prady",
+            "PASSWORD": _db_password,
+            "HOST": _db_host,
+            "PORT": _db_port or "3306",
+            "OPTIONS": {"charset": "utf8mb4"},
+        }
+    }
+else:
+    _sqlite_name = _db_name or "db.sqlite3"
     _sqlite_path = Path(_sqlite_name)
     if not _sqlite_path.is_absolute():
         _sqlite_path = BASE_DIR / _sqlite_path
@@ -108,21 +143,6 @@ if not _use_mysql:
         "default": {
             "ENGINE": "django.db.backends.sqlite3",
             "NAME": str(_sqlite_path),
-        }
-    }
-else:
-    import pymysql
-
-    pymysql.install_as_MySQLdb()
-    DATABASES = {
-        "default": {
-            "ENGINE": "django.db.backends.mysql",
-            "NAME": os.getenv("DJANGO_DB_NAME") or os.getenv("DB_DATABASE", "pradytec_prady"),
-            "USER": os.getenv("DJANGO_DB_USER") or os.getenv("DB_USERNAME", "pradytec_prady"),
-            "PASSWORD": os.getenv("DJANGO_DB_PASSWORD") or os.getenv("DB_PASSWORD", ""),
-            "HOST": os.getenv("DJANGO_DB_HOST") or os.getenv("DB_HOST", "127.0.0.1"),
-            "PORT": os.getenv("DJANGO_DB_PORT") or os.getenv("DB_PORT", "3306"),
-            "OPTIONS": {"charset": "utf8mb4"},
         }
     }
 
@@ -156,10 +176,9 @@ USE_TZ = True
 
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
+# Django admin/framework static only. React Vite assets deploy to public_html/assets/
+# (not collectstatic). See deploy.sh and README.
 STATICFILES_DIRS = [BASE_DIR / "static"]
-_REACT_DIST = BASE_DIR / "react" / "dist"
-if _REACT_DIST.exists():
-    STATICFILES_DIRS.append(_REACT_DIST)
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"

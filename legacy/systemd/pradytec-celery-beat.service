@@ -1,5 +1,7 @@
+# NOT USED BY DOCKER PRODUCTION DEPLOYMENT.
+# Celery Beat runs inside Docker Compose service `beat`.
 [Unit]
-Description=PradytecAI Celery Beat
+Description=PradytecAI Celery Beat — LEGACY NON-DOCKER
 After=network.target redis.service
 # Only ONE beat instance in production
 

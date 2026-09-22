@@ -1,10 +1,12 @@
-"""Gunicorn configuration for production (WHM / Linux).
+"""Gunicorn configuration for production.
 
-Default: bind 127.0.0.1:8100 (port 8000 is taken by another app).
-Override with GUNICORN_BIND / GUNICORN_WORKERS in .env.
+Inside Docker (`web` service): bind 0.0.0.0:8000.
+Host publishes only 127.0.0.1:8100 → container :8000 (Apache proxies here).
+
+Gunicorn is managed exclusively by Docker Compose through the `web` service.
+Host systemd units pradytec-gunicorn / pradytecai-gunicorn are NOT used.
 """
 
-import multiprocessing
 import os
 from pathlib import Path
 
@@ -15,16 +17,14 @@ try:
 except ImportError:
     pass
 
-# Behind Apache/Nginx: 127.0.0.1:8100
-# Direct IP access: 0.0.0.0:8100 (open CSF if needed)
-bind = os.getenv("GUNICORN_BIND", "127.0.0.1:8100")
+# Container default; override via GUNICORN_BIND in .env if needed.
+bind = os.getenv("GUNICORN_BIND", "0.0.0.0:8000")
 
-# Keep workers modest on shared VPS
-_default_workers = min(3, max(2, multiprocessing.cpu_count()))
-workers = int(os.getenv("GUNICORN_WORKERS", str(_default_workers)))
+# Conservative on shared WHM — do not derive from full host CPU count.
+workers = int(os.getenv("GUNICORN_WORKERS", "2"))
 worker_class = "sync"
 timeout = int(os.getenv("GUNICORN_TIMEOUT", "120"))
-graceful_timeout = 30
+graceful_timeout = int(os.getenv("GUNICORN_GRACEFUL_TIMEOUT", "30"))
 keepalive = 5
 accesslog = "-"
 errorlog = "-"

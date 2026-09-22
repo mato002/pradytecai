@@ -1,233 +1,188 @@
-# Production Server — Django Environment & Deployment
+# Production Server — Docker Compose + PostgreSQL
 
 **Project root:** `/home/pradytec/pradytecai`  
-**Gunicorn port:** **8100** (port 8000 is used by another app on this server)  
-**WSGI module:** `config.wsgi:application`
+**Compose project:** `pradytecai`  
+**Published backend:** `127.0.0.1:8100` → container Gunicorn `:8000`  
+**WSGI:** `config.wsgi:application` inside Docker service `web`
 
 ---
 
-## 1. Server environment overview
+## Authoritative architecture
 
-
-| Item                | Value                                    |
-| ------------------- | ---------------------------------------- |
-| Project root        | `/home/pradytec/pradytecai`              |
-| Assigned port       | **8100**                                 |
-| System Python (WHM) | `/usr/bin/python3` → **3.9.25**          |
-| App Python          | `/usr/local/bin/python3.12` → **3.12.0** |
-| Production venv     | `/home/pradytec/pradytecai/env`          |
-
-
-### Critical system notice
-
-Do **not** modify, re-link, or uninstall `/usr/bin/python3` or `/usr/bin/python`.  
-WHM/cPanel depends on system Python 3.9.
-
-Always use **Python 3.12** only inside the project virtualenv:
-
-```bash
-/usr/local/bin/python3.12 -m venv env
+```text
+HOST
+├── WHM / Apache
+├── existing Redis (:6379)
+└── Docker Engine
+      └── Compose: pradytecai
+             ├── web      → Gunicorn + Django
+             ├── worker   → Celery Worker
+             ├── beat     → Celery Beat
+             └── postgres → PostgreSQL 17 (named volume)
 ```
 
-Do **not** `pip install` packages globally as root.
+React is a **build artifact** deployed to `public_html` (no permanent Node process).
+
+> **`pradytec-gunicorn.service` is not used.**  
+> **`pradytecai-gunicorn.service` is not used.**  
+> Gunicorn is managed exclusively by Docker Compose through the `web` service.
+
+Historical unit files live under `legacy/systemd/` and must **not** be installed for Docker production.
 
 ---
 
+## Requirements
 
+| Item | Notes |
+|------|--------|
+| WHM / Apache | TLS + static + proxy |
+| Docker Engine | required |
+| Docker Compose v2 | `docker compose` |
+| Host Redis | reuse existing instance |
+| Git | deploy from `django` branch |
+| Document root | `/home/pradytec/pradytecai/public_html` |
 
-## 2. Django / Python compatibility
-
-Django 5.x requires Python ≥ 3.10. This app runs in an isolated **Python 3.12** venv named `env`.
+Python 3.12 runs **inside** the application image. You do **not** need the host `env/` venv for Docker production.
 
 ---
 
-
-
-## 3. First-time setup checklist
-
-Run from `/home/pradytec/pradytecai`:
-
-### Step 1 — Create and activate venv
+## First-time setup
 
 ```bash
 cd /home/pradytec/pradytecai
-/usr/local/bin/python3.12 -m venv env
-source env/bin/activate
+git pull origin django
+cp -n .env.example .env
+# Edit .env: DEBUG=false, secrets, PostgreSQL, Redis host.docker.internal, Celery URLs
 ```
 
-
-
-### Step 2 — Install dependencies
-
-```bash
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-
-
-### Step 3 — Env, migrate, static
-
-```bash
-cp -n .env.example .env   # then edit production secrets / MySQL / hosts
-python manage.py migrate --noinput
-python manage.py collectstatic --noinput
-# optional first admin (if MySQL users not yet adopted):
-# python manage.py ensure_admin --email admin@pradytecai.com --password '…'
-# python manage.py seed_marketing
-```
-
-
-
-### Step 4 — Build React
-
-```bash
-cd react && npm ci && npm run build && cd ..
-python manage.py collectstatic --noinput
-```
-
-
-
-### Step 5 — Launch Gunicorn on **8100**
-
-**Behind Apache/Nginx proxy (recommended):**
-
-```bash
-/home/pradytec/pradytecai/env/bin/gunicorn \
-  --config /home/pradytec/pradytecai/gunicorn.conf.py \
-  config.wsgi:application
-```
-
-Default bind in `gunicorn.conf.py` / `.env`:
+### Production `.env` essentials
 
 ```env
-GUNICORN_BIND=127.0.0.1:8100
-```
-
-**Direct browser access via IP:8100** (only if CSF allows):
-
-```bash
-GUNICORN_BIND=0.0.0.0:8100 /home/pradytec/pradytecai/env/bin/gunicorn \
-  --config gunicorn.conf.py \
-  config.wsgi:application
-```
-
-Or:
-
-```bash
-/home/pradytec/pradytecai/env/bin/gunicorn --bind 0.0.0.0:8100 config.wsgi:application
-```
-
----
-
-
-
-## 4. CSF firewall (direct IP:8100 only)
-
-If accessing `http://YOUR_SERVER_IP:8100` without a reverse proxy:
-
-```bash
-csf -a 8100
-csf -r
-```
-
-If Apache/Nginx proxies HTTPS → `127.0.0.1:8100`, you usually **do not** need to open 8100 publicly.
-
----
-
-
-
-## 5. Verify
-
-```bash
-ss -tulpn | grep :8100
-curl -fsS http://127.0.0.1:8100/up
-```
-
-Expect a listener on `127.0.0.1:8100` or `0.0.0.0:8100`, and JSON `{"status":"ok",...}` from `/up`.
-
----
-
-
-
-## 6. systemd units
-
-Install from `deploy/`:
-
-- `pradytec-gunicorn.service` → Gunicorn on **8100** using `env/bin/gunicorn`
-- `pradytec-celery-worker.service`
-- `pradytec-celery-beat.service`
-
-```bash
-sudo cp deploy/pradytec-*.service /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable --now pradytec-gunicorn pradytec-celery-worker pradytec-celery-beat
-```
-
-Deploy helper: `./deploy.sh` (uses `env` + Python 3.12 on this host).
-If you see `Permission denied`, run `chmod +x deploy.sh` once (or `bash deploy.sh`).
-
----
-
-
-
-## 7. Production `.env` essentials
-
-Same MySQL database as Laravel — **do not create a new DB**:
-
-| Key | Value |
-|-----|--------|
-| Database | `pradytec_prady` |
-| User | `pradytec_prady` |
-| Host | `127.0.0.1:3306` |
-
-```env
+COMPOSE_PROJECT_NAME=pradytecai
 DEBUG=false
 ALLOWED_HOSTS=www.pradytecai.com,pradytecai.com,127.0.0.1
 CSRF_TRUSTED_ORIGINS=https://www.pradytecai.com,https://pradytecai.com
 SESSION_SECURE_COOKIE=true
-GUNICORN_BIND=127.0.0.1:8100
-GUNICORN_WORKERS=2
 
-# Same MySQL as Laravel (required)
-DJANGO_DB_CONNECTION=mysql
-DJANGO_DB_HOST=127.0.0.1
-DJANGO_DB_PORT=3306
-DJANGO_DB_NAME=pradytec_prady
-DJANGO_DB_USER=pradytec_prady
-DJANGO_DB_PASSWORD=…same as Laravel…
-DB_CONNECTION=mysql
-DB_HOST=127.0.0.1
-DB_PORT=3306
-DB_DATABASE=pradytec_prady
-DB_USERNAME=pradytec_prady
-DB_PASSWORD=…same as Laravel…
+POSTGRES_DB=pradytecai
+POSTGRES_USER=pradytecai
+POSTGRES_PASSWORD=…strong…
 
-APP_KEY=base64:…same as Laravel…
-APP_URL=https://www.pradytecai.com
+DJANGO_DB_ENGINE=postgresql
+DJANGO_DB_NAME=pradytecai
+DJANGO_DB_USER=pradytecai
+DJANGO_DB_PASSWORD=…same…
+DJANGO_DB_HOST=postgres
+DJANGO_DB_PORT=5432
 
-REDIS_HOST=127.0.0.1
+REDIS_HOST=host.docker.internal
 REDIS_PORT=6379
-REDIS_PASSWORD=
-CELERY_BROKER_URL=redis://127.0.0.1:6379/0
-CELERY_WORKER_CONCURRENCY=1
+CELERY_BROKER_URL=redis://host.docker.internal:6379/2
+CELERY_RESULT_BACKEND=redis://host.docker.internal:6379/3
+
+GUNICORN_BIND=0.0.0.0:8000
+GUNICORN_WORKERS=2
+VITE_API_BASE_URL=/api/v1
 ```
 
-Do **not** set `DJANGO_DB_CONNECTION=sqlite` on this server.  
-Adopt existing tables with `--fake-initial` on a clone first (see `docs/MYSQL_ADOPTION.md`).
+Inspect Redis DB usage before choosing `/2` and `/3`. Keep MySQL intact until PostgreSQL migration is verified ([POSTGRES_MIGRATION.md](POSTGRES_MIGRATION.md)).
+
+### Host Redis ↔ Docker
+
+Compose uses `extra_hosts: host.docker.internal:host-gateway`.
+
+If Redis only listens on `127.0.0.1`, containers **cannot** reach it via `host.docker.internal` (that address is the docker bridge IP, not loopback).
+
+Safe options (pick one; do **not** bind Redis to `0.0.0.0` without firewall + auth):
+
+1. Add the docker bridge IP to Redis `bind` (keep `protected-mode yes` / require a password)
+2. Or a host firewall DNAT from the bridge IP:6379 → 127.0.0.1:6379
+
+Verify before cutover:
+
+```bash
+ss -ltnp | grep 6379
+redis-cli ping
+docker compose run --rm --no-deps web python -c "import redis,os; redis.Redis.from_url(os.environ['CELERY_BROKER_URL']).ping()"
+```
+
+If this fails, **stop** and fix Redis reachability — do not report a successful deploy while worker/beat crash-loop.
+
+### Apache
+
+Apply proxy rules from `deploy/apache/pradytecai-proxy.conf.example`:
+
+* Serve `/`, `/assets/*`, `/static/*`, `/media/*` from `public_html`
+* Proxy `/api/v1/*`, `/up`, `/health`, `/t/*` → `http://127.0.0.1:8100`
+
+Do **not** open port 8100 publicly if Apache terminates TLS.
+
+### Start
+
+```bash
+chmod +x deploy.sh scripts/postgres-backup.sh scripts/postgres-restore.sh docker/entrypoint.sh
+./deploy.sh
+```
 
 ---
 
+## Normal updates
 
+```bash
+cd /home/pradytec/pradytecai
+./deploy.sh
+```
 
-## 8. Local Windows vs production Linux
+`deploy.sh` builds the app image, builds React in ephemeral Node, migrates, collectstatic, safely syncs `public_html`, and runs `docker compose up -d --remove-orphans`.
 
+It does **not** run `systemctl` for Gunicorn or Celery.
 
-|             | Local (dev)                       | Production (this server)             |
-| ----------- | --------------------------------- | ------------------------------------ |
-| Python      | whatever `.venv` was created with | `/usr/local/bin/python3.12` **only** |
-| Venv folder | `.venv`                           | `env`                                |
-| HTTP        | `runserver` :8000                 | **Gunicorn :8100**                   |
-| Never touch | —                                 | `/usr/bin/python3` **(3.9 / WHM)**   |
+---
 
+## Operations
 
+```bash
+docker compose ps
+docker compose logs -f web
+docker compose logs -f worker
+docker compose logs -f beat
+docker compose logs -f postgres
+docker compose restart web
+docker compose exec web python manage.py shell
+docker stats
+```
+
+### Backups
+
+```bash
+./scripts/postgres-backup.sh
+# NEVER casually: docker compose down -v
+```
+
+### Reboot behaviour
+
+Docker `restart: unless-stopped` + postgres healthchecks bring the stack back after reboot. No manual Gunicorn/Celery/Postgres start.
+
+---
+
+## Resource limits
+
+Defaults (override in `.env`):
+
+| Service | CPUs | Memory |
+|---------|------|--------|
+| web | 0.75 | 512m |
+| worker | 0.50 | 384m |
+| beat | 0.20 | 192m |
+| postgres | 1.00 | 768m |
+
+Tune from `docker stats`; keep headroom for WHM, Apache, host Redis, and other sites.
+
+---
+
+## Warnings
+
+* `docker compose down -v` destroys `pradytecai_postgres_data`
+* Do not install `legacy/systemd/*.service` on Docker production
+* Do not add Redis/Nginx/Traefik Compose services by default
+* Do not delete MySQL until PostgreSQL cutover is formally accepted
