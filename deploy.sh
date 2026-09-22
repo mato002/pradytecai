@@ -4,6 +4,9 @@
 # Gunicorn runs ONLY inside the Compose `web` service.
 # Do NOT systemctl restart pradytec-gunicorn / pradytecai-gunicorn (obsolete).
 #
+# Redis/Celery: if host Redis is unreachable, deploy continues with web+postgres
+# only and leaves worker/beat stopped (CELERY off).
+#
 # Usage (production):
 #   cd /home/pradytec/pradytecai && ./deploy.sh
 set -euo pipefail
@@ -17,6 +20,8 @@ COMPOSE="${COMPOSE:-docker compose}"
 NODE_IMAGE="${NODE_IMAGE:-node:24-alpine}"
 PUBLIC_HEALTH_URL="${PUBLIC_HEALTH_URL:-https://pradytecai.com/up}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
+# Force Celery off even if Redis pings: ENABLE_CELERY=0 ./deploy.sh
+ENABLE_CELERY="${ENABLE_CELERY:-auto}"
 
 log() { echo "[deploy] $*"; }
 fail() { echo "[deploy] ERROR: $*" >&2; exit 1; }
@@ -62,18 +67,26 @@ REDIS_HOST_CHECK="${REDIS_HOST:-host.docker.internal}"
 REDIS_PORT_CHECK="${REDIS_PORT:-6379}"
 BROKER_URL_CHECK="${CELERY_BROKER_URL:-redis://${REDIS_HOST_CHECK}:${REDIS_PORT_CHECK}/2}"
 
+CELERY_OK=0
+
 # ---------------------------------------------------------------------------
-# 4a. Host Redis preflight (best-effort on the host before build)
+# 4a. Host Redis preflight (non-fatal — Celery skipped if Redis is down)
 # ---------------------------------------------------------------------------
 log "Preflight: host Redis (redis-cli if available)"
-if command -v redis-cli >/dev/null 2>&1; then
-  # Prefer loopback from the host; Docker uses host.docker.internal later.
-  if ! redis-cli -h 127.0.0.1 -p "${REDIS_PORT_CHECK}" ping 2>/dev/null | grep -qi pong; then
-    fail "Host redis-cli could not PING 127.0.0.1:${REDIS_PORT_CHECK}"
+if [[ "${ENABLE_CELERY}" == "0" || "${ENABLE_CELERY}" == "false" || "${ENABLE_CELERY}" == "no" ]]; then
+  log "ENABLE_CELERY=${ENABLE_CELERY} — Celery worker/beat will stay OFF"
+  CELERY_OK=0
+elif command -v redis-cli >/dev/null 2>&1; then
+  if redis-cli -h 127.0.0.1 -p "${REDIS_PORT_CHECK}" ping 2>/dev/null | grep -qi pong; then
+    log "redis-cli PING ok on 127.0.0.1:${REDIS_PORT_CHECK}"
+    CELERY_OK=1
+  else
+    log "WARN: redis-cli could not PING 127.0.0.1:${REDIS_PORT_CHECK} — continuing without Celery"
+    CELERY_OK=0
   fi
-  log "redis-cli PING ok on 127.0.0.1:${REDIS_PORT_CHECK}"
 else
-  log "redis-cli not installed on host — will verify from Docker after image build"
+  log "redis-cli not installed on host — will probe from Docker after image build"
+  CELERY_OK=1  # optimistic; Docker probe may demote to 0
 fi
 
 # ---------------------------------------------------------------------------
@@ -93,20 +106,32 @@ log "Building application image pradytecai-app:${IMAGE_TAG}"
 $COMPOSE build web
 
 # ---------------------------------------------------------------------------
-# 4b. Redis from Docker (required — worker/beat use host Redis)
+# 4b. Redis from Docker (non-fatal)
 # ---------------------------------------------------------------------------
-log "Verifying host Redis reachability from application image"
-$COMPOSE run --rm --no-deps \
-  -e CELERY_BROKER_URL="$BROKER_URL_CHECK" \
-  -e REDIS_HOST="$REDIS_HOST_CHECK" \
-  -e REDIS_PORT="$REDIS_PORT_CHECK" \
-  --entrypoint python \
-  web -c "import os,sys,redis; url=os.environ.get('CELERY_BROKER_URL');
+if [[ "${ENABLE_CELERY}" == "0" || "${ENABLE_CELERY}" == "false" || "${ENABLE_CELERY}" == "no" ]]; then
+  CELERY_OK=0
+elif [[ "$CELERY_OK" -eq 1 ]] || ! command -v redis-cli >/dev/null 2>&1; then
+  log "Verifying host Redis reachability from application image"
+  if $COMPOSE run --rm --no-deps \
+    -e CELERY_BROKER_URL="$BROKER_URL_CHECK" \
+    -e REDIS_HOST="$REDIS_HOST_CHECK" \
+    -e REDIS_PORT="$REDIS_PORT_CHECK" \
+    --entrypoint python \
+    web -c "import os,redis; url=os.environ.get('CELERY_BROKER_URL');
 r=redis.Redis.from_url(url, socket_connect_timeout=5);
 r.ping();
 safe=url.split('@')[-1] if '@' in url else url;
-print('redis ok ('+safe+')')" \
-  || fail "Host Redis unreachable from Docker (worker/beat will crash). Fix Redis bind/ACL/firewall before deploy. Do not expose Redis on 0.0.0.0 without firewall + auth."
+print('redis ok ('+safe+')')"; then
+    CELERY_OK=1
+  else
+    log "WARN: Host Redis unreachable from Docker — continuing WITHOUT Celery (worker/beat OFF)"
+    CELERY_OK=0
+  fi
+fi
+
+if [[ "$CELERY_OK" -eq 0 ]]; then
+  log "Celery mode: OFF (web + postgres only). Fix Redis later, then: docker compose up -d worker beat"
+fi
 
 # ---------------------------------------------------------------------------
 # 8–9. Ephemeral React build (Node does not stay running)
@@ -152,14 +177,14 @@ log "Running migrations"
 $COMPOSE run --rm --no-deps web python manage.py migrate --noinput
 
 log "Seeding default products (idempotent)"
-$COMPOSE run --rm --no-deps web python manage.py seed_products
+$COMPOSE run --rm --no-deps web python manage.py seed_products \
+  || log "WARN: seed_products failed (non-fatal)"
 
 log "collectstatic → ./staticfiles"
 mkdir -p staticfiles media logs backups
 # Container app user is uid/gid 1000. WHM/SELinux often blocks writes otherwise.
 if [[ "$(id -u)" -eq 0 ]]; then
   chown -R 1000:1000 staticfiles media logs backups 2>/dev/null || true
-  # SELinux (RHEL/CloudLinux/WHM): allow container access to bind mounts
   if command -v getenforce >/dev/null 2>&1 && [[ "$(getenforce 2>/dev/null)" == "Enforcing" ]]; then
     chcon -Rt container_file_t staticfiles media logs backups 2>/dev/null \
       || chcon -Rt svirt_sandbox_file_t staticfiles media logs backups 2>/dev/null \
@@ -169,8 +194,6 @@ else
   chown -R 1000:1000 staticfiles media logs backups 2>/dev/null \
     || log "WARN: could not chown bind mounts to 1000:1000"
 fi
-# Run as root inside the one-shot container so collectstatic always can write,
-# then hand ownership back to uid 1000 for the running web service.
 $COMPOSE run --rm --no-deps --user root web python manage.py collectstatic --noinput
 if [[ "$(id -u)" -eq 0 ]]; then
   chown -R 1000:1000 staticfiles media logs backups 2>/dev/null || true
@@ -184,7 +207,6 @@ if [[ -d "$PUBLIC_HTML" ]]; then
   mkdir -p "$PUBLIC_HTML/assets" "$PUBLIC_HTML/static"
   mkdir -p media
 
-  # Prefer symlink so Apache /media serves the same files Docker writes to ./media
   if [[ -L "$PUBLIC_HTML/media" ]]; then
     log "public_html/media already symlinked"
   elif [[ ! -e "$PUBLIC_HTML/media" ]]; then
@@ -229,26 +251,36 @@ fi
 # ---------------------------------------------------------------------------
 # 16–17. Bring stack up (preserve postgres volume; no `down -v`)
 # ---------------------------------------------------------------------------
-log "docker compose up -d --remove-orphans"
-$COMPOSE up -d --remove-orphans
+if [[ "$CELERY_OK" -eq 1 ]]; then
+  log "docker compose up -d --remove-orphans (web worker beat postgres)"
+  $COMPOSE up -d --remove-orphans
+else
+  log "docker compose up -d postgres web (Celery OFF)"
+  $COMPOSE up -d --remove-orphans postgres web
+  log "Stopping worker/beat if present"
+  $COMPOSE stop worker beat 2>/dev/null || true
+  $COMPOSE rm -f worker beat 2>/dev/null || true
+fi
 
 log "Waiting for services"
 sleep 8
 
 # ---------------------------------------------------------------------------
-# 18–22. Verify containers + Redis from worker + /up
+# 18–22. Verify containers + optional Celery + /up
 # ---------------------------------------------------------------------------
 log "Compose status"
 $COMPOSE ps
 
 running="$($COMPOSE ps --status running --services | tr '\n' ' ')"
 echo "$running" | grep -qw web || fail "web service is not running"
-echo "$running" | grep -qw worker || fail "worker service is not running"
-echo "$running" | grep -qw beat || fail "beat service is not running"
 echo "$running" | grep -qw postgres || fail "postgres service is not running"
 
-log "Verifying Redis from worker container"
-$COMPOSE exec -T worker python - <<'PY' || fail "worker cannot reach host Redis"
+if [[ "$CELERY_OK" -eq 1 ]]; then
+  echo "$running" | grep -qw worker || fail "worker service is not running"
+  echo "$running" | grep -qw beat || fail "beat service is not running"
+
+  log "Verifying Redis from worker container"
+  $COMPOSE exec -T worker python - <<'PY' || fail "worker cannot reach host Redis"
 import os
 import django
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "config.settings")
@@ -266,9 +298,14 @@ safe = url.split("@")[-1] if "@" in url else url
 print(f"worker redis ok ({safe})")
 PY
 
-log "Celery worker ping"
-$COMPOSE exec -T worker celery -A config inspect ping -t 10 \
-  || fail "Celery worker did not respond to inspect ping"
+  log "Celery worker ping"
+  $COMPOSE exec -T worker celery -A config inspect ping -t 10 \
+    || fail "Celery worker did not respond to inspect ping"
+  CELERY_STATUS="worker+beat RUNNING"
+else
+  log "SKIP Celery checks — worker/beat are OFF (Redis unavailable or ENABLE_CELERY=0)"
+  CELERY_STATUS="OFF (Redis down / skipped)"
+fi
 
 log "Internal health http://127.0.0.1:8100/up"
 curl -fsS "http://127.0.0.1:8100/up" >/dev/null \
@@ -284,10 +321,12 @@ cat <<EOF
   project:     ${COMPOSE_PROJECT_NAME}
   revision:    ${OLD_REV} → ${NEW_REV}
   image:       pradytecai-app:${IMAGE_TAG}
-  services:    web worker beat postgres
+  services:    web postgres (+ Celery: ${CELERY_STATUS})
   gunicorn:    inside Docker service \`web\` (no host systemd)
   listen:      127.0.0.1:8100 → container :8000
   frontend:    ${PUBLIC_HTML}
+  celery:      ${CELERY_STATUS}
+  enable later: fix Redis, then: docker compose up -d worker beat
   rollback:    git checkout ${OLD_REV} && ./deploy.sh
   NEVER:       docker compose down -v   # destroys postgres_data
 
