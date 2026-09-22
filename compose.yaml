@@ -63,9 +63,10 @@ services:
     ports:
       - "127.0.0.1:8100:8000"
     volumes:
-      - ./media:/app/media
-      - ./staticfiles:/app/staticfiles
-      - ./logs:/app/logs
+      # :z = shared SELinux label (required on many WHM/RHEL hosts)
+      - ./media:/app/media:z
+      - ./staticfiles:/app/staticfiles:z
+      - ./logs:/app/logs:z
     depends_on:
       postgres:
         condition: service_healthy
@@ -112,8 +113,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./media:/app/media
-      - ./logs:/app/logs
+      - ./media:/app/media:z
+      - ./logs:/app/logs:z
     depends_on:
       postgres:
         condition: service_healthy
@@ -159,7 +160,7 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     volumes:
-      - ./logs:/app/logs
+      - ./logs:/app/logs:z
     depends_on:
       postgres:
         condition: service_healthy

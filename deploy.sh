@@ -156,15 +156,25 @@ $COMPOSE run --rm --no-deps web python manage.py seed_products
 
 log "collectstatic → ./staticfiles"
 mkdir -p staticfiles media logs backups
-# Container runs as uid/gid 1000 (app). Host bind mounts must be writable by that user.
+# Container app user is uid/gid 1000. WHM/SELinux often blocks writes otherwise.
 if [[ "$(id -u)" -eq 0 ]]; then
   chown -R 1000:1000 staticfiles media logs backups 2>/dev/null || true
+  # SELinux (RHEL/CloudLinux/WHM): allow container access to bind mounts
+  if command -v getenforce >/dev/null 2>&1 && [[ "$(getenforce 2>/dev/null)" == "Enforcing" ]]; then
+    chcon -Rt container_file_t staticfiles media logs backups 2>/dev/null \
+      || chcon -Rt svirt_sandbox_file_t staticfiles media logs backups 2>/dev/null \
+      || true
+  fi
 else
-  # Best-effort when not root (may need: sudo chown -R 1000:1000 staticfiles media logs)
   chown -R 1000:1000 staticfiles media logs backups 2>/dev/null \
-    || log "WARN: could not chown bind mounts to 1000:1000 — fix if collectstatic fails"
+    || log "WARN: could not chown bind mounts to 1000:1000"
 fi
-$COMPOSE run --rm --no-deps web python manage.py collectstatic --noinput
+# Run as root inside the one-shot container so collectstatic always can write,
+# then hand ownership back to uid 1000 for the running web service.
+$COMPOSE run --rm --no-deps --user root web python manage.py collectstatic --noinput
+if [[ "$(id -u)" -eq 0 ]]; then
+  chown -R 1000:1000 staticfiles media logs backups 2>/dev/null || true
+fi
 
 # ---------------------------------------------------------------------------
 # 14. Safe React → public_html (never rsync --delete the whole document root)
