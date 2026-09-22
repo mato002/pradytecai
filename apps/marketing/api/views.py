@@ -60,14 +60,19 @@ class SettingsViewSet(viewsets.ModelViewSet):
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def public_home(request):
-    products = Product.objects.filter(is_active=True).order_by("order")[:12]
+    from apps.products.api.views import PublicProductSerializer
+
+    products = Product.objects.filter(is_active=True).order_by("order", "name")
+    featured = products.filter(is_featured=True).first()
     posts = BlogPost.objects.filter(is_published=True).order_by("-published_at")[:6]
     return Response(
         {
-            "products": [
-                {"id": p.id, "name": p.name, "slug": p.slug, "short": p.short, "url": p.url}
-                for p in products
-            ],
+            "products": PublicProductSerializer(
+                products[:24], many=True, context={"request": request}
+            ).data,
+            "featured": PublicProductSerializer(featured, context={"request": request}).data
+            if featured
+            else None,
             "posts": BlogPostSerializer(posts, many=True).data,
             "site_name": SiteSetting.get("site.name", "PradytecAI"),
             "tagline": SiteSetting.get("site.tagline", ""),

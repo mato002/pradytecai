@@ -572,3 +572,123 @@
   box-shadow: 0 8px 20px rgba(0, 77, 64, 0.35);
   cursor: pointer;
 }
+
+.admin-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(280px, 0.9fr);
+  gap: 0;
+  align-items: start;
+}
+
+@media (max-width: 960px) {
+  .admin-split {
+    grid-template-columns: 1fr;
+  }
+}
+
+.admin-form {
+  padding: 1.15rem;
+  border-left: 1px solid var(--admin-border);
+  display: grid;
+  gap: 0.75rem;
+  background: #fbfcfb;
+}
+
+.admin-form h3 {
+  margin: 0 0 0.25rem;
+  color: var(--admin-forest);
+  font-size: 1rem;
+}
+
+.admin-field {
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.82rem;
+  color: var(--admin-muted);
+}
+
+.admin-field input,
+.admin-field textarea,
+.admin-field select {
+  width: 100%;
+  border: 1px solid var(--admin-border);
+  border-radius: 0.55rem;
+  padding: 0.55rem 0.7rem;
+  font: inherit;
+  color: var(--admin-text);
+  background: #fff;
+}
+
+.admin-form__row {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-form__checks {
+  display: flex;
+  gap: 1rem;
+  font-size: 0.85rem;
+  color: var(--admin-text);
+}
+
+.admin-btn {
+  border: none;
+  border-radius: 0.55rem;
+  padding: 0.55rem 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.admin-btn--primary {
+  background: var(--admin-forest);
+  color: #fff;
+}
+
+.admin-linkish {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--admin-lime);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: left;
+}
+
+.admin-row--active td {
+  background: rgba(0, 77, 64, 0.06);
+}
+
+.admin-poster-preview {
+  width: 100%;
+  max-height: 180px;
+  object-fit: cover;
+  border-radius: 0.65rem;
+  border: 1px solid var(--admin-border);
+}
+
+.admin-dl {
+  display: grid;
+  gap: 0.65rem;
+  margin: 0;
+}
+
+.admin-dl div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.admin-dl dt {
+  font-size: 0.72rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--admin-muted);
+}
+
+.admin-dl dd {
+  margin: 0;
+  color: var(--admin-text);
+  font-size: 0.92rem;
+}
+

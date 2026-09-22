@@ -40,9 +40,16 @@ $COMPOSE version >/dev/null 2>&1 || fail "Docker Compose v2 not available (try: 
 [[ -f compose.yaml ]] || fail "compose.yaml missing"
 [[ -f Dockerfile ]] || fail "Dockerfile missing"
 
+# Strip Windows CRLF if .env was edited on Windows (avoids: $'\r': command not found)
+if grep -q $'\r' .env 2>/dev/null; then
+  log "Normalizing CRLF → LF in .env"
+  sed -i 's/\r$//' .env
+fi
+
 # shellcheck disable=SC1091
 set -a
-source .env
+# shellcheck source=/dev/null
+source <(sed 's/\r$//' .env)
 set +a
 
 : "${POSTGRES_PASSWORD:?POSTGRES_PASSWORD must be set in .env}"
@@ -144,6 +151,9 @@ $COMPOSE run --rm --no-deps web python manage.py check --deploy \
 log "Running migrations"
 $COMPOSE run --rm --no-deps web python manage.py migrate --noinput
 
+log "Seeding default products (idempotent)"
+$COMPOSE run --rm --no-deps web python manage.py seed_products
+
 log "collectstatic → ./staticfiles"
 mkdir -p staticfiles media logs backups
 $COMPOSE run --rm --no-deps web python manage.py collectstatic --noinput
@@ -153,7 +163,20 @@ $COMPOSE run --rm --no-deps web python manage.py collectstatic --noinput
 # ---------------------------------------------------------------------------
 if [[ -d "$PUBLIC_HTML" ]]; then
   log "Deploying React to ${PUBLIC_HTML} (preserving .well-known, static, media)"
-  mkdir -p "$PUBLIC_HTML/assets" "$PUBLIC_HTML/static" "$PUBLIC_HTML/media"
+  mkdir -p "$PUBLIC_HTML/assets" "$PUBLIC_HTML/static"
+  mkdir -p media
+
+  # Prefer symlink so Apache /media serves the same files Docker writes to ./media
+  if [[ -L "$PUBLIC_HTML/media" ]]; then
+    log "public_html/media already symlinked"
+  elif [[ ! -e "$PUBLIC_HTML/media" ]]; then
+    ln -sfn "$(pwd)/media" "$PUBLIC_HTML/media"
+    log "Linked public_html/media → $(pwd)/media"
+  elif [[ -d "$PUBLIC_HTML/media" ]]; then
+    rsync -a "$PUBLIC_HTML/media/" media/ || true
+    rsync -a media/ "$PUBLIC_HTML/media/" || true
+    log "Synced ./media ↔ public_html/media (directory already present)"
+  fi
 
   rsync -a react/dist/assets/ "$PUBLIC_HTML/assets/"
 

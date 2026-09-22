@@ -1,20 +1,39 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { portfolio, productBySlug } from "../../data/portfolio";
+import { api } from "../../api/client";
+import { portfolio } from "../../data/portfolio";
 import PradyIcon from "../../components/marketing/PradyIcon";
 import HeroVisual from "../../components/marketing/HeroVisual";
 
 export default function HomePage() {
   const location = useLocation();
-  const featured = productBySlug(portfolio.featured.slug);
-  const productsBySlug = Object.fromEntries(portfolio.products.map((p) => [p.slug, p]));
+  const [products, setProducts] = useState([]);
+  const [featured, setFeatured] = useState(null);
+
+  useEffect(() => {
+    api("/public/home/")
+      .then((data) => {
+        const list = Array.isArray(data.products) ? data.products : [];
+        setProducts(list);
+        setFeatured(data.featured || list.find((p) => p.is_featured) || null);
+      })
+      .catch(() => {
+        setProducts([]);
+        setFeatured(null);
+      });
+  }, []);
+
+  const productsBySlug = useMemo(
+    () => Object.fromEntries(products.map((p) => [p.slug, p])),
+    [products]
+  );
 
   useEffect(() => {
     if (location.hash) {
       const el = document.querySelector(location.hash);
       if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
     }
-  }, [location]);
+  }, [location, products]);
 
   useEffect(() => {
     document.title = "Prady Technologies | Smart Technology Solutions for African Businesses";
@@ -110,30 +129,44 @@ export default function HomePage() {
               commerce.
             </p>
           </div>
-          {portfolio.product_groups.map((group) => (
-            <div key={group.key} className="mkt-product-group">
-              <h3 className="mkt-product-group__title">{group.title}</h3>
-              <div className="mkt-products-grid">
-                {group.slugs.map((slug) => {
-                  const p = productsBySlug[slug];
-                  if (!p) return null;
-                  return (
-                    <Link key={slug} to={`/products#${slug}`} className="mkt-product-card" id={slug}>
-                      <span className="mkt-product-card__icon">
-                        <PradyIcon name={p.icon} className="w-7 h-7" />
-                      </span>
+          {portfolio.product_groups.map((group) => {
+            const items = group.slugs.map((slug) => productsBySlug[slug]).filter(Boolean);
+            if (!items.length) return null;
+            return (
+              <div key={group.key} className="mkt-product-group">
+                <h3 className="mkt-product-group__title">{group.title}</h3>
+                <div className="mkt-products-grid">
+                  {items.map((p) => (
+                    <Link
+                      key={p.slug}
+                      to={`/products/${p.slug}`}
+                      className="mkt-product-card"
+                      id={p.slug}
+                    >
+                      {p.poster_url ? (
+                        <img
+                          src={p.poster_url}
+                          alt=""
+                          className="mkt-product-card__poster"
+                          loading="lazy"
+                        />
+                      ) : (
+                        <span className="mkt-product-card__icon">
+                          <PradyIcon name={p.icon || "cog"} className="w-7 h-7" />
+                        </span>
+                      )}
                       <h3 className="mkt-product-card__title">{p.name}</h3>
-                      <p className="mkt-product-card__text">{p.short}</p>
+                      <p className="mkt-product-card__text">{p.short_description || p.short}</p>
                       {p.market && <p className="mkt-product-card__market">{p.market}</p>}
                       <span className="mkt-product-card__link">
                         Learn more <span aria-hidden="true">→</span>
                       </span>
                     </Link>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       </section>
 
@@ -192,31 +225,29 @@ export default function HomePage() {
           <div className="mkt-container">
             <div className="mkt-featured">
               <div className="mkt-featured__visual" aria-hidden="true">
-                <HeroVisual />
+                {featured.poster_url ? (
+                  <img src={featured.poster_url} alt="" className="mkt-featured__poster" />
+                ) : (
+                  <HeroVisual />
+                )}
               </div>
               <div className="mkt-featured__copy">
                 <p className="mkt-featured__eyebrow">Featured product</p>
                 <h2 className="mkt-section__title mkt-section__title--left">{featured.name}</h2>
-                <p className="mkt-about__text">{featured.description}</p>
-                <ul className="mkt-featured__outcomes">
-                  {portfolio.featured.outcomes.map((o) => (
-                    <li key={o}>
-                      <span aria-hidden="true">
-                        <PradyIcon name="check" className="w-5 h-5" />
-                      </span>
-                      <span>{o}</span>
-                    </li>
-                  ))}
-                </ul>
+                <p className="mkt-about__text">
+                  {featured.description || featured.short_description || featured.short}
+                </p>
                 <div className="mkt-featured__actions">
-                  <Link to={`/products#${featured.slug}`} className="mkt-btn mkt-btn--primary">
+                  <Link to={`/products/${featured.slug}`} className="mkt-btn mkt-btn--primary">
                     Explore Product
                   </Link>
                   <Link
-                    to={`/contact?product=${encodeURIComponent(featured.name)}`}
+                    to={`/contact?product=${encodeURIComponent(featured.name)}&product_slug=${encodeURIComponent(
+                      featured.slug || ""
+                    )}&request_type=demo`}
                     className="mkt-btn mkt-btn--outline"
                   >
-                    Request Demo
+                    {featured.cta_label || "Request Demo"}
                   </Link>
                 </div>
               </div>

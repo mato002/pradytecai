@@ -18,6 +18,9 @@ import PoliciesPage from "./pages/public/PoliciesPage";
 import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminModule from "./pages/admin/AdminModule";
+import ProductsAdmin from "./pages/admin/ProductsAdmin";
+import EnquiriesAdmin from "./pages/admin/EnquiriesAdmin";
+import ProductDetailPage from "./pages/public/ProductDetailPage";
 import SocialOverview from "./pages/admin/social/SocialOverview";
 import SocialComposer from "./pages/admin/social/SocialComposer";
 import SocialCalendar from "./pages/admin/social/SocialCalendar";
@@ -46,6 +49,7 @@ export default function App() {
         <Route path="/about" element={<AboutPage />} />
         <Route path="/services" element={<ServicesPage />} />
         <Route path="/products" element={<ProductsPage />} />
+        <Route path="/products/:slug" element={<ProductDetailPage />} />
         <Route path="/careers" element={<CareersPage />} />
         <Route path="/careers/:id/apply" element={<CareerApplyPage />} />
         <Route path="/contact" element={<ContactPage />} />
@@ -67,8 +71,8 @@ export default function App() {
         }
       >
         <Route index element={<AdminDashboard />} />
-        <Route path="products" element={<AdminModule resource="products" title="Products" perm="products.view" />} />
-        <Route path="enquiries" element={<AdminModule resource="enquiries" title="Leads" perm="leads.view" />} />
+        <Route path="products" element={<ProductsAdmin />} />
+        <Route path="enquiries" element={<EnquiriesAdmin />} />
         <Route path="users" element={<AdminModule resource="users" title="Users" perm="users.view" />} />
         <Route path="roles" element={<AdminModule resource="roles" title="Roles" perm="roles.view" />} />
         <Route path="blog" element={<AdminModule resource="blog" title="Blog" perm="blog.view" />} />

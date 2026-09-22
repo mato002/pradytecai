@@ -1,11 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { api } from "../../api/client";
 import { portfolio } from "../../data/portfolio";
 import PradyLogo from "./PradyLogo";
 
 export default function SiteFooter() {
-  const footerProducts = portfolio.products.slice(0, 6);
+  const [footerProducts, setFooterProducts] = useState([]);
   const { contact } = portfolio;
+
+  useEffect(() => {
+    api("/public/products/")
+      .then((data) => setFooterProducts(Array.isArray(data) ? data.slice(0, 6) : []))
+      .catch(() => setFooterProducts([]));
+  }, []);
 
   return (
     <footer className="mkt-footer">
@@ -43,7 +50,7 @@ export default function SiteFooter() {
             <ul className="mkt-footer__list">
               {footerProducts.map((p) => (
                 <li key={p.slug}>
-                  <Link to={`/products#${p.slug}`}>{p.name}</Link>
+                  <Link to={`/products/${p.slug}`}>{p.name}</Link>
                 </li>
               ))}
             </ul>

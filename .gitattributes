@@ -9,3 +9,10 @@
 
 /.github export-ignore
 CHANGELOG.md export-ignore
+
+# Env files must be LF on Linux hosts
+.env text eol=lf
+.env.* text eol=lf
+production.env text eol=lf
+*.env text eol=lf
+

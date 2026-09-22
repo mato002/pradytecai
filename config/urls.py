@@ -27,8 +27,11 @@ urlpatterns = [
     ),
 ]
 
+# Media is also served by Apache from public_html/media (symlink to ./media).
+# Keep Django serving as a fallback for local/dev and misconfigured proxies.
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+
 if settings.DEBUG:
-    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
     _react_assets = Path(settings.BASE_DIR) / "react" / "dist" / "assets"
     if _react_assets.exists():
         urlpatterns += [

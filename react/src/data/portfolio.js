@@ -1,4 +1,6 @@
-/** Port of config/portfolio.php for React marketing parity. */
+/** Marketing chrome (contact, capabilities, industries, group layout).
+ *  Product catalog content is loaded from the Django API / database.
+ */
 export const portfolio = {
   company: "Prady Technologies Ltd",
   tagline: "Doing It Differently",
@@ -15,13 +17,13 @@ export const portfolio = {
       name: "Microfinance System",
       short: "Lending & repayment management for microfinance institutions.",
       icon: "piggy",
-      href: "/products#prady-microfinance",
+      href: "/products/prady-microfinance",
     },
     {
       name: "SACCO System",
       short: "Member savings, loans & cooperative management platform.",
       icon: "users",
-      href: "/products#sacco-system",
+      href: "/products/sacco-system",
     },
     {
       name: "Custom Software",
@@ -33,7 +35,7 @@ export const portfolio = {
       name: "HR System",
       short: "Employee management, payroll & HR operations streamlined.",
       icon: "hr",
-      href: "/products#prady-microfinance",
+      href: "/products/prady-microfinance",
     },
   ],
   trust: [
@@ -42,15 +44,16 @@ export const portfolio = {
     { label: "Built for Growing Businesses", icon: "building" },
   ],
   manage: [
-    { label: "Lending & Collections", icon: "finance", href: "/products#prady-microfinance" },
-    { label: "SACCO & Members", icon: "users", href: "/products#sacco-system" },
-    { label: "GPS & Fleet Tracking", icon: "location", href: "/products#gps-hosting" },
-    { label: "Property & Rent", icon: "building", href: "/products#property-management" },
-    { label: "Automotive Parts", icon: "car", href: "/products#spareme" },
-    { label: "Social Selling", icon: "live", href: "/products#live-commerce" },
-    { label: "Travel & Payments", icon: "wallet", href: "/products#mtalii-travel-wallet" },
+    { label: "Lending & Collections", icon: "finance", href: "/products/prady-microfinance" },
+    { label: "SACCO & Members", icon: "users", href: "/products/sacco-system" },
+    { label: "GPS & Fleet Tracking", icon: "location", href: "/products/gps-hosting" },
+    { label: "Property & Rent", icon: "building", href: "/products/property-management" },
+    { label: "Automotive Parts", icon: "car", href: "/products/spareme" },
+    { label: "Social Selling", icon: "live", href: "/products/live-commerce" },
+    { label: "Travel & Payments", icon: "wallet", href: "/products/mtalii-travel-wallet" },
     { label: "Custom Software", icon: "code", href: "/#capabilities" },
   ],
+  /** Layout helper only — product copy/images come from the API. */
   product_groups: [
     {
       key: "finance",
@@ -111,145 +114,49 @@ export const portfolio = {
       name: "Microfinance & Lending",
       short: "Operating systems for MFIs, credit companies and digital lenders.",
       icon: "finance",
-      href: "/products#prady-microfinance",
+      href: "/products/prady-microfinance",
     },
     {
       name: "SACCOs",
       short: "Membership, savings, loans and governance for cooperatives.",
       icon: "users",
-      href: "/products#sacco-system",
+      href: "/products/sacco-system",
     },
     {
       name: "Chamas",
       short: "Transparent group accounts, contributions and welfare tracking.",
       icon: "group",
-      href: "/products#chama-system",
+      href: "/products/chama-system",
     },
     {
       name: "Fleet & Logistics",
       short: "GPS hosting and tracking for vehicles, fleets and resellers.",
       icon: "location",
-      href: "/products#gps-hosting",
+      href: "/products/gps-hosting",
     },
     {
       name: "Property",
       short: "Units, tenants, leases, rent and maintenance in one platform.",
       icon: "building",
-      href: "/products#property-management",
+      href: "/products/property-management",
     },
     {
       name: "Automotive",
       short: "Vehicle-first spare parts matching and dealer inventory.",
       icon: "car",
-      href: "/products#spareme",
+      href: "/products/spareme",
     },
     {
       name: "Social Commerce",
       short: "Live selling platforms for creators, SMEs and merchants.",
       icon: "live",
-      href: "/products#live-commerce",
+      href: "/products/live-commerce",
     },
     {
       name: "Tourism",
       short: "Travel wallets, FX and merchant acceptance for tourism.",
       icon: "wallet",
-      href: "/products#mtalii-travel-wallet",
-    },
-  ],
-  featured: {
-    slug: "prady-microfinance",
-    outcomes: [
-      "Manage customers, loans, collections and repayments in one platform",
-      "Support M-Pesa payments, accounting and institutional reporting",
-      "Strengthen controls across HR, operations and governance",
-    ],
-  },
-  products: [
-    {
-      slug: "prady-microfinance",
-      name: "Prady Microfinance",
-      short:
-        "Complete operating platform for MFIs and lenders covering loans, collections, payments and institutional operations.",
-      description:
-        "A complete operating platform for microfinance institutions and lenders, covering customers, loans, collections, payments, M-Pesa, accounting, reporting, HR, controls and institutional operations.",
-      market: "MFIs, credit companies and lenders",
-      icon: "finance",
-    },
-    {
-      slug: "rafiki-loan",
-      name: "Rafiki Loan",
-      short: "Digital lending marketplace connecting borrowers with institutions and capital providers.",
-      description:
-        "A digital lending marketplace connecting people seeking financing with institutions or people offering financing. Supports discovery, matching and the journey between borrower and finance provider.",
-      market: "Borrowers, lenders and capital providers",
-      icon: "handshake",
-    },
-    {
-      slug: "gps-hosting",
-      name: "GPS Hosting & Tracking Platform",
-      short: "GPS tracking and hosting for vehicle trackers, fleets and GPS resellers.",
-      description:
-        "A GPS tracking and hosting platform for compatible vehicle trackers, fleets and GPS resellers, including support for Prady-branded tracking devices.",
-      market: "Vehicle owners, fleet operators, logistics businesses and GPS resellers",
-      icon: "location",
-    },
-    {
-      slug: "property-management",
-      name: "Property Management System",
-      short: "Manage properties, tenants, leases, rent, arrears and maintenance in one place.",
-      description:
-        "A platform for managing properties, units, tenants, leases, rent, payments, arrears, maintenance and property performance.",
-      market: "Landlords, property managers and real-estate businesses",
-      icon: "building",
-    },
-    {
-      slug: "spareme",
-      name: "SpareMe",
-      short: "Vehicle-first automotive commerce matching spare parts to exact vehicles.",
-      description:
-        "A vehicle-first automotive commerce and intelligence ecosystem. Vehicle owners identify their exact vehicle while dealers manage inventory and compatible spare parts can be matched to vehicles.",
-      market: "Vehicle owners, spare-parts dealers, mechanics, suppliers and garages",
-      icon: "car",
-    },
-    {
-      slug: "live-commerce",
-      name: "Live Commerce / Social Selling Platform",
-      short: "Social-commerce platform for live shows, audiences and lasting product shelves.",
-      description:
-        "A social-commerce platform where sellers and creators can announce live shows, attract audiences and showcase products during and after live broadcasts.",
-      market: "Social sellers, creators, SMEs and online merchants",
-      icon: "live",
-    },
-    {
-      slug: "sacco-system",
-      name: "SACCO System",
-      short: "Digital operating system for SACCOs covering membership, savings and loans.",
-      description:
-        "A digital operating system for SACCO and member-based financial institutions covering membership, savings, contributions, loans, accounts, governance and institutional administration.",
-      market: "SACCOs and member-based financial institutions",
-      icon: "users",
-    },
-    {
-      slug: "chama-system",
-      name: "Chama System",
-      short: "Simple digital platform for chamas, investment clubs and welfare groups.",
-      description:
-        "A simplified digital platform for investment groups and chamas covering members, contributions, welfare, loans, projects/investments, commitments, documents and transparent group accounts.",
-      market: "Chamas, investment clubs and welfare groups",
-      icon: "group",
-    },
-    {
-      slug: "mtalii-travel-wallet",
-      name: "Mtalii Travel Wallet",
-      short: "Tourism-focused wallet for payments, FX and local merchant acceptance.",
-      description:
-        "A tourism-focused wallet and travel platform designed around tourists and local merchants, including payments, FX, merchant acceptance and tourism-oriented financial services.",
-      market: "Tourists, tour operators, guides and local merchants",
-      icon: "wallet",
+      href: "/products/mtalii-travel-wallet",
     },
   ],
 };
-
-export function productBySlug(slug) {
-  return portfolio.products.find((p) => p.slug === slug);
-}

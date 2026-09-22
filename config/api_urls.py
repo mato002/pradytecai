@@ -20,7 +20,7 @@ from apps.marketing.api.views import (
     public_newsletter,
     public_search,
 )
-from apps.products.api.views import ProductViewSet
+from apps.products.api.views import ProductViewSet, public_product_detail, public_product_list
 from apps.social.api.views import IntegrationViewSet, SocialAccountViewSet
 from apps.tasks.api.views import ActivityLogViewSet, MarketingTaskViewSet
 
@@ -56,6 +56,8 @@ urlpatterns = [
     path("public/search/", public_search),
     path("public/newsletter/", public_newsletter),
     path("public/contact/", public_contact),
+    path("public/products/", public_product_list),
+    path("public/products/<slug:slug>/", public_product_detail),
     path("public/positions/", public_positions),
     path("public/careers/apply/", public_apply),
     path("", include(router.urls)),

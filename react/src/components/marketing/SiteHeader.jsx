@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { api } from "../../api/client";
 import { portfolio } from "../../data/portfolio";
 import PradyLogo from "./PradyLogo";
 
@@ -23,6 +24,7 @@ export default function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMega, setOpenMega] = useState(null);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -30,13 +32,30 @@ export default function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  const productMega = portfolio.product_groups.map((g) => ({
-    title: g.title,
-    items: g.slugs.map((slug) => {
-      const p = portfolio.products.find((x) => x.slug === slug);
-      return { name: p.name, short: p.short, href: `/products#${p.slug}` };
-    }),
-  }));
+  useEffect(() => {
+    api("/public/products/")
+      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .catch(() => setProducts([]));
+  }, []);
+
+  const bySlug = useMemo(
+    () => Object.fromEntries(products.map((p) => [p.slug, p])),
+    [products]
+  );
+
+  const productMega = portfolio.product_groups
+    .map((g) => ({
+      title: g.title,
+      items: g.slugs
+        .map((slug) => bySlug[slug])
+        .filter(Boolean)
+        .map((p) => ({
+          name: p.name,
+          short: p.short_description || p.short,
+          href: `/products/${p.slug}`,
+        })),
+    }))
+    .filter((col) => col.items.length);
 
   return (
     <header className={`mkt-header ${scrolled ? "is-scrolled" : ""}`}>
