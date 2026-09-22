@@ -49,7 +49,7 @@ services:
     env_file:
       - .env
     environment:
-      GUNICORN_BIND: "0.0.0.0:8000"
+      GUNICORN_BIND: "0.0.0.0:8100"
       DJANGO_DB_ENGINE: ${DJANGO_DB_ENGINE:-postgresql}
       DJANGO_DB_HOST: ${DJANGO_DB_HOST:-postgres}
       DJANGO_DB_PORT: ${DJANGO_DB_PORT:-5432}
@@ -61,7 +61,8 @@ services:
     extra_hosts:
       - "host.docker.internal:host-gateway"
     ports:
-      - "127.0.0.1:8100:8000"
+      # Host external :8000 → container internal :8100 (loopback only)
+      - "127.0.0.1:8000:8100"
     volumes:
       # :z = shared SELinux label (required on many WHM/RHEL hosts)
       - ./media:/app/media:z
@@ -78,7 +79,7 @@ services:
           "CMD",
           "curl",
           "-fsS",
-          "http://127.0.0.1:8000/up",
+          "http://127.0.0.1:8100/up",
         ]
       interval: 15s
       timeout: 5s

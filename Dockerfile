@@ -26,7 +26,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PATH="/opt/venv/bin:$PATH" \
     DJANGO_SETTINGS_MODULE=config.settings \
-    GUNICORN_BIND=0.0.0.0:8000
+    GUNICORN_BIND=0.0.0.0:8100
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
@@ -47,7 +47,7 @@ RUN chmod +x /entrypoint.sh \
     && chown -R app:app /app
 
 USER app
-EXPOSE 8000
+EXPOSE 8100
 
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["gunicorn", "--config", "gunicorn.conf.py", "config.wsgi:application"]

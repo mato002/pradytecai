@@ -14,7 +14,7 @@ HOST
       │
       └── Compose: pradytecai
              ├── web
-             │    └── Gunicorn + Django   → host 127.0.0.1:8100
+             │    └── Gunicorn + Django   → host 127.0.0.1:8000
              ├── worker
              │    └── Celery Worker
              ├── beat
@@ -34,7 +34,7 @@ Vite build → public_html → Apache
 Backend:
 
 ```text
-/api/v1 /up /health /t/*  → Apache → 127.0.0.1:8100 → Docker web → Gunicorn → Django
+/api/v1 /up /health /t/*  → Apache → 127.0.0.1:8000 → Docker web → Gunicorn :8100 → Django
 ```
 
 > **`pradytec-gunicorn.service` is not used.**
@@ -171,7 +171,7 @@ REDIS_PORT=6379
 CELERY_BROKER_URL=redis://host.docker.internal:6379/2
 CELERY_RESULT_BACKEND=redis://host.docker.internal:6379/3
 
-GUNICORN_BIND=0.0.0.0:8000
+GUNICORN_BIND=0.0.0.0:8100
 GUNICORN_WORKERS=2
 VITE_API_BASE_URL=/api/v1
 ```
@@ -205,7 +205,7 @@ Apply rules from `deploy/apache/pradytecai-proxy.conf.example` (WHM Include Edit
 
 * DocumentRoot → `/home/pradytec/pradytecai/public_html`  
   (`deploy.sh` creates this folder if missing. Override with `PUBLIC_HTML=/path ./deploy.sh` if the cPanel docroot differs — do **not** point at the account-wide `/home/pradytec/public_html` if other apps live there.)
-* Proxy `/api/v1/*`, `/up`, `/health`, `/t/*` → `http://127.0.0.1:8100`
+* Proxy `/api/v1/*`, `/up`, `/health`, `/t/*` → `http://127.0.0.1:8000`
 * Serve `/`, `/assets/*`, `/static/*`, `/media/*` from disk (not Gunicorn)
 
 Reload Apache after changes (`/scripts/rebuildhttpdconf` + restart via WHM, or your usual reload).
@@ -226,7 +226,7 @@ chmod +x deploy.sh docker/entrypoint.sh \
 
 ```bash
 docker compose ps
-curl -fsS http://127.0.0.1:8100/up
+curl -fsS http://127.0.0.1:8000/up
 curl -fsS https://pradytecai.com/up
 docker compose logs --tail=50 web
 docker compose exec web python manage.py showmigrations
@@ -308,7 +308,7 @@ cd react; npm ci; npm run build; cd ..
 python manage.py runserver 8000
 ```
 
-Local port **8000** is fine on your laptop. Production publishes **127.0.0.1:8100** only.
+Local port **8000** is fine on your laptop (`runserver`). Production Docker publishes host **127.0.0.1:8000** → container Gunicorn **:8100**.
 
 ## API / auth
 

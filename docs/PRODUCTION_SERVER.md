@@ -2,7 +2,7 @@
 
 **Project root:** `/home/pradytec/pradytecai`  
 **Compose project:** `pradytecai`  
-**Published backend:** `127.0.0.1:8100` → container Gunicorn `:8000`  
+**Published backend:** `127.0.0.1:8000` → container Gunicorn `:8100`  
 **WSGI:** `config.wsgi:application` inside Docker service `web`
 
 ---
@@ -80,7 +80,7 @@ REDIS_PORT=6379
 CELERY_BROKER_URL=redis://host.docker.internal:6379/2
 CELERY_RESULT_BACKEND=redis://host.docker.internal:6379/3
 
-GUNICORN_BIND=0.0.0.0:8000
+GUNICORN_BIND=0.0.0.0:8100
 GUNICORN_WORKERS=2
 VITE_API_BASE_URL=/api/v1
 ```
@@ -113,9 +113,9 @@ If this fails, **stop** and fix Redis reachability — do not report a successfu
 Apply proxy rules from `deploy/apache/pradytecai-proxy.conf.example`:
 
 * Serve `/`, `/assets/*`, `/static/*`, `/media/*` from `public_html`
-* Proxy `/api/v1/*`, `/up`, `/health`, `/t/*` → `http://127.0.0.1:8100`
+* Proxy `/api/v1/*`, `/up`, `/health`, `/t/*` → `http://127.0.0.1:8000`
 
-Do **not** open port 8100 publicly if Apache terminates TLS.
+Do **not** open port 8000 publicly if Apache terminates TLS.
 
 ### Start
 

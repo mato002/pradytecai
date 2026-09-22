@@ -6,8 +6,8 @@ Laravel has been removed from this repo. Django + React is the only app stack.
 
 | Environment | App | Port |
 |-------------|-----|------|
-| **Production (WHM + Docker)** | Compose `web` (Gunicorn) published as | **127.0.0.1:8100** |
-| Production | Other app on same host | 8000 (taken — do not use) |
+| **Production (WHM + Docker)** | Compose `web` (Gunicorn) published as | **127.0.0.1:8000** |
+| Production | Other apps on same host | use other ports |
 | Local Windows | Django `runserver` | **8000** |
 
 ```powershell
@@ -15,7 +15,7 @@ Laravel has been removed from this repo. Django + React is the only app stack.
 # or: python manage.py runserver 8000
 ```
 
-Never publish production Gunicorn on **8000**. Inside the container it binds `0.0.0.0:8000`; the host maps only `127.0.0.1:8100:8000`.
+Production Docker: container binds `0.0.0.0:8100`; host maps only `127.0.0.1:8000:8100`.
 
 Full host guide: [PRODUCTION_SERVER.md](PRODUCTION_SERVER.md).
 

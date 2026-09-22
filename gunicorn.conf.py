@@ -1,7 +1,7 @@
 """Gunicorn configuration for production.
 
-Inside Docker (`web` service): bind 0.0.0.0:8000.
-Host publishes only 127.0.0.1:8100 → container :8000 (Apache proxies here).
+Inside Docker (`web` service): bind 0.0.0.0:8100 (internal).
+Host publishes only 127.0.0.1:8000 → container :8100 (Apache proxies here).
 
 Gunicorn is managed exclusively by Docker Compose through the `web` service.
 Host systemd units pradytec-gunicorn / pradytecai-gunicorn are NOT used.
@@ -17,8 +17,8 @@ try:
 except ImportError:
     pass
 
-# Container default; override via GUNICORN_BIND in .env if needed.
-bind = os.getenv("GUNICORN_BIND", "0.0.0.0:8000")
+# Container internal port 8100; host maps 127.0.0.1:8000:8100
+bind = os.getenv("GUNICORN_BIND", "0.0.0.0:8100")
 
 # Conservative on shared WHM — do not derive from full host CPU count.
 workers = int(os.getenv("GUNICORN_WORKERS", "2"))

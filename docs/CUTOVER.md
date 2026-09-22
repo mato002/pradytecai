@@ -10,7 +10,7 @@ PostgreSQL migration is verified — see [POSTGRES_MIGRATION.md](POSTGRES_MIGRAT
 2. Git tag / commit rollback point
 3. Rehearse MySQL → PostgreSQL on a clone; reconcile row counts / logins
 4. Confirm host Redis reachable from Docker (`host.docker.internal`)
-5. Confirm Apache proxies `/api/v1`, `/up`, `/health`, `/t/*` → `127.0.0.1:8100`
+5. Confirm Apache proxies `/api/v1`, `/up`, `/health`, `/t/*` → `127.0.0.1:8000`
 6. Keep `APP_KEY` for Integration token decrypt
 7. Confirm Celery Beat schedules (UTC) after DatabaseScheduler on Postgres
 

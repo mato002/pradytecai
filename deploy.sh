@@ -15,13 +15,20 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
 DEPLOY_BRANCH="${DEPLOY_BRANCH:-django}"
+# ONLY this path — never the account-wide /home/pradytec/public_html (other apps live there).
 PUBLIC_HTML="${PUBLIC_HTML:-/home/pradytec/pradytecai/public_html}"
 COMPOSE="${COMPOSE:-docker compose}"
 NODE_IMAGE="${NODE_IMAGE:-node:24-alpine}"
 PUBLIC_HEALTH_URL="${PUBLIC_HEALTH_URL:-https://pradytecai.com/up}"
 IMAGE_TAG="${IMAGE_TAG:-latest}"
+APP_IMAGE="pradytecai-app:${IMAGE_TAG}"
 # Force Celery off even if Redis pings: ENABLE_CELERY=0 ./deploy.sh
 ENABLE_CELERY="${ENABLE_CELERY:-auto}"
+# Rebuild app image even if it already exists: FORCE_BUILD=1 ./deploy.sh
+FORCE_BUILD="${FORCE_BUILD:-0}"
+# Always git pull even when images exist: FORCE_PULL=1 ./deploy.sh
+# Default: skip git pull when app image already exists (faster redeploy).
+FORCE_PULL="${FORCE_PULL:-0}"
 
 log() { echo "[deploy] $*"; }
 fail() { echo "[deploy] ERROR: $*" >&2; exit 1; }
@@ -29,6 +36,25 @@ fail() { echo "[deploy] ERROR: $*" >&2; exit 1; }
 require_cmd() {
   command -v "$1" >/dev/null 2>&1 || fail "'$1' not found"
 }
+
+image_exists() {
+  docker image inspect "$1" >/dev/null 2>&1
+}
+
+# Refuse dangerous account-wide docroot
+if [[ "$PUBLIC_HTML" == "/home/pradytec/public_html" || "$PUBLIC_HTML" == "/home/pradytec/public_html/" ]]; then
+  fail "PUBLIC_HTML must NOT be /home/pradytec/public_html (shared with other apps). Use /home/pradytec/pradytecai/public_html"
+fi
+
+# Create site document root early (not the nested Laravel folder ./pradytecai/)
+if [[ ! -d "$PUBLIC_HTML" ]]; then
+  log "Creating PUBLIC_HTML=${PUBLIC_HTML}"
+  mkdir -p "$PUBLIC_HTML" || fail "Could not create ${PUBLIC_HTML}"
+  if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
+    chown pradytec:pradytec "$PUBLIC_HTML" 2>/dev/null || true
+  fi
+fi
+log "Frontend target: ${PUBLIC_HTML}"
 
 # ---------------------------------------------------------------------------
 # 1–3. Prerequisites
@@ -61,7 +87,21 @@ set +a
 : "${DJANGO_SECRET_KEY:?DJANGO_SECRET_KEY must be set in .env}"
 
 export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-pradytecai}"
-export IMAGE_TAG
+export IMAGE_TAG="${IMAGE_TAG:-latest}"
+APP_IMAGE="pradytecai-app:${IMAGE_TAG}"
+
+# Re-apply docroot after .env (still refuse account-wide public_html)
+PUBLIC_HTML="${PUBLIC_HTML:-/home/pradytec/pradytecai/public_html}"
+if [[ "$PUBLIC_HTML" == "/home/pradytec/public_html" || "$PUBLIC_HTML" == "/home/pradytec/public_html/" ]]; then
+  fail "PUBLIC_HTML must NOT be /home/pradytec/public_html. Use /home/pradytec/pradytecai/public_html"
+fi
+if [[ ! -d "$PUBLIC_HTML" ]]; then
+  log "Creating PUBLIC_HTML=${PUBLIC_HTML}"
+  mkdir -p "$PUBLIC_HTML" || fail "Could not create ${PUBLIC_HTML}"
+  if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
+    chown pradytec:pradytec "$PUBLIC_HTML" 2>/dev/null || true
+  fi
+fi
 
 REDIS_HOST_CHECK="${REDIS_HOST:-host.docker.internal}"
 REDIS_PORT_CHECK="${REDIS_PORT:-6379}"
@@ -94,16 +134,25 @@ fi
 # ---------------------------------------------------------------------------
 OLD_REV="$(git rev-parse --short HEAD)"
 log "Current revision: ${OLD_REV}"
-log "Pulling origin/${DEPLOY_BRANCH}"
-git pull origin "$DEPLOY_BRANCH"
-NEW_REV="$(git rev-parse --short HEAD)"
-log "New revision: ${NEW_REV} (was ${OLD_REV})"
+if image_exists "$APP_IMAGE" && [[ "$FORCE_PULL" != "1" && "$FORCE_BUILD" != "1" ]]; then
+  log "App image ${APP_IMAGE} already present — skipping git pull (FORCE_PULL=1 or FORCE_BUILD=1 to pull)"
+  NEW_REV="$OLD_REV"
+else
+  log "Pulling origin/${DEPLOY_BRANCH}"
+  git pull origin "$DEPLOY_BRANCH"
+  NEW_REV="$(git rev-parse --short HEAD)"
+  log "New revision: ${NEW_REV} (was ${OLD_REV})"
+fi
 
 # ---------------------------------------------------------------------------
 # 7. Build application image (shared by web / worker / beat)
 # ---------------------------------------------------------------------------
-log "Building application image pradytecai-app:${IMAGE_TAG}"
-$COMPOSE build web
+if image_exists "$APP_IMAGE" && [[ "$FORCE_BUILD" != "1" ]]; then
+  log "App image ${APP_IMAGE} already exists — skipping docker build (FORCE_BUILD=1 to rebuild)"
+else
+  log "Building application image ${APP_IMAGE}"
+  $COMPOSE build web
+fi
 
 # ---------------------------------------------------------------------------
 # 4b. Redis from Docker (non-fatal)
@@ -138,7 +187,15 @@ fi
 # ---------------------------------------------------------------------------
 log "Building React with ephemeral ${NODE_IMAGE}"
 mkdir -p react/dist
+NODE_PULL_ARGS=()
+if image_exists "$NODE_IMAGE"; then
+  log "Node image ${NODE_IMAGE} already present — not pulling"
+  NODE_PULL_ARGS=(--pull=never)
+else
+  log "Node image ${NODE_IMAGE} missing — will pull once"
+fi
 docker run --rm \
+  "${NODE_PULL_ARGS[@]}" \
   -v "$ROOT/react:/app" \
   -w /app \
   -e VITE_API_BASE_URL="${VITE_API_BASE_URL:-/api/v1}" \
@@ -200,17 +257,14 @@ if [[ "$(id -u)" -eq 0 ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 14. Safe React → public_html (never rsync --delete the whole document root)
+# 14. Safe React → /home/pradytec/pradytecai/public_html only
+#     (NOT /home/pradytec/public_html — NOT the nested Laravel ./pradytecai/)
 # ---------------------------------------------------------------------------
-# Create document root if missing (first deploy). Override with PUBLIC_HTML=...
 if [[ ! -d "$PUBLIC_HTML" ]]; then
   log "Creating PUBLIC_HTML=${PUBLIC_HTML}"
   mkdir -p "$PUBLIC_HTML" || fail "Could not create PUBLIC_HTML=${PUBLIC_HTML}"
-  if [[ "$(id -u)" -eq 0 ]]; then
-    # Prefer account owner when deploying as root on WHM
-    if id pradytec >/dev/null 2>&1; then
-      chown pradytec:pradytec "$PUBLIC_HTML" 2>/dev/null || true
-    fi
+  if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
+    chown pradytec:pradytec "$PUBLIC_HTML" 2>/dev/null || true
   fi
 fi
 
@@ -222,11 +276,11 @@ if [[ -L "$PUBLIC_HTML/media" ]]; then
   log "public_html/media already symlinked"
 elif [[ ! -e "$PUBLIC_HTML/media" ]]; then
   ln -sfn "$(pwd)/media" "$PUBLIC_HTML/media"
-  log "Linked public_html/media → $(pwd)/media"
+  log "Linked ${PUBLIC_HTML}/media → $(pwd)/media"
 elif [[ -d "$PUBLIC_HTML/media" ]]; then
   rsync -a "$PUBLIC_HTML/media/" media/ || true
   rsync -a media/ "$PUBLIC_HTML/media/" || true
-  log "Synced ./media ↔ public_html/media (directory already present)"
+  log "Synced ./media ↔ ${PUBLIC_HTML}/media (directory already present)"
 fi
 
 rsync -a react/dist/assets/ "$PUBLIC_HTML/assets/"
@@ -244,7 +298,7 @@ done < <(find react/dist -type f -print0)
 
 cp -a react/dist/index.html "$PUBLIC_HTML/index.html.new"
 mv -f "$PUBLIC_HTML/index.html.new" "$PUBLIC_HTML/index.html"
-log "React index.html replaced atomically"
+log "React index.html replaced atomically at ${PUBLIC_HTML}/index.html"
 
 # ---------------------------------------------------------------------------
 # 15. Django static → public_html/static
@@ -319,8 +373,8 @@ else
   CELERY_STATUS="OFF (Redis down / skipped)"
 fi
 
-log "Internal health http://127.0.0.1:8100/up"
-curl -fsS "http://127.0.0.1:8100/up" >/dev/null \
+log "Internal health http://127.0.0.1:8000/up"
+curl -fsS "http://127.0.0.1:8000/up" >/dev/null \
   || fail "internal /up failed"
 
 log "Public health ${PUBLIC_HEALTH_URL}"
@@ -335,7 +389,7 @@ cat <<EOF
   image:       pradytecai-app:${IMAGE_TAG}
   services:    web postgres (+ Celery: ${CELERY_STATUS})
   gunicorn:    inside Docker service \`web\` (no host systemd)
-  listen:      127.0.0.1:8100 → container :8000
+  listen:      127.0.0.1:8000 → container :8100
   frontend:    ${PUBLIC_HTML}
   celery:      ${CELERY_STATUS}
   enable later: fix Redis, then: docker compose up -d worker beat
