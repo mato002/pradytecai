@@ -156,6 +156,14 @@ $COMPOSE run --rm --no-deps web python manage.py seed_products
 
 log "collectstatic → ./staticfiles"
 mkdir -p staticfiles media logs backups
+# Container runs as uid/gid 1000 (app). Host bind mounts must be writable by that user.
+if [[ "$(id -u)" -eq 0 ]]; then
+  chown -R 1000:1000 staticfiles media logs backups 2>/dev/null || true
+else
+  # Best-effort when not root (may need: sudo chown -R 1000:1000 staticfiles media logs)
+  chown -R 1000:1000 staticfiles media logs backups 2>/dev/null \
+    || log "WARN: could not chown bind mounts to 1000:1000 — fix if collectstatic fails"
+fi
 $COMPOSE run --rm --no-deps web python manage.py collectstatic --noinput
 
 # ---------------------------------------------------------------------------
