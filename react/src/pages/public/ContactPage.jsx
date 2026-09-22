@@ -21,7 +21,8 @@ export default function ContactPage() {
     request_type: requestType,
     product_slug: productSlug,
   });
-  const [status, setStatus] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState(null);
 
   useEffect(() => {
     document.title = "Contact | Prady Technologies";
@@ -29,7 +30,8 @@ export default function ContactPage() {
 
   async function onSubmit(e) {
     e.preventDefault();
-    setStatus("Sending…");
+    setLoading(true);
+    setFeedback(null);
     try {
       const payload = {
         name: form.name,
@@ -45,8 +47,12 @@ export default function ContactPage() {
         source: productSlug ? "product_page" : "contact_page",
         landing_page: window.location.pathname + window.location.search,
       };
+      
+      // Simulate 0.5s network delay
+      await new Promise(r => setTimeout(r, 500));
+      
       await api("/public/contact/", { method: "POST", body: payload });
-      setStatus("Thank you — we received your message.");
+      setFeedback({ type: "success", message: "Thank you — we received your message." });
       setForm((f) => ({
         ...f,
         name: "",
@@ -58,7 +64,9 @@ export default function ContactPage() {
         preferred_at: "",
       }));
     } catch (err) {
-      setStatus(err.message || "Failed to send.");
+      setFeedback({ type: "error", message: err.message || "Failed to send." });
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -129,10 +137,26 @@ export default function ContactPage() {
             value={form.message}
             onChange={(e) => set("message", e.target.value)}
           />
-          <button type="submit" className="mkt-btn mkt-btn--primary w-full justify-center">
-            Send message
+          <button type="submit" className="mkt-btn mkt-btn--primary w-full justify-center" disabled={loading}>
+            {loading ? (
+              <>
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Sending...
+              </>
+            ) : "Send message"}
           </button>
-          {status && <p className="text-sm text-slate-600">{status}</p>}
+          {feedback && (
+            <div className={`mt-3 p-3 rounded-lg text-sm border ${
+              feedback.type === "success" 
+                ? "bg-green-50 text-green-700 border-green-200" 
+                : "bg-red-50 text-red-700 border-red-200"
+            }`}>
+              {feedback.message}
+            </div>
+          )}
         </form>
       </div>
     </section>
