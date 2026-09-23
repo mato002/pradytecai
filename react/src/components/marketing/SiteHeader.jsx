@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import { Link, NavLink } from "react-router-dom";
+import { api } from "../../api/client";
 import { portfolio } from "../../data/portfolio";
-import { MAIN_PRODUCTS } from "../../data/products";
 import PradyLogo from "./PradyLogo";
 
 function MegaColumn({ title, items }) {
@@ -24,6 +24,7 @@ export default function SiteHeader() {
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
   const [openMega, setOpenMega] = useState(null);
+  const [products, setProducts] = useState([]);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
@@ -31,9 +32,15 @@ export default function SiteHeader() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  useEffect(() => {
+    api("/public/products/")
+      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .catch(() => setProducts([]));
+  }, []);
+
   const bySlug = useMemo(
-    () => Object.fromEntries(MAIN_PRODUCTS.map((p) => [p.slug, p])),
-    []
+    () => Object.fromEntries(products.map((p) => [p.slug, p])),
+    [products]
   );
 
   const productMega = portfolio.product_groups

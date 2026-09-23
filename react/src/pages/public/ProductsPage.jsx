@@ -1,15 +1,21 @@
-import React, { useEffect, useMemo } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router-dom";
+import { api } from "../../api/client";
 import { portfolio } from "../../data/portfolio";
-import { MAIN_PRODUCTS } from "../../data/products";
 import ProductCard from "../../components/marketing/ProductCard";
 
 export default function ProductsPage() {
   const location = useLocation();
-  const products = MAIN_PRODUCTS;
+  const [products, setProducts] = useState([]);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     document.title = "Products | Prady Technologies";
+    api("/public/products/")
+      .then((data) => setProducts(Array.isArray(data) ? data : []))
+      .catch((err) => setError(err.message || "Failed to load products"))
+      .finally(() => setLoading(false));
   }, []);
 
   useEffect(() => {
@@ -51,6 +57,11 @@ export default function ProductsPage() {
             commerce.
           </p>
         </div>
+        {loading && <p className="mkt-empty-hint">Loading products…</p>}
+        {error && <p className="mkt-empty-hint mkt-empty-hint--error">{error}</p>}
+        {!loading && !error && !products.length && (
+          <p className="mkt-empty-hint">Products will appear here once published.</p>
+        )}
         {grouped.map((group) => (
           <div key={group.key} className="mkt-product-group">
             <h2 className="mkt-product-group__title">{group.title}</h2>

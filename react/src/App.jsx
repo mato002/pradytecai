@@ -19,6 +19,7 @@ import LoginPage from "./pages/LoginPage";
 import AdminDashboard from "./pages/admin/Dashboard";
 import AdminModule from "./pages/admin/AdminModule";
 import ProductsAdmin from "./pages/admin/ProductsAdmin";
+import ProductAdminEditor from "./pages/admin/ProductAdminEditor";
 import EnquiriesAdmin from "./pages/admin/EnquiriesAdmin";
 import ProductDetailPage from "./pages/public/ProductDetailPage";
 import SocialOverview from "./pages/admin/social/SocialOverview";
@@ -72,6 +73,8 @@ export default function App() {
       >
         <Route index element={<AdminDashboard />} />
         <Route path="products" element={<ProductsAdmin />} />
+        <Route path="products/new" element={<ProductAdminEditor />} />
+        <Route path="products/:id/edit" element={<ProductAdminEditor />} />
         <Route path="enquiries" element={<EnquiriesAdmin />} />
         <Route path="users" element={<AdminModule resource="users" title="Users" perm="users.view" />} />
         <Route path="roles" element={<AdminModule resource="roles" title="Roles" perm="roles.view" />} />

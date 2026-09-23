@@ -5,7 +5,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
 from apps.accounts.permissions import require_perm
-from apps.marketing.models import BlogPost, NewsletterSubscriber, SiteSetting
+from apps.marketing.models import BlogPost, ContactChannel, NewsletterSubscriber, SiteSetting
 from apps.products.models import Product
 
 
@@ -13,6 +13,26 @@ class BlogPostSerializer(serializers.ModelSerializer):
     class Meta:
         model = BlogPost
         fields = "__all__"
+
+
+class ContactChannelSerializer(serializers.ModelSerializer):
+    href = serializers.SerializerMethodField()
+
+    class Meta:
+        model = ContactChannel
+        fields = [
+            "id",
+            "channel_type",
+            "label",
+            "value",
+            "href",
+            "description",
+            "is_primary",
+            "display_order",
+        ]
+
+    def get_href(self, obj):
+        return obj.build_href()
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):
@@ -59,12 +79,25 @@ class SettingsViewSet(viewsets.ModelViewSet):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
+def public_contact_info(request):
+    """Active contact channels for the public contact page / footer."""
+    rows = ContactChannel.objects.filter(is_active=True).order_by("display_order", "id")
+    return Response(
+        {
+            "channels": ContactChannelSerializer(rows, many=True).data,
+        }
+    )
+
+
+@api_view(["GET"])
+@permission_classes([AllowAny])
 def public_home(request):
     from apps.products.api.views import PublicProductSerializer
 
     products = Product.objects.filter(is_active=True).order_by("order", "name")
     featured = products.filter(is_featured=True).first()
     posts = BlogPost.objects.filter(is_published=True).order_by("-published_at")[:6]
+    channels = ContactChannel.objects.filter(is_active=True).order_by("display_order", "id")
     return Response(
         {
             "products": PublicProductSerializer(
@@ -76,6 +109,7 @@ def public_home(request):
             "posts": BlogPostSerializer(posts, many=True).data,
             "site_name": SiteSetting.get("site.name", "PradytecAI"),
             "tagline": SiteSetting.get("site.tagline", ""),
+            "contact_channels": ContactChannelSerializer(channels, many=True).data,
         }
     )
 

@@ -22,6 +22,7 @@ from apps.products.models import (
     ProductHighlight,
     ProductImplementationStep,
     ProductIntegration,
+    ProductMedia,
     ProductOutcome,
     ProductPageSection,
     ProductProblem,
@@ -187,6 +188,7 @@ MICROFINANCE = {
         ("problems", 30, "Problems solved", ""),
         ("capabilities", 40, "Core capabilities", ""),
         ("workflow", 50, "How it works", ""),
+        ("media", 55, "See the product", "Screenshots and walkthroughs from the live platform."),
         ("integrations", 60, "Integrations", "Only integrations configured for this product are listed."),
         ("controls", 70, "Security and controls", ""),
         ("outcomes", 80, "Outcomes", ""),
@@ -407,6 +409,58 @@ def _attach_known_poster(product):
     return True
 
 
+def _ensure_media_section(product):
+    """Add a media page section when absent (does not reorder existing sections)."""
+    if product.page_sections.filter(section_type=ProductPageSection.MEDIA).exists():
+        return False
+    max_order = (
+        product.page_sections.order_by("-display_order")
+        .values_list("display_order", flat=True)
+        .first()
+    )
+    order = 55 if max_order is None else max_order + 5
+    ProductPageSection.objects.create(
+        product=product,
+        section_type=ProductPageSection.MEDIA,
+        title_override="See the product",
+        subtitle="Screenshots and walkthroughs from the live platform.",
+        display_order=order,
+        is_enabled=True,
+    )
+    return True
+
+
+def _attach_gallery_media(product):
+    """Seed one gallery image when the product has no media rows."""
+    if product.slug != "prady-microfinance" or product.media_items.exists():
+        return False
+    path = Path(settings.BASE_DIR) / "react" / "public" / "images" / "mfi.jpg"
+    if not path.is_file() and not product.poster:
+        return False
+    item = ProductMedia(
+        product=product,
+        media_type=ProductMedia.TYPE_IMAGE,
+        image_category=ProductMedia.CATEGORY_DASHBOARD,
+        title="Operations dashboard",
+        caption="Desktop and mobile views of the Prady Microfinance operations dashboard.",
+        alt_text="Prady Microfinance dashboard on laptop and phone",
+        is_featured=True,
+        display_order=10,
+        is_active=True,
+    )
+    if product.poster:
+        product.poster.open("rb")
+        try:
+            item.image.save("mfi-gallery.jpg", File(product.poster.file), save=False)
+        finally:
+            product.poster.close()
+    else:
+        with path.open("rb") as handle:
+            item.image.save("mfi-gallery.jpg", File(handle), save=False)
+    item.save()
+    return True
+
+
 def seed_product_page_content():
     """Create missing detail content for known products. Returns a small stats dict."""
     filled = 0
@@ -424,7 +478,11 @@ def seed_product_page_content():
             touched = True
         if _seed_sections(product, spec.get("page_sections")):
             touched = True
+        if _ensure_media_section(product):
+            touched = True
         if _attach_known_poster(product):
+            touched = True
+        if _attach_gallery_media(product):
             touched = True
         if touched:
             filled += 1

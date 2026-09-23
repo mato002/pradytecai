@@ -82,6 +82,7 @@ const TITLES = {
   "/admin/demos": ["Demo Requests", "Demo pipeline and assignees."],
   "/admin/subscribers": ["Subscribers", "Newsletter subscribers."],
   "/admin/products": ["Products", "Website product catalogue."],
+  "/admin/products/new": ["New product", "Create a catalogue product with poster and gallery media."],
   "/admin/blog": ["Blog", "Public blog posts."],
   "/admin/positions": ["Careers", "Open positions."],
   "/admin/applications": ["Applications", "Job application pipeline."],
@@ -103,6 +104,9 @@ export default function AdminLayout() {
   const isSocialWorkspace = location.pathname.startsWith("/admin/social");
 
   const [title, description] = useMemo(() => {
+    if (/^\/admin\/products\/\d+\/edit$/.test(location.pathname)) {
+      return ["Edit product", "Update catalogue fields, posters and gallery media."];
+    }
     const exact = TITLES[location.pathname];
     if (exact) return exact;
     const key = Object.keys(TITLES).find((k) => k !== "/admin" && location.pathname.startsWith(k));

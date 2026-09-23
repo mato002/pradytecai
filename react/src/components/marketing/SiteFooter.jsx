@@ -1,12 +1,18 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import { api } from "../../api/client";
 import { portfolio } from "../../data/portfolio";
-import { MAIN_PRODUCTS } from "../../data/products";
 import PradyLogo from "./PradyLogo";
 
 export default function SiteFooter() {
-  const footerProducts = MAIN_PRODUCTS.slice(0, 6);
+  const [footerProducts, setFooterProducts] = useState([]);
   const { contact } = portfolio;
+
+  useEffect(() => {
+    api("/public/products/")
+      .then((data) => setFooterProducts(Array.isArray(data) ? data.slice(0, 6) : []))
+      .catch(() => setFooterProducts([]));
+  }, []);
 
   return (
     <footer className="mkt-footer">
@@ -51,28 +57,25 @@ export default function SiteFooter() {
           </div>
           <div>
             <h3 className="mkt-footer__heading">Contact</h3>
-            <ul className="mkt-footer__list mkt-footer__contact">
+            <ul className="mkt-footer__list">
               <li>
-                <span>Phone</span>
+                Phone{" "}
                 <a href={contact.phone_href}>{contact.phone}</a>
               </li>
               <li>
-                <span>Email</span>
+                Email{" "}
                 <a href={contact.email_href}>{contact.email}</a>
               </li>
-              <li>
-                <span>Location</span>
-                <span className="mkt-footer__muted">{contact.location}</span>
-              </li>
+              <li>Location {contact.location}</li>
               <li>
                 <Link to="/policies">Terms &amp; Privacy</Link>
               </li>
             </ul>
           </div>
         </div>
-        <div className="mkt-footer__bottom">
-          <p>&copy; {new Date().getFullYear()} Prady Technologies Ltd. All rights reserved.</p>
-        </div>
+        <p className="mkt-footer__copy">
+          © {new Date().getFullYear()} Prady Technologies Ltd. All rights reserved.
+        </p>
       </div>
     </footer>
   );

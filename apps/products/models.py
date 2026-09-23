@@ -290,17 +290,16 @@ class ProductWorkflowStep(OrderedProductItem):
 class ProductMediaQuerySet(models.QuerySet):
     def publicly_visible(self):
         """Active rows that have a renderable image or video payload."""
-        image_ok = Q(media_type=ProductMedia.TYPE_IMAGE) & ~Q(image="")
+        image_ok = Q(media_type=ProductMedia.TYPE_IMAGE) & Q(image__gt="")
         video_upload = (
             Q(media_type=ProductMedia.TYPE_VIDEO)
             & Q(video_source=ProductMedia.SOURCE_UPLOAD)
-            & ~Q(video_file="")
+            & Q(video_file__gt="")
         )
         video_external = (
             Q(media_type=ProductMedia.TYPE_VIDEO)
             & Q(video_source=ProductMedia.SOURCE_EXTERNAL)
-            & ~Q(video_url="")
-            & Q(video_url__isnull=False)
+            & Q(video_url__gt="")
         )
         return (
             self.filter(is_active=True)

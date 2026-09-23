@@ -226,6 +226,73 @@ class ProductAdminApiTests(TestCase):
         )
         self.assertIn(r.status_code, (401, 403))
 
+    def test_admin_media_image_gif_and_video_upload(self):
+        product = Product.objects.create(name="Media Host", slug="media-host", is_active=True)
+
+        img = _png("shot.png")
+        r = self.client.post(
+            f"/api/v1/products/{product.id}/media/",
+            data={
+                "media_type": "image",
+                "image_category": "screenshot",
+                "title": "Dashboard",
+                "image": img,
+                "is_featured": "true",
+                "display_order": "10",
+            },
+        )
+        self.assertEqual(r.status_code, 201, r.content)
+        self.assertEqual(r.json()["media_type"], "image")
+        self.assertTrue(r.json().get("image_url"))
+        self.assertTrue(r.json().get("is_featured"))
+
+        video = _tiny_mp4()
+        r = self.client.post(
+            f"/api/v1/products/{product.id}/media/",
+            data={
+                "media_type": "video",
+                "video_source": "upload",
+                "title": "Walkthrough",
+                "video_file": video,
+                "display_order": "20",
+            },
+        )
+        self.assertEqual(r.status_code, 201, r.content)
+        self.assertEqual(r.json()["media_type"], "video")
+        self.assertTrue(r.json().get("video_file_url"))
+        video_row = ProductMedia.objects.get(pk=r.json()["id"])
+        self.assertTrue(video_row.video_file.name)
+        self.assertEqual(video_row.video_source, ProductMedia.SOURCE_UPLOAD)
+        self.assertTrue(video_row.is_active)
+        self.assertEqual(video_row.media_type, ProductMedia.TYPE_VIDEO)
+
+        listing = self.client.get(f"/api/v1/products/{product.id}/media/")
+        self.assertEqual(listing.status_code, 200)
+        self.assertEqual(len(listing.json()), 2)
+
+        mid = listing.json()[0]["id"]
+        r = self.client.delete(f"/api/v1/products/{product.id}/media/{mid}/")
+        self.assertEqual(r.status_code, 204)
+        self.assertEqual(len(self.client.get(f"/api/v1/products/{product.id}/media/").json()), 1)
+
+        video_row.refresh_from_db()
+        self.assertTrue(video_row.video_file.name)
+        self.assertTrue(video_row.is_active)
+        qs = ProductMedia.objects.filter(product=product)
+        self.assertEqual(qs.count(), 1)
+        visible = list(ProductMedia.objects.publicly_visible().filter(product=product))
+        self.assertEqual(
+            len(visible),
+            1,
+            msg=f"row={video_row.media_type}/{video_row.video_source}/{video_row.video_file.name!r}/active={video_row.is_active}",
+        )
+
+        # Public detail exposes remaining media
+        pub = self.anon.get("/api/v1/public/products/media-host/")
+        self.assertEqual(pub.status_code, 200)
+        self.assertEqual(len(pub.json()["media"]), 1)
+        self.assertEqual(pub.json()["media"][0]["media_type"], "video")
+
 
 class ProductDetailApiTests(TestCase):
     def setUp(self):
