@@ -50,7 +50,7 @@ Legacy host systemd unit files (historical only): `legacy/systemd/`.
 * Git
 * Docker Engine + Docker Compose v2 (`docker compose`)
 * Existing host Redis
-* Document root: `/home/pradytec/pradytecai/public_html`
+* Document root: `/home/pradytec/public_html` (cPanel main domain; sibling apps stay untouched)
 
 ---
 
@@ -203,9 +203,10 @@ Gunicorn/Celery/Postgres for this app are Compose-only going forward.
 
 Apply rules from `deploy/apache/pradytecai-proxy.conf.example` (WHM Include Editor / VirtualHost):
 
-* DocumentRoot → `/home/pradytec/pradytecai/public_html`  
-  (`deploy.sh` creates this folder if missing. Override with `PUBLIC_HTML=/path ./deploy.sh` if the cPanel docroot differs — do **not** point at the account-wide `/home/pradytec/public_html` if other apps live there.)
-* Proxy `/api/v1/*`, `/up`, `/health`, `/t/*` → `http://127.0.0.1:8100`
+* DocumentRoot → `/home/pradytec/public_html` (already set for `pradytecai.com`)
+  `deploy.sh` safely updates only `assets/`, `index.html`, `static/`, and additive `media/` —
+  it does **not** delete or modify `crm/`, `dashboard/`, `analyzer/`, `mfi/`, etc.
+* Proxy `/api/v1/*`, `/up`, `/health`, `/t/*`, `/login`, `/admin` → `http://127.0.0.1:8100`
 * Serve `/`, `/assets/*`, `/static/*`, `/media/*` from disk (not Gunicorn)
 
 Reload Apache after changes (`/scripts/rebuildhttpdconf` + restart via WHM, or your usual reload).

@@ -40,7 +40,7 @@ Historical unit files live under `legacy/systemd/` and must **not** be installed
 | Docker Compose v2 | `docker compose` |
 | Host Redis | reuse existing instance |
 | Git | deploy from `django` branch |
-| Document root | `/home/pradytec/pradytecai/public_html` |
+| Document root | `/home/pradytec/public_html` (shared; deploy allowlists React/Django files only) |
 
 Python 3.12 runs **inside** the application image. You do **not** need the host `env/` venv for Docker production.
 

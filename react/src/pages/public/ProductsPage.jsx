@@ -1,55 +1,8 @@
 import React, { useEffect, useMemo, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { api } from "../../api/client";
 import { portfolio } from "../../data/portfolio";
-import PradyIcon from "../../components/marketing/PradyIcon";
-
-function ProductCard({ product }) {
-  const cta = product.cta_label || "Request demo";
-  const detailTo = `/products/${product.slug}`;
-  const demoTo =
-    product.cta_type === "external" && product.cta_url
-      ? product.cta_url
-      : `/contact?product=${encodeURIComponent(product.name)}&product_slug=${encodeURIComponent(
-          product.slug || ""
-        )}&request_type=demo`;
-
-  return (
-    <article id={product.slug} className="mkt-product-card">
-      {product.poster_url ? (
-        <img
-          src={product.poster_url}
-          alt=""
-          className="mkt-product-card__poster"
-          loading="lazy"
-        />
-      ) : (
-        <span className="mkt-product-card__icon" aria-hidden="true">
-          <PradyIcon name={product.icon || "cog"} className="w-7 h-7" />
-        </span>
-      )}
-      <h3 className="mkt-product-card__title">{product.name}</h3>
-      <p className="mkt-product-card__text">
-        {product.short_description || product.short || product.description}
-      </p>
-      {product.market && <p className="mkt-product-card__market">{product.market}</p>}
-      <div className="mkt-product-card__actions">
-        <Link to={detailTo} className="mkt-product-card__link">
-          Learn more →
-        </Link>
-        {product.cta_type === "external" && product.cta_url ? (
-          <a href={demoTo} className="mkt-product-card__demo" target="_blank" rel="noreferrer">
-            {cta}
-          </a>
-        ) : (
-          <Link to={demoTo} className="mkt-product-card__demo">
-            {cta}
-          </Link>
-        )}
-      </div>
-    </article>
-  );
-}
+import ProductCard from "../../components/marketing/ProductCard";
 
 export default function ProductsPage() {
   const location = useLocation();
@@ -104,17 +57,21 @@ export default function ProductsPage() {
             commerce.
           </p>
         </div>
-        {loading && <p className="text-slate-600">Loading products…</p>}
-        {error && <p className="text-red-700">{error}</p>}
+        {loading && <p className="mkt-empty-hint">Loading products…</p>}
+        {error && <p className="mkt-empty-hint mkt-empty-hint--error">{error}</p>}
         {!loading && !error && !products.length && (
-          <p className="text-slate-600">Products will appear here once published.</p>
+          <p className="mkt-empty-hint">Products will appear here once published.</p>
         )}
         {grouped.map((group) => (
           <div key={group.key} className="mkt-product-group">
             <h2 className="mkt-product-group__title">{group.title}</h2>
             <div className="mkt-products-grid">
-              {group.items.map((p) => (
-                <ProductCard key={p.id || p.slug} product={p} />
+              {group.items.map((p, index) => (
+                <ProductCard
+                  key={p.id || p.slug}
+                  product={p}
+                  lazyPoster={index > 0 || grouped.indexOf(group) > 0}
+                />
               ))}
             </div>
           </div>

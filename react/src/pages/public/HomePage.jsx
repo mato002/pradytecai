@@ -1,37 +1,31 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { api } from "../../api/client";
 import { portfolio } from "../../data/portfolio";
 import PradyIcon from "../../components/marketing/PradyIcon";
 import HeroVisual from "../../components/marketing/HeroVisual";
+import ProductCard from "../../components/marketing/ProductCard";
 
 export default function HomePage() {
   const location = useLocation();
   const [products, setProducts] = useState([]);
-  const [featured, setFeatured] = useState(null);
 
   useEffect(() => {
     api("/public/home/")
       .then((data) => {
         const list = Array.isArray(data.products) ? data.products : [];
         setProducts(list);
-        setFeatured(data.featured || list.find((p) => p.is_featured) || null);
       })
-      .catch(() => {
-        setProducts([]);
-        setFeatured(null);
-      });
+      .catch(() => setProducts([]));
   }, []);
 
-  const productsBySlug = useMemo(
-    () => Object.fromEntries(products.map((p) => [p.slug, p])),
-    [products]
-  );
-
   useEffect(() => {
-    if (location.hash) {
-      const el = document.querySelector(location.hash);
-      if (el) el.scrollIntoView({ behavior: "smooth", block: "start" });
+    if (!location.hash) return;
+    const id = location.hash.replace("#", "");
+    const el = document.getElementById(id) || document.querySelector(location.hash);
+    if (el) {
+      const t = window.setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
+      return () => window.clearTimeout(t);
     }
   }, [location, products]);
 
@@ -39,239 +33,266 @@ export default function HomePage() {
     document.title = "Prady Technologies | Smart Technology Solutions for African Businesses";
   }, []);
 
+  const homeProducts = products.slice(0, 8);
+
   return (
     <>
-      <section className="mkt-hero" aria-labelledby="home-hero-heading" style={{ backgroundColor: '#0A4E99' }}>
-        <div className="mkt-container mkt-hero__inner relative z-10 pt-16">
-          <div className="mkt-hero__copy relative">
-            <h1 id="home-hero-heading" className="mkt-hero__title" style={{ color: '#ffffff', fontWeight: '800', fontSize: '3rem', lineHeight: '1.2' }}>
-              <span className="mkt-hero__title-line block">Smart Technology Solutions</span>
-              <span className="mkt-hero__title-line block">for Ambitious Businesses</span>
+      <section className="mkt-hero" aria-labelledby="home-hero-heading">
+        <div className="mkt-container mkt-hero__inner">
+          <div className="mkt-hero__copy">
+            <p className="mkt-hero__eyebrow">Doing IT differently</p>
+            <h1 id="home-hero-heading" className="mkt-hero__title">
+              <span className="mkt-hero__title-line">Smart Technology Solutions</span>
+              <span className="mkt-hero__title-line">for Ambitious Businesses</span>
             </h1>
-            <p className="mkt-hero__lead mt-4 text-xl font-medium" style={{ color: '#ffffff' }}>We build secure, efficient software that drives growth.</p>
-            <div className="mkt-hero__actions mt-8 flex gap-4">
-              <Link to="/contact" className="mkt-btn bg-white font-bold transition-colors mkt-btn--hero shadow-md" style={{ color: '#0A4E99', borderRadius: '8px' }}>
-                Get Demo →
+            <p className="mkt-hero__lead">
+              Secure business software for finance, operations, mobility and commerce.
+            </p>
+            <div className="mkt-hero__actions">
+              <Link to="/contact" className="mkt-btn mkt-btn--light mkt-btn--hero">
+                Get Demo <span aria-hidden="true">→</span>
               </Link>
-              <Link to="/products" className="mkt-btn border-2 border-white text-white font-bold transition-colors mkt-btn--hero hover:bg-white/10" style={{ borderRadius: '8px' }}>
+              <Link to="/products" className="mkt-btn mkt-btn--ghost-hero mkt-btn--hero">
                 Our Products
               </Link>
             </div>
           </div>
-          <div className="mkt-hero__media" aria-hidden="true">
+          <div className="mkt-hero__media">
             <HeroVisual />
           </div>
         </div>
       </section>
 
-      <section id="solutions" className="mkt-section mkt-section--solutions py-16 bg-white relative z-10" style={{ backgroundColor: '#ffffff' }}>
+      <section className="mkt-trust" aria-label="Why Prady">
         <div className="mkt-container">
-          <div className="mkt-section__header mkt-section__header--solutions mb-12 text-center max-w-4xl mx-auto">
-            <h2 className="text-4xl md:text-5xl font-bold mb-4" style={{ color: '#0A4E99' }}>Our Solutions</h2>
-            <p className="text-lg md:text-xl font-medium" style={{ color: '#535B67' }}>
-              Tailored systems designed to streamline operations and scale your business
-            </p>
-          </div>
-          <div className="mkt-solutions-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {portfolio.solutions.map((s) => (
-              <Link key={s.name} to={s.href} className="mkt-solution-card group bg-white rounded-xl p-8 shadow-[0_4px_16px_rgba(0,0,0,0.08)] hover:shadow-[0_12px_24px_rgba(0,0,0,0.12)] transition-shadow duration-300 flex flex-col items-center text-center" style={{ border: 'none', backgroundColor: '#ffffff' }}>
-                <span className="mkt-solution-card__icon inline-flex items-center justify-center w-20 h-20 rounded-full mb-6" style={{ backgroundColor: '#EDF6FC', color: '#0A4E99' }}>
-                  <PradyIcon name={s.icon} className="w-10 h-10" />
-                </span>
-                <h3 className="mkt-solution-card__title text-xl font-bold mb-3" style={{ color: '#053171' }}>{s.name}</h3>
-                <p className="mkt-solution-card__text text-sm leading-relaxed" style={{ color: '#535B67' }}>{s.short}</p>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="mkt-trust py-6" aria-label="Why Prady" style={{ backgroundColor: '#F0F2F5', borderTop: '1px solid #E5EAF0' }}>
-        <div className="mkt-container">
-          <div className="mkt-trust__grid flex flex-col md:flex-row justify-center gap-12 md:gap-24">
+          <div className="mkt-trust__grid mkt-trust__grid--three">
             {portfolio.trust.map((t) => (
-              <div key={t.label} className="mkt-trust__item flex items-center gap-3 font-bold" style={{ color: '#053171' }}>
-                <span className="mkt-trust__icon" style={{ color: '#0A4E99' }}>
-                  <PradyIcon name={t.icon} className="w-6 h-6" />
+              <div key={t.label} className="mkt-trust__item mkt-trust__item--center">
+                <span className="mkt-trust__icon">
+                  <PradyIcon name={t.icon} className="w-4 h-4 sm:w-5 sm:h-5" />
                 </span>
-                <p className="mkt-trust__label text-sm tracking-wide">{t.label}</p>
+                <p className="mkt-trust__label">{t.label}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="manage" className="mkt-section mkt-section--light">
+      <section id="solutions" className="mkt-section mkt-section--solutions">
         <div className="mkt-container">
-          <div className="mkt-section__header">
-            <h2 className="mkt-section__title">What do you want to manage?</h2>
-            <p className="mkt-section__subtitle">Guide visitors directly to the right Prady platform.</p>
+          <div className="mkt-section__header mkt-section__header--solutions">
+            <h2 className="mkt-section__title">Our Solutions</h2>
+            <p className="mkt-section__subtitle mkt-section__subtitle--desktop">
+              Connected systems designed to streamline operations and scale your business.
+            </p>
           </div>
-          <div className="mkt-manage-grid">
-            {portfolio.manage.map((item) => (
-              <Link key={item.label} to={item.href} className="mkt-manage-card">
-                <span className="mkt-manage-card__icon">
-                  <PradyIcon name={item.icon} className="w-6 h-6" />
+          <div className="mkt-solutions-grid">
+            {portfolio.solutions.map((s) => (
+              <Link key={s.name} to={s.href} className="mkt-solution-card">
+                <span className="mkt-solution-card__icon">
+                  <PradyIcon name={s.icon} className="mkt-solution-card__svg" />
                 </span>
-                <span className="mkt-manage-card__label">{item.label}</span>
+                <h3 className="mkt-solution-card__title">{s.name}</h3>
+                <p className="mkt-solution-card__text">{s.short}</p>
               </Link>
             ))}
           </div>
         </div>
       </section>
 
-      <section id="products" className="mkt-section mkt-section--white">
+      <section id="products" className="mkt-section mkt-section--products">
         <div className="mkt-container">
           <div className="mkt-section__header">
-            <h2 className="mkt-section__title">Product Portfolio</h2>
+            <h2 className="mkt-section__title">Our Products</h2>
             <p className="mkt-section__subtitle">
-              Practical platforms built for African businesses across finance, mobility, property and
-              commerce.
+              Practical platforms for finance, mobility, property and commerce.
             </p>
           </div>
-          {portfolio.product_groups.map((group) => {
-            const items = group.slugs.map((slug) => productsBySlug[slug]).filter(Boolean);
-            if (!items.length) return null;
-            return (
-              <div key={group.key} className="mkt-product-group">
-                <h3 className="mkt-product-group__title">{group.title}</h3>
-                <div className="mkt-products-grid">
-                  {items.map((p) => (
-                    <Link
-                      key={p.slug}
-                      to={`/products/${p.slug}`}
-                      className="mkt-product-card"
-                      id={p.slug}
-                    >
-                      {p.poster_url ? (
-                        <img
-                          src={p.poster_url}
-                          alt=""
-                          className="mkt-product-card__poster"
-                          loading="lazy"
-                        />
-                      ) : (
-                        <span className="mkt-product-card__icon">
-                          <PradyIcon name={p.icon || "cog"} className="w-7 h-7" />
-                        </span>
-                      )}
-                      <h3 className="mkt-product-card__title">{p.name}</h3>
-                      <p className="mkt-product-card__text">{p.short_description || p.short}</p>
-                      {p.market && <p className="mkt-product-card__market">{p.market}</p>}
-                      <span className="mkt-product-card__link">
-                        Learn more <span aria-hidden="true">→</span>
-                      </span>
-                    </Link>
-                  ))}
+          {homeProducts.length > 0 ? (
+            <div className="mkt-products-grid">
+              {homeProducts.map((p, index) => (
+                <ProductCard key={p.slug || p.id} product={p} lazyPoster={index > 1} />
+              ))}
+            </div>
+          ) : (
+            <p className="mkt-empty-hint">Products will appear here once published.</p>
+          )}
+          <div className="mkt-section__more">
+            <Link to="/products" className="mkt-btn mkt-btn--outline">
+              View All Products
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      <section id="about" className="mkt-section mkt-section--white">
+        <div className="mkt-container">
+          <div className="mkt-home-split">
+            <div>
+              <h2 className="mkt-section__title mkt-section__title--left">About Prady</h2>
+              <p className="mkt-about__text">
+                {portfolio.company} builds secure, efficient software for finance, operations,
+                mobility and digital commerce across Africa.
+              </p>
+              <p className="mkt-about__text">
+                Our approach — <strong>{portfolio.tagline}</strong> — means platforms that fit real
+                institutional workflows, payments and growth.
+              </p>
+              <Link to="/about" className="mkt-btn mkt-btn--outline">
+                Learn more about us
+              </Link>
+            </div>
+            <div className="mkt-home-about-points">
+              {portfolio.trust.map((t) => (
+                <div key={t.label} className="mkt-about__point">
+                  <span className="mkt-about__point-icon">
+                    <PradyIcon name={t.icon} className="w-5 h-5" />
+                  </span>
+                  <div>
+                    <h3>{t.label}</h3>
+                    <p>
+                      {t.label === "Secure by Design"
+                        ? "Security-minded platforms built for sensitive financial and business data."
+                        : t.label === "Built for African Businesses"
+                          ? "Designed around African markets, payments and institutional workflows."
+                          : "Responsive support to help your teams adopt and operate confidently."}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section id="capabilities" className="mkt-section mkt-section--light">
-        <div className="mkt-container">
-          <div className="mkt-section__header">
-            <h2 className="mkt-section__title">Solutions &amp; Capabilities</h2>
-            <p className="mkt-section__subtitle">
-              Services that support every Prady platform — separate from our named products.
-            </p>
-          </div>
-          <div className="mkt-products-grid">
-            {portfolio.capabilities.map((item) => (
-              <Link key={item.name} to={item.href} className="mkt-product-card">
-                <span className="mkt-product-card__icon">
-                  <PradyIcon name={item.icon} className="w-7 h-7" />
-                </span>
-                <h3 className="mkt-product-card__title">{item.name}</h3>
-                <p className="mkt-product-card__text">{item.short}</p>
-                <span className="mkt-product-card__link">
-                  Learn more <span aria-hidden="true">→</span>
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section id="industries" className="mkt-section mkt-section--white">
-        <div className="mkt-container">
-          <div className="mkt-section__header">
-            <h2 className="mkt-section__title">Industries We Serve</h2>
-            <p className="mkt-section__subtitle">
-              Purpose-built platforms for the markets where Prady Technologies works deepest.
-            </p>
-          </div>
-          <div className="mkt-products-grid">
-            {portfolio.industries.map((item) => (
-              <Link key={item.name} to={item.href} className="mkt-product-card">
-                <span className="mkt-product-card__icon">
-                  <PradyIcon name={item.icon} className="w-7 h-7" />
-                </span>
-                <h3 className="mkt-product-card__title">{item.name}</h3>
-                <p className="mkt-product-card__text">{item.short}</p>
-                <span className="mkt-product-card__link">
-                  See products <span aria-hidden="true">→</span>
-                </span>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {featured && (
-        <section id="featured" className="mkt-section mkt-section--light">
-          <div className="mkt-container">
-            <div className="mkt-featured">
-              <div className="mkt-featured__visual" aria-hidden="true">
-                {featured.poster_url ? (
-                  <img src={featured.poster_url} alt="" className="mkt-featured__poster" />
-                ) : (
-                  <HeroVisual />
-                )}
-              </div>
-              <div className="mkt-featured__copy">
-                <p className="mkt-featured__eyebrow">Featured product</p>
-                <h2 className="mkt-section__title mkt-section__title--left">{featured.name}</h2>
-                <p className="mkt-about__text">
-                  {featured.description || featured.short_description || featured.short}
-                </p>
-                <div className="mkt-featured__actions">
-                  <Link to={`/products/${featured.slug}`} className="mkt-btn mkt-btn--primary">
-                    Explore Product
-                  </Link>
-                  <Link
-                    to={`/contact?product=${encodeURIComponent(featured.name)}&product_slug=${encodeURIComponent(
-                      featured.slug || ""
-                    )}&request_type=demo`}
-                    className="mkt-btn mkt-btn--outline"
-                  >
-                    {featured.cta_label || "Request Demo"}
-                  </Link>
-                </div>
-              </div>
+              ))}
             </div>
           </div>
-        </section>
-      )}
+        </div>
+      </section>
+
+      <section id="contact" className="mkt-section mkt-section--light">
+        <div className="mkt-container">
+          <div className="mkt-home-split mkt-home-split--contact">
+            <div>
+              <h2 className="mkt-section__title mkt-section__title--left">Contact</h2>
+              <p className="mkt-section__subtitle mkt-section__subtitle--left">
+                Tell us what you need and we&apos;ll route it to the right team.
+              </p>
+              <ul className="mkt-home-contact-list">
+                <li>
+                  <strong>Phone</strong>
+                  <a href={portfolio.contact.phone_href}>{portfolio.contact.phone}</a>
+                </li>
+                <li>
+                  <strong>Email</strong>
+                  <a href={portfolio.contact.email_href}>{portfolio.contact.email}</a>
+                </li>
+                <li>
+                  <strong>Location</strong>
+                  <span>{portfolio.contact.location}</span>
+                </li>
+                <li>
+                  <strong>Hours</strong>
+                  <span>{portfolio.contact.hours}</span>
+                </li>
+              </ul>
+            </div>
+            <HomeContactForm />
+          </div>
+        </div>
+      </section>
 
       <section className="mkt-cta">
         <div className="mkt-container mkt-cta__inner">
-          <h2 className="mkt-cta__title">Not sure which Prady platform fits your business?</h2>
+          <h2 className="mkt-cta__title">Tell us what you&apos;re trying to improve.</h2>
           <p className="mkt-cta__text">
-            Tell us what you&apos;re trying to manage and we&apos;ll guide you to the right solution.
+            We&apos;ll help you find the right Prady platform for your business.
           </p>
           <div className="mkt-cta__actions">
             <Link to="/contact" className="mkt-btn mkt-btn--light">
-              Talk to Us
-            </Link>
-            <Link to="/contact" className="mkt-btn mkt-btn--ghost">
               Get Demo
             </Link>
+            <a href="#contact" className="mkt-btn mkt-btn--ghost">
+              Talk to Us
+            </a>
           </div>
         </div>
       </section>
     </>
+  );
+}
+
+function HomeContactForm() {
+  const [form, setForm] = useState({
+    name: "",
+    company: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState(null);
+
+  function set(k, v) {
+    setForm((f) => ({ ...f, [k]: v }));
+  }
+
+  async function onSubmit(e) {
+    e.preventDefault();
+    setLoading(true);
+    setFeedback(null);
+    try {
+      await api("/public/contact/", {
+        method: "POST",
+        body: {
+          name: form.name,
+          company: form.company,
+          email: form.email,
+          phone: form.phone,
+          subject: form.subject,
+          message: form.message,
+          request_type: "contact",
+          source: "home_page",
+          landing_page: window.location.pathname,
+        },
+      });
+      setFeedback({ type: "success", message: "Thank you — we received your message." });
+      setForm({ name: "", company: "", email: "", phone: "", subject: "", message: "" });
+    } catch (err) {
+      setFeedback({ type: "error", message: err.message || "Failed to send." });
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <form onSubmit={onSubmit} className="mkt-home-contact-form">
+      {["name", "company", "email", "phone", "subject"].map((k) => (
+        <input
+          key={k}
+          required={["name", "email", "subject"].includes(k)}
+          className="mkt-input"
+          placeholder={k.charAt(0).toUpperCase() + k.slice(1)}
+          value={form[k]}
+          onChange={(e) => set(k, e.target.value)}
+        />
+      ))}
+      <textarea
+        required
+        className="mkt-textarea"
+        rows={4}
+        placeholder="Message"
+        value={form.message}
+        onChange={(e) => set("message", e.target.value)}
+      />
+      <button type="submit" className="mkt-btn mkt-btn--primary" disabled={loading}>
+        {loading ? "Sending…" : "Send message"}
+      </button>
+      {feedback && (
+        <p
+          className={`mkt-home-contact-feedback ${
+            feedback.type === "success" ? "is-success" : "is-error"
+          }`}
+        >
+          {feedback.message}
+        </p>
+      )}
+    </form>
   );
 }

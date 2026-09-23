@@ -1,31 +1,49 @@
-# Apache / WHM reverse-proxy example for PradytecAI
+# Apache / WHM — PradytecAI on shared public_html
 #
-# Place equivalent rules in the domain's Apache include (WHM → Apache
-# Configuration → Include Editor / or .htaccess ProxyPass where allowed).
+# cPanel: pradytecai.com DocumentRoot = /home/pradytec/public_html
+# Sibling sites (crm/, dashboard/, analyzer/, …) must remain untouched.
+# deploy.sh only writes: assets/, index.html, static/, additive media/
 #
-# DocumentRoot should be the React build output:
-#   /home/pradytec/pradytecai/public_html
+# Backend: Docker web → 127.0.0.1:8100 (container Gunicorn :8100)
+
+# --- Prefer ProxyPass in VirtualHost include (mod_proxy, mod_proxy_http) ---
 #
-# Backend: Docker Compose `web` publishes Gunicorn only on 127.0.0.1:8100
-# (container binds 0.0.0.0:8100). Host :8000 is used by another app.
-# Do NOT expose 8100 publicly.
+# ProxyPreserveHost On
+# RequestHeader set X-Forwarded-Proto "https"
 #
 # ProxyPass        /api/v1/  http://127.0.0.1:8100/api/v1/
 # ProxyPassReverse /api/v1/  http://127.0.0.1:8100/api/v1/
-#
 # ProxyPass        /up       http://127.0.0.1:8100/up
 # ProxyPassReverse /up       http://127.0.0.1:8100/up
-#
 # ProxyPass        /health   http://127.0.0.1:8100/health
 # ProxyPassReverse /health   http://127.0.0.1:8100/health
-#
 # ProxyPass        /t/       http://127.0.0.1:8100/t/
 # ProxyPassReverse /t/      http://127.0.0.1:8100/t/
+# ProxyPass        /login    http://127.0.0.1:8100/login
+# ProxyPassReverse /login    http://127.0.0.1:8100/login
+# ProxyPass        /admin    http://127.0.0.1:8100/admin
+# ProxyPassReverse /admin    http://127.0.0.1:8100/admin
+# ProxyPass        /contact  http://127.0.0.1:8100/contact
+# ProxyPassReverse /contact  http://127.0.0.1:8100/contact
 
-# Serve React + static + media from disk (DocumentRoot), not via Gunicorn:
-#   /           → public_html/index.html (SPA)
-#   /assets/*   → public_html/assets/   (Vite hashed bundles)
-#   /static/*   → public_html/static/   (Django collectstatic)
-#   /media/*    → public_html/media/ or symlink to repo media/
+# --- Optional: SPA fallback in /home/pradytec/public_html/.htaccess ---
+# Do NOT use a blanket rewrite that catches /crm /dashboard etc.
+#
+# <IfModule mod_rewrite.c>
+#   RewriteEngine On
+#   RewriteBase /
+#   # Real files/dirs (including sibling apps) pass through
+#   RewriteCond %{REQUEST_FILENAME} -f [OR]
+#   RewriteCond %{REQUEST_FILENAME} -d
+#   RewriteRule ^ - [L]
+#   # API / health / tracking already proxied above — skip if using ProxyPass
+#   RewriteRule ^index\.html$ - [L]
+#   RewriteRule . /index.html [L]
+# </IfModule>
 
-# Do NOT add a second reverse proxy (Nginx/Traefik) inside Docker.
+# Serve from disk:
+#   /           → index.html (React SPA)
+#   /assets/*   → Vite hashed JS/CSS
+#   /static/*   → Django collectstatic
+#   /media/*    → uploads
+#   /crm/* etc. → existing apps (unchanged)

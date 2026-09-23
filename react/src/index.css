@@ -5,15 +5,15 @@
 @import "./styles/react-extras.css";
 
 @theme {
-  --color-prady-navy: #053171;
-  --color-prady-blue: #0a4e99;
-  --color-prady-primary: #0557a6;
-  --color-prady-deep: #00398c;
-  --color-prady-cyan: #19a7ef;
-  --color-prady-sky: #0487cd;
-  --color-prady-ice: #edf6fc;
+  --color-prady-navy: #0b3f8f;
+  --color-prady-blue: #0b5fb8;
+  --color-prady-primary: #0b5fb8;
+  --color-prady-deep: #0a3e8d;
+  --color-prady-cyan: #1598cd;
+  --color-prady-sky: #1598cd;
+  --color-prady-ice: #eaf3ff;
   --color-prady-light: #f7f9fc;
-  --font-sans: "Poppins", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  --font-sans: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 
 html,

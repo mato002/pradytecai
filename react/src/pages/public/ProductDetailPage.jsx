@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../../api/client";
-import PradyIcon from "../../components/marketing/PradyIcon";
+import ProductPoster from "../../components/marketing/ProductPoster";
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
@@ -29,7 +29,7 @@ export default function ProductDetailPage() {
     return (
       <div className="mkt-section mkt-section--white">
         <div className="mkt-container">
-          <p className="text-slate-600">Loading…</p>
+          <p className="mkt-empty-hint">Loading…</p>
         </div>
       </div>
     );
@@ -55,29 +55,24 @@ export default function ProductDetailPage() {
 
   return (
     <div className="mkt-section mkt-section--white">
-      <div className="mkt-container" style={{ maxWidth: 920 }}>
+      <div className="mkt-container mkt-product-detail-wrap">
         <p className="mb-4">
-          <Link to="/products" className="mkt-product-card__link">
+          <Link to="/products" className="mkt-product-card__link" style={{ marginTop: 0 }}>
             ← All products
           </Link>
         </p>
         <div className="mkt-product-detail">
-          {product.poster_url ? (
-            <img
-              src={product.poster_url}
-              alt=""
-              className="mkt-product-detail__poster"
-            />
-          ) : (
-            <div className="mkt-product-detail__icon-fallback" aria-hidden="true">
-              <PradyIcon name={product.icon || "cog"} className="w-12 h-12" />
-            </div>
-          )}
-          <h1 className="mkt-section__title mkt-section__title--left" style={{ marginTop: "1.25rem" }}>
+          <ProductPoster
+            src={product.poster_url || null}
+            alt={`${product.name} poster`}
+            variant="detail"
+            lazy={false}
+          />
+          <h1 className="mkt-section__title mkt-section__title--left mkt-product-detail__name">
             {product.name}
           </h1>
           {(product.short_description || product.short) && (
-            <p className="mkt-section__subtitle" style={{ textAlign: "left", marginInline: 0 }}>
+            <p className="mkt-section__subtitle mkt-section__subtitle--left">
               {product.short_description || product.short}
             </p>
           )}

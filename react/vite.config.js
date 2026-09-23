@@ -22,6 +22,10 @@ export default defineConfig({
   },
   server: {
     port: 5173,
+    watch: {
+      // Windows often locks newly copied image files; avoid crashing the watcher.
+      ignored: ["**/public/images/**"],
+    },
     proxy: {
       "/api": "http://127.0.0.1:8000",
       "/t": "http://127.0.0.1:8000",

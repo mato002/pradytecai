@@ -61,7 +61,9 @@ export default function SiteHeader() {
     <header className={`mkt-header ${scrolled ? "is-scrolled" : ""}`}>
       <div className="mkt-container">
         <div className="mkt-header__bar">
-          <PradyLogo variant="nav" />
+          <div className="mkt-header__logo">
+            <PradyLogo variant="nav" />
+          </div>
           <nav className="mkt-nav" aria-label="Primary">
             <NavLink to="/" end className="mkt-nav__link">
               Home
@@ -130,10 +132,10 @@ export default function SiteHeader() {
                 </div>
               )}
             </div>
-            <NavLink to="/about" className="mkt-nav__link">
+            <NavLink to="/#about" className="mkt-nav__link">
               About
             </NavLink>
-            <NavLink to="/contact" className="mkt-nav__link">
+            <NavLink to="/#contact" className="mkt-nav__link">
               Contact
             </NavLink>
           </nav>
@@ -165,7 +167,7 @@ export default function SiteHeader() {
           <Link to="/services" onClick={() => setMobileOpen(false)}>
             Solutions / Industries
           </Link>
-          <Link to="/about" onClick={() => setMobileOpen(false)}>
+          <Link to="/#about" onClick={() => setMobileOpen(false)}>
             About
           </Link>
           <Link to="/careers" onClick={() => setMobileOpen(false)}>
@@ -174,7 +176,7 @@ export default function SiteHeader() {
           <Link to="/blog" onClick={() => setMobileOpen(false)}>
             Blog
           </Link>
-          <Link to="/contact" onClick={() => setMobileOpen(false)}>
+          <Link to="/#contact" onClick={() => setMobileOpen(false)}>
             Contact
           </Link>
           <Link to="/contact" className="mkt-btn mkt-btn--primary" onClick={() => setMobileOpen(false)}>

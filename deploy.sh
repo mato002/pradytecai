@@ -15,8 +15,9 @@ ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 cd "$ROOT"
 
 DEPLOY_BRANCH="${DEPLOY_BRANCH:-django}"
-# ONLY this path — never the account-wide /home/pradytec/public_html (other apps live there).
-PUBLIC_HTML="${PUBLIC_HTML:-/home/pradytec/pradytecai/public_html}"
+# cPanel main domain DocumentRoot (pradytecai.com → this path).
+# Other production apps live as sibling folders here; deploy only touches allowlisted paths.
+PUBLIC_HTML="${PUBLIC_HTML:-/home/pradytec/public_html}"
 COMPOSE="${COMPOSE:-docker compose}"
 NODE_IMAGE="${NODE_IMAGE:-node:24-alpine}"
 PUBLIC_HEALTH_URL="${PUBLIC_HEALTH_URL:-https://pradytecai.com/up}"
@@ -27,7 +28,6 @@ ENABLE_CELERY="${ENABLE_CELERY:-auto}"
 # Rebuild app image even if it already exists: FORCE_BUILD=1 ./deploy.sh
 FORCE_BUILD="${FORCE_BUILD:-0}"
 # Always git pull even when images exist: FORCE_PULL=1 ./deploy.sh
-# Default: skip git pull when app image already exists (faster redeploy).
 FORCE_PULL="${FORCE_PULL:-0}"
 
 log() { echo "[deploy] $*"; }
@@ -41,19 +41,60 @@ image_exists() {
   docker image inspect "$1" >/dev/null 2>&1
 }
 
-# Refuse dangerous account-wide docroot
-if [[ "$PUBLIC_HTML" == "/home/pradytec/public_html" || "$PUBLIC_HTML" == "/home/pradytec/public_html/" ]]; then
-  fail "PUBLIC_HTML must NOT be /home/pradytec/public_html (shared with other apps). Use /home/pradytec/pradytecai/public_html"
-fi
+# Safe frontend publish into a SHARED public_html (never wipe sibling sites).
+# Writes ONLY: assets/, index.html, optional root favicons, static/ (Django), media/ (additive).
+deploy_frontend_safe() {
+  local dest="$1"
+  [[ -d "$dest" ]] || fail "PUBLIC_HTML does not exist: ${dest} (cPanel DocumentRoot must already exist)"
 
-# Create site document root early (not the nested Laravel folder ./pradytecai/)
-if [[ ! -d "$PUBLIC_HTML" ]]; then
-  log "Creating PUBLIC_HTML=${PUBLIC_HTML}"
-  mkdir -p "$PUBLIC_HTML" || fail "Could not create ${PUBLIC_HTML}"
-  if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
-    chown pradytec:pradytec "$PUBLIC_HTML" 2>/dev/null || true
+  log "Safe React deploy → ${dest}"
+  log "  allowlist: assets/ index.html favicon* static/ media/"
+  log "  untouched: crm dashboard analyzer mfi .well-known and all other sibling sites"
+
+  mkdir -p "$dest/assets" "$dest/static"
+  mkdir -p media
+
+  # React hashed bundles — --delete only inside assets/ (safe)
+  rsync -a --delete react/dist/assets/ "$dest/assets/"
+
+  # Optional root favicons from Vite public/ copy (do not overwrite dirs)
+  local f
+  for f in favicon.ico favicon.svg favicon.png apple-touch-icon.png; do
+    if [[ -f "react/dist/$f" ]]; then
+      cp -a "react/dist/$f" "$dest/$f"
+    fi
+  done
+
+  # Atomic index.html LAST (main domain SPA shell)
+  cp -a react/dist/index.html "$dest/index.html.new"
+  mv -f "$dest/index.html.new" "$dest/index.html"
+  log "React index.html replaced atomically at ${dest}/index.html"
+
+  # Django media: additive only — never replace an existing directory with a wipe
+  if [[ -L "$dest/media" ]]; then
+    log "media already symlinked → $(readlink "$dest/media")"
+  elif [[ ! -e "$dest/media" ]]; then
+    ln -sfn "$(pwd)/media" "$dest/media"
+    log "Linked ${dest}/media → $(pwd)/media"
+  elif [[ -d "$dest/media" ]]; then
+    rsync -a media/ "$dest/media/" || true
+    log "Synced repo media/ → ${dest}/media/ (additive; existing files kept)"
   fi
-fi
+
+  # Django collectstatic → static/ only (--delete confined to this directory)
+  if [[ -d staticfiles ]]; then
+    mkdir -p "$dest/static"
+    rsync -a --delete staticfiles/ "$dest/static/" \
+      || cp -a staticfiles/. "$dest/static/"
+    log "Django static synced → ${dest}/static/ (sibling site folders untouched)"
+  fi
+
+  if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
+    chown -R pradytec:pradytec "$dest/assets" "$dest/static" "$dest/index.html" 2>/dev/null || true
+    [[ -e "$dest/media" ]] && chown -h pradytec:pradytec "$dest/media" 2>/dev/null || true
+  fi
+}
+
 log "Frontend target: ${PUBLIC_HTML}"
 
 # ---------------------------------------------------------------------------
@@ -90,18 +131,14 @@ export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-pradytecai}"
 export IMAGE_TAG="${IMAGE_TAG:-latest}"
 APP_IMAGE="pradytecai-app:${IMAGE_TAG}"
 
-# Re-apply docroot after .env (still refuse account-wide public_html)
-PUBLIC_HTML="${PUBLIC_HTML:-/home/pradytec/pradytecai/public_html}"
-if [[ "$PUBLIC_HTML" == "/home/pradytec/public_html" || "$PUBLIC_HTML" == "/home/pradytec/public_html/" ]]; then
-  fail "PUBLIC_HTML must NOT be /home/pradytec/public_html. Use /home/pradytec/pradytecai/public_html"
-fi
+# Re-apply docroot after .env (cPanel main domain → /home/pradytec/public_html)
+PUBLIC_HTML="${PUBLIC_HTML:-/home/pradytec/public_html}"
+# Normalize trailing slash
+PUBLIC_HTML="${PUBLIC_HTML%/}"
 if [[ ! -d "$PUBLIC_HTML" ]]; then
-  log "Creating PUBLIC_HTML=${PUBLIC_HTML}"
-  mkdir -p "$PUBLIC_HTML" || fail "Could not create ${PUBLIC_HTML}"
-  if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
-    chown pradytec:pradytec "$PUBLIC_HTML" 2>/dev/null || true
-  fi
+  fail "PUBLIC_HTML missing: ${PUBLIC_HTML}. Create/fix DocumentRoot in cPanel first."
 fi
+log "Frontend target (shared docroot): ${PUBLIC_HTML}"
 
 REDIS_HOST_CHECK="${REDIS_HOST:-host.docker.internal}"
 REDIS_PORT_CHECK="${REDIS_PORT:-6379}"
@@ -257,62 +294,11 @@ if [[ "$(id -u)" -eq 0 ]]; then
 fi
 
 # ---------------------------------------------------------------------------
-# 14. Safe React → /home/pradytec/pradytecai/public_html only
-#     (NOT /home/pradytec/public_html — NOT the nested Laravel ./pradytecai/)
+# 14–15. Safe frontend → /home/pradytec/public_html (cPanel DocumentRoot)
+#     NEVER rsync --delete the whole docroot.
+#     NEVER touch sibling sites: crm, dashboard, analyzer, mfi, …
 # ---------------------------------------------------------------------------
-if [[ ! -d "$PUBLIC_HTML" ]]; then
-  log "Creating PUBLIC_HTML=${PUBLIC_HTML}"
-  mkdir -p "$PUBLIC_HTML" || fail "Could not create PUBLIC_HTML=${PUBLIC_HTML}"
-  if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
-    chown pradytec:pradytec "$PUBLIC_HTML" 2>/dev/null || true
-  fi
-fi
-
-log "Deploying React to ${PUBLIC_HTML} (preserving .well-known, static, media)"
-mkdir -p "$PUBLIC_HTML/assets" "$PUBLIC_HTML/static" "$PUBLIC_HTML/media"
-mkdir -p media
-
-if [[ -L "$PUBLIC_HTML/media" ]]; then
-  log "public_html/media already symlinked"
-elif [[ ! -e "$PUBLIC_HTML/media" ]]; then
-  ln -sfn "$(pwd)/media" "$PUBLIC_HTML/media"
-  log "Linked ${PUBLIC_HTML}/media → $(pwd)/media"
-elif [[ -d "$PUBLIC_HTML/media" ]]; then
-  rsync -a "$PUBLIC_HTML/media/" media/ || true
-  rsync -a media/ "$PUBLIC_HTML/media/" || true
-  log "Synced ./media ↔ ${PUBLIC_HTML}/media (directory already present)"
-fi
-
-rsync -a react/dist/assets/ "$PUBLIC_HTML/assets/"
-
-while IFS= read -r -d '' f; do
-  rel="${f#react/dist/}"
-  case "$rel" in
-    index.html|assets|assets/*) continue ;;
-    .well-known|.well-known/*|static|static/*|media|media/*) continue ;;
-  esac
-  dest="$PUBLIC_HTML/$rel"
-  mkdir -p "$(dirname "$dest")"
-  cp -a "$f" "$dest"
-done < <(find react/dist -type f -print0)
-
-cp -a react/dist/index.html "$PUBLIC_HTML/index.html.new"
-mv -f "$PUBLIC_HTML/index.html.new" "$PUBLIC_HTML/index.html"
-log "React index.html replaced atomically at ${PUBLIC_HTML}/index.html"
-
-# ---------------------------------------------------------------------------
-# 15. Django static → public_html/static
-# ---------------------------------------------------------------------------
-if [[ -d staticfiles ]]; then
-  mkdir -p "$PUBLIC_HTML/static"
-  rsync -a --delete staticfiles/ "$PUBLIC_HTML/static/" \
-    || cp -a staticfiles/. "$PUBLIC_HTML/static/"
-  log "Django static synced to ${PUBLIC_HTML}/static/"
-  if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
-    chown -R pradytec:pradytec "$PUBLIC_HTML/assets" "$PUBLIC_HTML/static" \
-      "$PUBLIC_HTML/index.html" 2>/dev/null || true
-  fi
-fi
+deploy_frontend_safe "$PUBLIC_HTML"
 
 # ---------------------------------------------------------------------------
 # 16–17. Bring stack up (preserve postgres volume; no `down -v`)

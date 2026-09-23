@@ -306,7 +306,7 @@ export default function ProductsAdmin() {
                   Featured
                 </label>
               </div>
-              <Field label="Poster image (JPEG/PNG/WebP/GIF, max 5 MB)">
+              <Field label="Poster image (JPEG/PNG/WebP/GIF, max 5 MB — preferred 4:3)">
                 <input
                   type="file"
                   accept="image/jpeg,image/png,image/webp,image/gif"
