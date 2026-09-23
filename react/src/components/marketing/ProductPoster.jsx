@@ -15,9 +15,14 @@ export default function ProductPoster({
   lazy = true,
   className = "",
 }) {
+  const [failed, setFailed] = React.useState(false);
+  React.useEffect(() => {
+    setFailed(false);
+  }, [src]);
+
   const frameClass = ["mkt-poster", `mkt-poster--${variant}`, className].filter(Boolean).join(" ");
 
-  if (!src) {
+  if (!src || failed) {
     return (
       <div className={frameClass} role="img" aria-label={alt}>
         <div className="mkt-poster__placeholder">
@@ -40,6 +45,7 @@ export default function ProductPoster({
         decoding="async"
         width={800}
         height={600}
+        onError={() => setFailed(true)}
       />
     </div>
   );

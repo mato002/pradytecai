@@ -1,3 +1,4 @@
+from django.db.models import Prefetch
 from rest_framework import serializers, viewsets
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.parsers import FormParser, JSONParser, MultiPartParser
@@ -6,7 +7,25 @@ from rest_framework.response import Response
 
 from apps.accounts.permissions import require_perm
 from apps.core.visibility import can_access_product, filter_products_visible
-from apps.products.models import Product, validate_product_poster
+from apps.products.api.serializers import PublicProductDetailSerializer
+from apps.products.models import (
+    Product,
+    ProductAudience,
+    ProductCapability,
+    ProductCapabilityGroup,
+    ProductControl,
+    ProductCustomSection,
+    ProductFAQ,
+    ProductHighlight,
+    ProductImplementationStep,
+    ProductIntegration,
+    ProductMedia,
+    ProductOutcome,
+    ProductPageSection,
+    ProductProblem,
+    ProductWorkflowStep,
+    validate_product_poster,
+)
 
 
 class ProductSerializer(serializers.ModelSerializer):
@@ -33,7 +52,15 @@ class ProductSerializer(serializers.ModelSerializer):
             "cta_type",
             "poster",
             "poster_url",
+            "hero_image",
+            "mobile_image",
+            "tagline",
             "icon",
+            "secondary_cta_label",
+            "secondary_cta_url",
+            "secondary_cta_type",
+            "seo_title",
+            "seo_description",
             "is_active",
             "is_featured",
             "order",
@@ -46,6 +73,8 @@ class ProductSerializer(serializers.ModelSerializer):
         read_only_fields = ["created_at", "updated_at", "poster_url"]
         extra_kwargs = {
             "poster": {"required": False, "allow_null": True},
+            "hero_image": {"required": False, "allow_null": True},
+            "mobile_image": {"required": False, "allow_null": True},
             "slug": {"required": False, "allow_blank": True},
         }
 
@@ -56,6 +85,16 @@ class ProductSerializer(serializers.ModelSerializer):
         return obj.poster.url
 
     def validate_poster(self, value):
+        if value:
+            validate_product_poster(value)
+        return value
+
+    def validate_hero_image(self, value):
+        if value:
+            validate_product_poster(value)
+        return value
+
+    def validate_mobile_image(self, value):
         if value:
             validate_product_poster(value)
         return value
@@ -127,8 +166,10 @@ class ProductViewSet(viewsets.ModelViewSet):
 
     def perform_destroy(self, instance):
         # FKs on ContactMessage / DemoRequest use SET_NULL — safe delete.
-        if instance.poster:
-            instance.poster.delete(save=False)
+        for field_name in ("poster", "hero_image", "mobile_image"):
+            image = getattr(instance, field_name, None)
+            if image:
+                image.delete(save=False)
         instance.delete()
 
     @action(detail=True, methods=["post"])
@@ -169,10 +210,41 @@ def public_product_list(request):
     return Response(PublicProductSerializer(qs, many=True, context={"request": request}).data)
 
 
+def _active_ordered(model):
+    return model.objects.filter(is_active=True).order_by("display_order", "id")
+
+
+def public_product_detail_queryset():
+    """Active product plus active related rows, ordered. Used only by the detail endpoint."""
+    return Product.objects.filter(is_active=True).prefetch_related(
+        Prefetch("highlights", queryset=_active_ordered(ProductHighlight)),
+        Prefetch("audiences", queryset=_active_ordered(ProductAudience)),
+        Prefetch("problems", queryset=_active_ordered(ProductProblem)),
+        Prefetch(
+            "capability_groups",
+            queryset=_active_ordered(ProductCapabilityGroup).prefetch_related(
+                Prefetch("capabilities", queryset=_active_ordered(ProductCapability))
+            ),
+        ),
+        Prefetch("workflow_steps", queryset=_active_ordered(ProductWorkflowStep)),
+        Prefetch("media_items", queryset=_active_ordered(ProductMedia).exclude(image="")),
+        Prefetch("integrations", queryset=_active_ordered(ProductIntegration)),
+        Prefetch("controls", queryset=_active_ordered(ProductControl)),
+        Prefetch("outcomes", queryset=_active_ordered(ProductOutcome)),
+        Prefetch("implementation_steps", queryset=_active_ordered(ProductImplementationStep)),
+        Prefetch("faqs", queryset=_active_ordered(ProductFAQ)),
+        Prefetch("custom_sections", queryset=_active_ordered(ProductCustomSection)),
+        Prefetch(
+            "page_sections",
+            queryset=ProductPageSection.objects.order_by("display_order", "id"),
+        ),
+    )
+
+
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def public_product_detail(request, slug):
-    product = Product.objects.filter(slug=slug, is_active=True).first()
+    product = public_product_detail_queryset().filter(slug=slug).first()
     if not product:
         return Response({"detail": "Not found."}, status=404)
-    return Response(PublicProductSerializer(product, context={"request": request}).data)
+    return Response(PublicProductDetailSerializer(product, context={"request": request}).data)

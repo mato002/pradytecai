@@ -8,8 +8,18 @@ from PIL import Image
 
 from apps.accounts.models import User
 from apps.leads.models import ContactMessage
+from apps.products.detail_defaults import seed_product_page_content
 from apps.products.management.commands.seed_products import DEFAULT_PRODUCTS, seed_default_products
-from apps.products.models import Product
+from apps.products.models import (
+    Product,
+    ProductCapability,
+    ProductCapabilityGroup,
+    ProductFAQ,
+    ProductHighlight,
+    ProductIntegration,
+    ProductPageSection,
+    ProductWorkflowStep,
+)
 
 
 def _png(name="poster.png", size=(40, 40), color=(20, 120, 80)):
@@ -213,3 +223,207 @@ class ProductAdminApiTests(TestCase):
             content_type="application/json",
         )
         self.assertIn(r.status_code, (401, 403))
+
+
+class ProductDetailApiTests(TestCase):
+    def setUp(self):
+        self.client = Client(enforce_csrf_checks=False)
+
+    def _product(self, **kwargs):
+        defaults = {"is_active": True, "cta_label": "Request demo", "cta_type": "demo"}
+        defaults.update(kwargs)
+        return Product.objects.create(**defaults)
+
+    def test_list_stays_lightweight(self):
+        product = self._product(name="Listed", slug="listed", short="Card copy")
+        ProductHighlight.objects.create(product=product, title="Should not be on the list", display_order=1)
+        r = self.client.get("/api/v1/public/products/")
+        self.assertEqual(r.status_code, 200)
+        row = r.json()[0]
+        self.assertEqual(row["slug"], "listed")
+        self.assertEqual(row["short_description"], "Card copy")
+        self.assertIn("poster_url", row)
+        self.assertIn("is_featured", row)
+        for heavy in (
+            "highlights",
+            "audiences",
+            "problems",
+            "capability_groups",
+            "workflow_steps",
+            "media",
+            "integrations",
+            "controls",
+            "outcomes",
+            "faqs",
+            "page_sections",
+            "custom_sections",
+        ):
+            self.assertNotIn(heavy, row)
+
+    def test_detail_orders_and_hides_inactive(self):
+        product = self._product(name="Ordered", slug="ordered", short="Short", description="Overview")
+        ProductHighlight.objects.create(product=product, title="Later", display_order=30)
+        ProductHighlight.objects.create(product=product, title="First", display_order=10)
+        ProductHighlight.objects.create(product=product, title="Hidden", display_order=5, is_active=False)
+        ProductCapabilityGroup.objects.create(product=product, title="Later group", display_order=20)
+        group_early = ProductCapabilityGroup.objects.create(product=product, title="Early group", display_order=10)
+        ProductCapability.objects.create(capability_group=group_early, title="Second cap", display_order=20)
+        ProductCapability.objects.create(capability_group=group_early, title="First cap", display_order=10)
+        ProductCapability.objects.create(
+            capability_group=group_early, title="Hidden cap", display_order=1, is_active=False
+        )
+        ProductCapabilityGroup.objects.create(
+            product=product, title="Hidden group", display_order=1, is_active=False
+        )
+        ProductPageSection.objects.create(
+            product=product, section_type="highlights", display_order=20, is_enabled=True
+        )
+        ProductPageSection.objects.create(
+            product=product, section_type="capabilities", display_order=10, is_enabled=True
+        )
+        ProductPageSection.objects.create(
+            product=product, section_type="faq", display_order=5, is_enabled=False, title_override="Nope"
+        )
+        ProductFAQ.objects.create(product=product, question="Hidden?", answer="No", is_active=False)
+
+        r = self.client.get("/api/v1/public/products/ordered/")
+        self.assertEqual(r.status_code, 200)
+        body = r.json()
+        self.assertEqual(body["overview"], "Overview")
+        self.assertEqual(body["short_description"], "Short")
+        self.assertEqual([h["title"] for h in body["highlights"]], ["First", "Later"])
+        self.assertEqual([g["title"] for g in body["capability_groups"]], ["Early group", "Later group"])
+        self.assertEqual(
+            [c["title"] for c in body["capability_groups"][0]["capabilities"]],
+            ["First cap", "Second cap"],
+        )
+        enabled = [s["section_type"] for s in body["page_sections"] if s["is_enabled"]]
+        self.assertEqual(enabled, ["capabilities", "highlights"])
+        self.assertIn(
+            "faq",
+            [s["section_type"] for s in body["page_sections"] if not s["is_enabled"]],
+        )
+        self.assertEqual(body["faqs"], [])
+
+    def test_missing_slug_404(self):
+        r = self.client.get("/api/v1/public/products/does-not-exist/")
+        self.assertEqual(r.status_code, 404)
+
+    def test_three_different_structures(self):
+        rich = self._product(name="Rich", slug="rich-product", tagline="Rich tagline")
+        ProductHighlight.objects.create(product=rich, title="Highlight", display_order=10)
+        ProductWorkflowStep.objects.create(product=rich, title="Apply", step_number=1, display_order=10)
+        ProductIntegration.objects.create(product=rich, name="M-Pesa", display_order=10)
+
+        gps = self._product(name="Tracker", slug="tracker-product")
+        group = ProductCapabilityGroup.objects.create(product=gps, title="Tracking", display_order=10)
+        ProductCapability.objects.create(capability_group=group, title="Live location", display_order=10)
+        ProductWorkflowStep.objects.create(product=gps, title="Register devices", step_number=1, display_order=10)
+
+        simple = self._product(name="Simple", slug="simple-product")
+        ProductFAQ.objects.create(
+            product=simple, question="What is it?", answer="A smaller page.", display_order=10
+        )
+
+        rich_body = self.client.get("/api/v1/public/products/rich-product/").json()
+        gps_body = self.client.get("/api/v1/public/products/tracker-product/").json()
+        simple_body = self.client.get("/api/v1/public/products/simple-product/").json()
+
+        self.assertTrue(rich_body["highlights"])
+        self.assertTrue(rich_body["workflow_steps"])
+        self.assertTrue(rich_body["integrations"])
+        self.assertFalse(rich_body["faqs"])
+
+        self.assertFalse(gps_body["highlights"])
+        self.assertEqual(gps_body["capability_groups"][0]["title"], "Tracking")
+        self.assertTrue(gps_body["workflow_steps"])
+        self.assertFalse(gps_body["integrations"])
+        self.assertFalse(gps_body["faqs"])
+
+        self.assertFalse(simple_body["highlights"])
+        self.assertFalse(simple_body["workflow_steps"])
+        self.assertFalse(simple_body["capability_groups"])
+        self.assertEqual(simple_body["faqs"][0]["question"], "What is it?")
+
+    def test_detail_query_count_is_bounded(self):
+        from django.db import connection
+        from django.test.utils import CaptureQueriesContext
+
+        product = self._product(name="Bound", slug="bound-product")
+        for index in range(4):
+            group = ProductCapabilityGroup.objects.create(
+                product=product, title=f"Group {index}", display_order=index
+            )
+            for cap in range(6):
+                ProductCapability.objects.create(
+                    capability_group=group, title=f"Cap {index}-{cap}", display_order=cap
+                )
+            ProductHighlight.objects.create(product=product, title=f"H {index}", display_order=index)
+
+        with CaptureQueriesContext(connection) as captured:
+            response = self.client.get("/api/v1/public/products/bound-product/")
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(response.json()["capability_groups"]), 4)
+        self.assertEqual(len(response.json()["capability_groups"][0]["capabilities"]), 6)
+        self.assertLessEqual(len(captured), 20)
+
+    def test_seeded_detail_preserves_admin_edits(self):
+        import tempfile
+        from pathlib import Path
+
+        tmp = tempfile.TemporaryDirectory()
+        self.addCleanup(tmp.cleanup)
+        media = override_settings(MEDIA_ROOT=Path(tmp.name))
+        media.enable()
+        self.addCleanup(media.disable)
+
+        seed_default_products()
+        first = seed_product_page_content()
+        self.assertGreaterEqual(first["filled"], 1)
+
+        product = Product.objects.get(slug="prady-microfinance")
+        original_slug = product.slug
+        original_short = product.short
+        product.name = "Admin Edited Microfinance"
+        product.tagline = "Admin tagline"
+        product.save(update_fields=["name", "tagline", "updated_at"])
+        highlight = product.highlights.order_by("display_order").first()
+        self.assertIsNotNone(highlight)
+        highlight.title = "Admin highlight"
+        highlight.save(update_fields=["title"])
+
+        product.poster.save("kept.png", _png(), save=True)
+
+        second = seed_product_page_content()
+        self.assertEqual(second["filled"], 0)
+        product.refresh_from_db()
+        highlight.refresh_from_db()
+        self.assertEqual(product.name, "Admin Edited Microfinance")
+        self.assertEqual(product.slug, original_slug)
+        self.assertEqual(product.short, original_short)
+        self.assertEqual(product.tagline, "Admin tagline")
+        self.assertEqual(highlight.title, "Admin highlight")
+        self.assertIn("kept", product.poster.name)
+
+        micro = self.client.get("/api/v1/public/products/prady-microfinance/").json()
+        gps = self.client.get("/api/v1/public/products/gps-hosting/").json()
+        prop = self.client.get("/api/v1/public/products/property-management/").json()
+
+        self.assertTrue(micro["integrations"])
+        self.assertTrue(micro["workflow_steps"])
+        self.assertTrue(micro["faqs"])
+        self.assertNotIn("%", " ".join(item["title"] for item in micro["outcomes"]))
+
+        self.assertTrue(gps["workflow_steps"])
+        self.assertFalse(gps["integrations"])
+        self.assertFalse(gps["faqs"])
+        self.assertFalse(gps["outcomes"])
+
+        self.assertTrue(prop["custom_sections"])
+        self.assertTrue(prop["faqs"])
+        self.assertFalse(prop["workflow_steps"])
+        self.assertFalse(prop["integrations"])
+        self.assertNotEqual(
+            [s["section_type"] for s in micro["page_sections"]],
+            [s["section_type"] for s in prop["page_sections"]],
+        )

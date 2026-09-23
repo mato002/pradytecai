@@ -1,119 +1,74 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../../api/client";
-import { getProductBySlug } from "../../data/products";
-import ProductPoster from "../../components/marketing/ProductPoster";
+import ProductDetailView from "../../components/marketing/ProductDetailView";
+import { applyProductSeo, clearProductSeo } from "../../lib/productDetailModel";
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
-  const hardcoded = getProductBySlug(slug);
-  const [product, setProduct] = useState(hardcoded);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(!hardcoded);
+  const [product, setProduct] = useState(null);
+  const [status, setStatus] = useState("loading");
 
   useEffect(() => {
-    const local = getProductBySlug(slug);
-    if (local) {
-      setProduct(local);
-      setLoading(false);
-      setError("");
-      document.title = `${local.name} | Prady Technologies`;
-    } else {
-      setLoading(true);
-    }
-
+    let cancelled = false;
+    setStatus("loading");
+    setProduct(null);
     api(`/public/products/${encodeURIComponent(slug)}/`)
       .then((data) => {
-        // Prefer hardcoded poster when API has none
-        const merged = {
-          ...data,
-          poster_url: data.poster_url || local?.poster_url || null,
-          short_description: data.short_description || data.short || local?.short_description,
-        };
-        setProduct(merged);
-        document.title = `${merged.name} | Prady Technologies`;
-        setError("");
+        if (cancelled) return;
+        setProduct(data);
+        applyProductSeo(data);
+        setStatus("ready");
       })
       .catch((err) => {
-        if (local) return;
+        if (cancelled) return;
         setProduct(null);
-        setError(err.status === 404 ? "Product not found." : err.message || "Failed to load");
+        setStatus(err.status === 404 ? "missing" : "error");
         document.title = "Product | Prady Technologies";
-      })
-      .finally(() => setLoading(false));
+      });
+    return () => {
+      cancelled = true;
+      clearProductSeo();
+    };
   }, [slug]);
 
-  if (loading) {
+  if (status === "loading") {
     return (
       <div className="mkt-section mkt-section--white">
         <div className="mkt-container">
-          <p className="mkt-empty-hint">Loading…</p>
+          <p className="mkt-empty-hint">Loading product…</p>
         </div>
       </div>
     );
   }
 
-  if (error || !product) {
+  if (status === "missing" || status === "error" || !product) {
+    const missing = status === "missing";
     return (
       <div className="mkt-section mkt-section--white">
-        <div className="mkt-container space-y-4">
-          <h1 className="mkt-section__title mkt-section__title--left">{error || "Not found"}</h1>
-          <Link to="/products" className="mkt-btn mkt-btn--primary">
-            Back to products
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
-  const cta = product.cta_label || "Request demo";
-  const contactTo = `/contact?product=${encodeURIComponent(product.name)}&product_slug=${encodeURIComponent(
-    product.slug || ""
-  )}&request_type=demo`;
-
-  return (
-    <div className="mkt-section mkt-section--white">
-      <div className="mkt-container mkt-product-detail-wrap">
-        <p className="mb-4">
-          <Link to="/products" className="mkt-product-card__link" style={{ marginTop: 0 }}>
-            ← All products
-          </Link>
-        </p>
-        <div className="mkt-product-detail">
-          <ProductPoster
-            src={product.poster_url || null}
-            alt={`${product.name} poster`}
-            variant="detail"
-            lazy={false}
-          />
-          <h1 className="mkt-section__title mkt-section__title--left mkt-product-detail__name">
-            {product.name}
+        <div className="mkt-container mkt-pdp-state">
+          <h1 className="mkt-section__title mkt-section__title--left">
+            {missing ? "Product not found" : "We couldn’t load this product"}
           </h1>
-          {(product.short_description || product.short) && (
-            <p className="mkt-section__subtitle mkt-section__subtitle--left">
-              {product.short_description || product.short}
-            </p>
-          )}
-          {product.market && <p className="mkt-product-card__market">{product.market}</p>}
-          {product.description && (
-            <div className="mkt-about__text mt-6 whitespace-pre-line">{product.description}</div>
-          )}
-          <div className="mkt-featured__actions mt-8">
-            {product.cta_type === "external" && product.cta_url ? (
-              <a href={product.cta_url} className="mkt-btn mkt-btn--primary" target="_blank" rel="noreferrer">
-                {cta}
-              </a>
-            ) : (
-              <Link to={contactTo} className="mkt-btn mkt-btn--primary">
-                {cta}
-              </Link>
-            )}
-            <Link to="/contact" className="mkt-btn mkt-btn--outline">
-              Contact us
+          <p className="mkt-section__subtitle mkt-section__subtitle--left">
+            {missing
+              ? "That product is not published, or the link is out of date."
+              : "The product page didn’t load. Check the connection and try again."}
+          </p>
+          <div className="mkt-featured__actions">
+            <Link to="/products" className="mkt-btn mkt-btn--primary">
+              Back to products
             </Link>
+            {status === "error" ? (
+              <button type="button" className="mkt-btn mkt-btn--outline" onClick={() => window.location.reload()}>
+                Try again
+              </button>
+            ) : null}
           </div>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
+
+  return <ProductDetailView key={product.slug || slug} product={product} />;
 }

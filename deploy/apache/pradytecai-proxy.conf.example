@@ -1,49 +1,23 @@
-# Apache / WHM — PradytecAI on shared public_html
+# Apache / WHM — PradytecAI on shared /home/pradytec/public_html
 #
 # cPanel: pradytecai.com DocumentRoot = /home/pradytec/public_html
-# Sibling sites (crm/, dashboard/, analyzer/, …) must remain untouched.
-# deploy.sh only writes: assets/, index.html, static/, additive media/
+# deploy.sh copies deploy/apache/pradytecai-public_html.htaccess → public_html/.htaccess
+# (backs up a Laravel index.php front-controller once as .htaccess.laravel.bak).
 #
-# Backend: Docker web → 127.0.0.1:8100 (container Gunicorn :8100)
-
-# --- Prefer ProxyPass in VirtualHost include (mod_proxy, mod_proxy_http) ---
+# That file (between # BEGIN PRADYTECAI / # END PRADYTECAI):
+#   1) Proxies /api/v1 /up /health /t /django-admin /contact … → 127.0.0.1:8100
+#   2) SPA-fallback to /index.html for React routes (/login /admin /products …)
+#   3) Leaves real dirs alone (crm/ dashboard/ analyzer/ assets/ images/ static/ media/ …)
 #
-# ProxyPreserveHost On
-# RequestHeader set X-Forwarded-Proto "https"
+# Sibling subdomain vhosts (crm.pradytecai.com, etc.) use their own DocumentRoots —
+# this root .htaccess does not control them.
 #
-# ProxyPass        /api/v1/  http://127.0.0.1:8100/api/v1/
-# ProxyPassReverse /api/v1/  http://127.0.0.1:8100/api/v1/
-# ProxyPass        /up       http://127.0.0.1:8100/up
-# ProxyPassReverse /up       http://127.0.0.1:8100/up
-# ProxyPass        /health   http://127.0.0.1:8100/health
-# ProxyPassReverse /health   http://127.0.0.1:8100/health
-# ProxyPass        /t/       http://127.0.0.1:8100/t/
-# ProxyPassReverse /t/      http://127.0.0.1:8100/t/
-# ProxyPass        /login    http://127.0.0.1:8100/login
-# ProxyPassReverse /login    http://127.0.0.1:8100/login
-# ProxyPass        /admin    http://127.0.0.1:8100/admin
-# ProxyPassReverse /admin    http://127.0.0.1:8100/admin
-# ProxyPass        /contact  http://127.0.0.1:8100/contact
-# ProxyPassReverse /contact  http://127.0.0.1:8100/contact
-
-# --- Optional: SPA fallback in /home/pradytec/public_html/.htaccess ---
-# Do NOT use a blanket rewrite that catches /crm /dashboard etc.
+# Requires: mod_rewrite + mod_proxy + mod_proxy_http (usual on EA4).
+# If [P] proxy rules 500, enable proxy in WHM or use VirtualHost ProxyPass instead.
 #
-# <IfModule mod_rewrite.c>
-#   RewriteEngine On
-#   RewriteBase /
-#   # Real files/dirs (including sibling apps) pass through
-#   RewriteCond %{REQUEST_FILENAME} -f [OR]
-#   RewriteCond %{REQUEST_FILENAME} -d
-#   RewriteRule ^ - [L]
-#   # API / health / tracking already proxied above — skip if using ProxyPass
-#   RewriteRule ^index\.html$ - [L]
-#   RewriteRule . /index.html [L]
-# </IfModule>
-
-# Serve from disk:
-#   /           → index.html (React SPA)
-#   /assets/*   → Vite hashed JS/CSS
-#   /static/*   → Django collectstatic
-#   /media/*    → uploads
-#   /crm/* etc. → existing apps (unchanged)
+# Verify after install:
+#   curl -fsS http://127.0.0.1:8100/up
+#   curl -fsS -H "Host: pradytecai.com" http://127.0.0.1/up
+#   curl -sI -H "Host: pradytecai.com" http://127.0.0.1/login | head -5
+#   curl -sI https://crm.pradytecai.com/ | head -5
+#   ls /home/pradytec/public_html/assets /home/pradytec/public_html/images

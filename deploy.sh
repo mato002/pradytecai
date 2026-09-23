@@ -42,20 +42,28 @@ image_exists() {
 }
 
 # Safe frontend publish into a SHARED public_html (never wipe sibling sites).
-# Writes ONLY: assets/, index.html, optional root favicons, static/ (Django), media/ (additive).
+# Writes ONLY: assets/, images/, index.html, favicons, static/, media/, .htaccess markers.
 deploy_frontend_safe() {
   local dest="$1"
   [[ -d "$dest" ]] || fail "PUBLIC_HTML does not exist: ${dest} (cPanel DocumentRoot must already exist)"
 
   log "Safe React deploy → ${dest}"
-  log "  allowlist: assets/ index.html favicon* static/ media/"
+  log "  allowlist: assets/ images/ index.html favicon* static/ media/ .htaccess(PRADYTECAI)"
   log "  untouched: crm dashboard analyzer mfi .well-known and all other sibling sites"
 
-  mkdir -p "$dest/assets" "$dest/static"
+  mkdir -p "$dest/assets" "$dest/static" "$dest/images"
   mkdir -p media
 
   # React hashed bundles — --delete only inside assets/ (safe)
   rsync -a --delete react/dist/assets/ "$dest/assets/"
+
+  # Vite copies public/images → dist/images (product posters, logos)
+  if [[ -d react/dist/images ]]; then
+    rsync -a --delete react/dist/images/ "$dest/images/"
+    log "Synced react/dist/images → ${dest}/images/"
+  else
+    log "WARN: react/dist/images missing — posters at /images/* will 404"
+  fi
 
   # Optional root favicons from Vite public/ copy (do not overwrite dirs)
   local f
@@ -70,7 +78,7 @@ deploy_frontend_safe() {
   mv -f "$dest/index.html.new" "$dest/index.html"
   log "React index.html replaced atomically at ${dest}/index.html"
 
-  # Django media: additive only — never replace an existing directory with a wipe
+  # Django media: additive only — never wipe an existing directory
   if [[ -L "$dest/media" ]]; then
     log "media already symlinked → $(readlink "$dest/media")"
   elif [[ ! -e "$dest/media" ]]; then
@@ -86,13 +94,41 @@ deploy_frontend_safe() {
     mkdir -p "$dest/static"
     rsync -a --delete staticfiles/ "$dest/static/" \
       || cp -a staticfiles/. "$dest/static/"
-    log "Django static synced → ${dest}/static/ (sibling site folders untouched)"
+    log "Django static synced → ${dest}/static/"
   fi
 
+  # Install/refresh SPA + API proxy rules (full PRADYTECAI .htaccess)
+  install_pradytecai_htaccess "$dest"
+
   if [[ "$(id -u)" -eq 0 ]] && id pradytec >/dev/null 2>&1; then
-    chown -R pradytec:pradytec "$dest/assets" "$dest/static" "$dest/index.html" 2>/dev/null || true
+    chown -R pradytec:pradytec "$dest/assets" "$dest/images" "$dest/static" "$dest/index.html" 2>/dev/null || true
     [[ -e "$dest/media" ]] && chown -h pradytec:pradytec "$dest/media" 2>/dev/null || true
+    [[ -f "$dest/.htaccess" ]] && chown pradytec:pradytec "$dest/.htaccess" 2>/dev/null || true
   fi
+}
+
+# Install root .htaccess for SPA + Django proxy.
+# Backs up legacy Laravel index.php front-controller once, then replaces.
+install_pradytecai_htaccess() {
+  local dest="$1"
+  local ht="$dest/.htaccess"
+  local snippet="$ROOT/deploy/apache/pradytecai-public_html.htaccess"
+  [[ -f "$snippet" ]] || fail "Missing $snippet"
+
+  if [[ -f "$ht" ]]; then
+    if grep -q 'index\.php' "$ht" 2>/dev/null || grep -q 'Send Requests To Front Controller' "$ht" 2>/dev/null; then
+      if [[ ! -f "$dest/.htaccess.laravel.bak" ]]; then
+        cp -a "$ht" "$dest/.htaccess.laravel.bak"
+        log "Backed up Laravel .htaccess → ${dest}/.htaccess.laravel.bak"
+      fi
+    elif grep -q '# BEGIN PRADYTECAI' "$ht" 2>/dev/null; then
+      # Older marker-based install — replace wholesale with full file
+      :
+    fi
+  fi
+
+  cp -a "$snippet" "$ht"
+  log "Installed SPA+Django .htaccess at ${ht} (no longer routes to index.php)"
 }
 
 log "Frontend target: ${PUBLIC_HTML}"
@@ -254,6 +290,10 @@ docker run --rm \
 [[ -f react/dist/index.html ]] || fail "React build missing dist/index.html"
 [[ -d react/dist/assets ]] || fail "React build missing dist/assets/"
 ls react/dist/assets/*.js >/dev/null 2>&1 || fail "React build missing JS under dist/assets/"
+# images/ comes from react/public/images via Vite
+if [[ ! -d react/dist/images ]]; then
+  log "WARN: react/dist/images missing after build (check react/public/images)"
+fi
 log "React build verified"
 
 # ---------------------------------------------------------------------------

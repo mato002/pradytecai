@@ -6,6 +6,7 @@ import { useAuth } from "../../auth/AuthContext";
 const EMPTY = {
   name: "",
   slug: "",
+  tagline: "",
   short: "",
   description: "",
   market: "",
@@ -13,6 +14,11 @@ const EMPTY = {
   cta_label: "Request demo",
   cta_type: "demo",
   url: "",
+  secondary_cta_label: "",
+  secondary_cta_type: "contact",
+  secondary_cta_url: "",
+  seo_title: "",
+  seo_description: "",
   is_active: true,
   is_featured: false,
   order: 0,
@@ -71,6 +77,7 @@ export default function ProductsAdmin() {
     setForm({
       name: row.name || "",
       slug: row.slug || "",
+      tagline: row.tagline || "",
       short: row.short || "",
       description: row.description || "",
       market: row.market || "",
@@ -78,6 +85,11 @@ export default function ProductsAdmin() {
       cta_label: row.cta_label || "Request demo",
       cta_type: row.cta_type || "demo",
       url: row.url || "",
+      secondary_cta_label: row.secondary_cta_label || "",
+      secondary_cta_type: row.secondary_cta_type || "contact",
+      secondary_cta_url: row.secondary_cta_url || "",
+      seo_title: row.seo_title || "",
+      seo_description: row.seo_description || "",
       is_active: row.is_active !== false,
       is_featured: !!row.is_featured,
       order: row.order ?? 0,
@@ -102,8 +114,14 @@ export default function ProductsAdmin() {
       const body = new FormData();
       body.append("name", form.name);
       if (form.slug) body.append("slug", form.slug);
+      body.append("tagline", form.tagline || "");
       body.append("short", form.short || "");
       body.append("description", form.description || "");
+      body.append("secondary_cta_label", form.secondary_cta_label || "");
+      body.append("secondary_cta_type", form.secondary_cta_type || "");
+      body.append("secondary_cta_url", form.secondary_cta_url || "");
+      body.append("seo_title", form.seo_title || "");
+      body.append("seo_description", form.seo_description || "");
       body.append("market", form.market || "");
       body.append("icon", form.icon || "");
       body.append("cta_label", form.cta_label || "");
@@ -241,6 +259,9 @@ export default function ProductsAdmin() {
               <Field label="Slug">
                 <input value={form.slug} onChange={(e) => set("slug", e.target.value)} disabled={!canManage} placeholder="auto from name" />
               </Field>
+              <Field label="Tagline">
+                <input value={form.tagline} onChange={(e) => set("tagline", e.target.value)} disabled={!canManage} />
+              </Field>
               <Field label="Short description">
                 <input value={form.short} onChange={(e) => set("short", e.target.value)} disabled={!canManage} />
               </Field>
@@ -286,6 +307,45 @@ export default function ProductsAdmin() {
                   <input value={form.url} onChange={(e) => set("url", e.target.value)} disabled={!canManage} />
                 </Field>
               </div>
+              <div className="admin-form__row">
+                <Field label="Secondary CTA">
+                  <input
+                    value={form.secondary_cta_label}
+                    onChange={(e) => set("secondary_cta_label", e.target.value)}
+                    disabled={!canManage}
+                    placeholder="Talk to Our Team"
+                  />
+                </Field>
+                <Field label="Secondary type">
+                  <select
+                    value={form.secondary_cta_type}
+                    onChange={(e) => set("secondary_cta_type", e.target.value)}
+                    disabled={!canManage}
+                  >
+                    <option value="contact">contact</option>
+                    <option value="demo">demo</option>
+                    <option value="external">external</option>
+                  </select>
+                </Field>
+                <Field label="Secondary URL">
+                  <input
+                    value={form.secondary_cta_url}
+                    onChange={(e) => set("secondary_cta_url", e.target.value)}
+                    disabled={!canManage}
+                  />
+                </Field>
+              </div>
+              <Field label="SEO title">
+                <input value={form.seo_title} onChange={(e) => set("seo_title", e.target.value)} disabled={!canManage} />
+              </Field>
+              <Field label="SEO description">
+                <textarea
+                  rows={2}
+                  value={form.seo_description}
+                  onChange={(e) => set("seo_description", e.target.value)}
+                  disabled={!canManage}
+                />
+              </Field>
               <div className="admin-form__checks">
                 <label>
                   <input
@@ -322,6 +382,9 @@ export default function ProductsAdmin() {
                   {saving ? "Saving…" : "Save product"}
                 </button>
               )}
+              <p className="text-sm text-[var(--admin-muted)]">
+                Highlights, audiences, capabilities, screenshots and section order are edited in Django admin.
+              </p>
               {notice && <p className="text-sm text-[var(--admin-muted)]">{notice}</p>}
             </form>
           )}

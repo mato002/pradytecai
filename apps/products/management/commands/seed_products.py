@@ -6,6 +6,7 @@ Never overwrites admin-edited fields on existing rows.
 
 from django.core.management.base import BaseCommand
 
+from apps.products.detail_defaults import seed_product_page_content
 from apps.products.models import Product
 
 # Stable portfolio defaults — slug is the idempotency key.
@@ -193,9 +194,17 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         created, skipped = seed_default_products()
+        detail = seed_product_page_content()
         self.stdout.write(
             self.style.SUCCESS(
                 f"Default products: created={created}, already_present={skipped}, "
                 f"total_defaults={len(DEFAULT_PRODUCTS)}"
+            )
+        )
+        self.stdout.write(
+            self.style.SUCCESS(
+                "Product page content: "
+                f"filled={detail['filled']}, unchanged={detail['unchanged']}, "
+                f"known_detail_products={detail['catalog']}"
             )
         )

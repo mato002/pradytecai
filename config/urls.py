@@ -21,7 +21,9 @@ urlpatterns = [
     path("newsletter/subscribe", newsletter_dispatch),
     path("careers/apply", careers_apply_dispatch),
     re_path(
-        r"^(?!api/|media/|static/|assets/|t/|up$|health$|django-admin/).*$",
+        # Exclude django-admin with or without trailing slash so APPEND_SLASH
+        # can redirect /django-admin → /django-admin/ instead of serving the SPA.
+        r"^(?!api/|media/|static/|assets/|t/|up$|health$|django-admin(?:/|$)).*$",
         spa_index,
         name="spa",
     ),

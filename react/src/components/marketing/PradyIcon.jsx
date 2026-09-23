@@ -22,6 +22,10 @@ const paths = {
   check: "M5 13l4 4L19 7",
 };
 
+export function hasPradyIcon(name) {
+  return Boolean(name && Object.prototype.hasOwnProperty.call(paths, name));
+}
+
 export default function PradyIcon({ name = "code", className = "w-6 h-6" }) {
   const d = paths[name] || paths.code;
   return (

@@ -32,6 +32,7 @@ export default defineConfig({
       "/media": "http://127.0.0.1:8000",
       "/up": "http://127.0.0.1:8000",
       "/health": "http://127.0.0.1:8000",
+      "/django-admin": "http://127.0.0.1:8000",
     },
   },
 });

@@ -1,0 +1,47 @@
+# BEGIN PRADYTECAI
+# PradytecAI main site — /home/pradytec/public_html/.htaccess
+# Managed by deploy.sh (replaces Laravel index.php front controller).
+# Sibling apps (crm/, dashboard/, …) are real directories and are not rewritten.
+#
+# Requires: mod_rewrite, mod_proxy, mod_proxy_http
+
+<IfModule mod_negotiation.c>
+    Options -MultiViews -Indexes
+</IfModule>
+
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /
+
+    # Preserve auth headers (API / session)
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    RewriteCond %{HTTP:x-xsrf-token} .
+    RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
+
+    # --- Django (Docker web → 127.0.0.1:8100) — before SPA ---
+    RewriteRule ^api/v1/(.*)$ http://127.0.0.1:8100/api/v1/$1 [P,L]
+    RewriteRule ^up$ http://127.0.0.1:8100/up [P,L]
+    RewriteRule ^health$ http://127.0.0.1:8100/health [P,L]
+    RewriteRule ^t/(.*)$ http://127.0.0.1:8100/t/$1 [P,L]
+    RewriteRule ^django-admin(/.*)?$ http://127.0.0.1:8100/django-admin$1 [P,L]
+    RewriteRule ^contact$ http://127.0.0.1:8100/contact [P,L]
+    RewriteRule ^newsletter/subscribe$ http://127.0.0.1:8100/newsletter/subscribe [P,L]
+    RewriteRule ^careers/apply$ http://127.0.0.1:8100/careers/apply [P,L]
+
+    # Real files/dirs pass through (assets, images, static, media, crm, dashboard, …)
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # React SPA (NOT index.php)
+    RewriteRule ^index\.html$ - [L]
+    RewriteRule . /index.html [L]
+</IfModule>
+
+<IfModule mod_headers.c>
+    RequestHeader set X-Forwarded-Proto "https" env=HTTPS
+</IfModule>
+# END PRADYTECAI
