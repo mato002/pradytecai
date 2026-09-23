@@ -131,10 +131,22 @@ export COMPOSE_PROJECT_NAME="${COMPOSE_PROJECT_NAME:-pradytecai}"
 export IMAGE_TAG="${IMAGE_TAG:-latest}"
 APP_IMAGE="pradytecai-app:${IMAGE_TAG}"
 
-# Re-apply docroot after .env (cPanel main domain → /home/pradytec/public_html)
+# Docroot after .env: cPanel main domain is /home/pradytec/public_html
 PUBLIC_HTML="${PUBLIC_HTML:-/home/pradytec/public_html}"
-# Normalize trailing slash
 PUBLIC_HTML="${PUBLIC_HTML%/}"
+# Auto-correct obsolete nested path from earlier deploys
+if [[ "$PUBLIC_HTML" == "/home/pradytec/pradytecai/public_html" ]]; then
+  log "Correcting PUBLIC_HTML from nested path → /home/pradytec/public_html (cPanel DocumentRoot)"
+  PUBLIC_HTML="/home/pradytec/public_html"
+  if [[ -f .env ]]; then
+    if grep -q '^PUBLIC_HTML=' .env; then
+      sed -i 's|^PUBLIC_HTML=.*|PUBLIC_HTML=/home/pradytec/public_html|' .env
+    else
+      printf '\nPUBLIC_HTML=/home/pradytec/public_html\n' >> .env
+    fi
+    log "Updated PUBLIC_HTML in .env"
+  fi
+fi
 if [[ ! -d "$PUBLIC_HTML" ]]; then
   fail "PUBLIC_HTML missing: ${PUBLIC_HTML}. Create/fix DocumentRoot in cPanel first."
 fi
