@@ -1,23 +1,41 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { api } from "../../api/client";
+import { getProductBySlug } from "../../data/products";
 import ProductPoster from "../../components/marketing/ProductPoster";
 
 export default function ProductDetailPage() {
   const { slug } = useParams();
-  const [product, setProduct] = useState(null);
+  const hardcoded = getProductBySlug(slug);
+  const [product, setProduct] = useState(hardcoded);
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(!hardcoded);
 
   useEffect(() => {
-    setLoading(true);
-    setError("");
+    const local = getProductBySlug(slug);
+    if (local) {
+      setProduct(local);
+      setLoading(false);
+      setError("");
+      document.title = `${local.name} | Prady Technologies`;
+    } else {
+      setLoading(true);
+    }
+
     api(`/public/products/${encodeURIComponent(slug)}/`)
       .then((data) => {
-        setProduct(data);
-        document.title = `${data.name} | Prady Technologies`;
+        // Prefer hardcoded poster when API has none
+        const merged = {
+          ...data,
+          poster_url: data.poster_url || local?.poster_url || null,
+          short_description: data.short_description || data.short || local?.short_description,
+        };
+        setProduct(merged);
+        document.title = `${merged.name} | Prady Technologies`;
+        setError("");
       })
       .catch((err) => {
+        if (local) return;
         setProduct(null);
         setError(err.status === 404 ? "Product not found." : err.message || "Failed to load");
         document.title = "Product | Prady Technologies";

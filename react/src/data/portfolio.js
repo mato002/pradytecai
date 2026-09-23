@@ -53,7 +53,7 @@ export const portfolio = {
     { label: "Travel & Payments", icon: "wallet", href: "/products/mtalii-travel-wallet" },
     { label: "Custom Software", icon: "code", href: "/#capabilities" },
   ],
-  /** Layout helper only — product copy/images come from the API. */
+  /** Layout helper — product copy/images come from data/products.js for now. */
   product_groups: [
     {
       key: "finance",

@@ -1,23 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
-import { api } from "../../api/client";
 import { portfolio } from "../../data/portfolio";
+import { MAIN_PRODUCTS } from "../../data/products";
 import PradyIcon from "../../components/marketing/PradyIcon";
 import HeroVisual from "../../components/marketing/HeroVisual";
 import ProductCard from "../../components/marketing/ProductCard";
+import { api } from "../../api/client";
 
 export default function HomePage() {
   const location = useLocation();
-  const [products, setProducts] = useState([]);
-
-  useEffect(() => {
-    api("/public/home/")
-      .then((data) => {
-        const list = Array.isArray(data.products) ? data.products : [];
-        setProducts(list);
-      })
-      .catch(() => setProducts([]));
-  }, []);
+  const products = MAIN_PRODUCTS;
+  const homeProducts = products.slice(0, 8);
 
   useEffect(() => {
     if (!location.hash) return;
@@ -27,13 +20,12 @@ export default function HomePage() {
       const t = window.setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 50);
       return () => window.clearTimeout(t);
     }
-  }, [location, products]);
+  }, [location]);
 
   useEffect(() => {
     document.title = "Prady Technologies | Smart Technology Solutions for African Businesses";
   }, []);
 
-  const homeProducts = products.slice(0, 8);
 
   return (
     <>

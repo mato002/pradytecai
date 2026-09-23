@@ -1,18 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { Link } from "react-router-dom";
-import { api } from "../../api/client";
 import { portfolio } from "../../data/portfolio";
+import { MAIN_PRODUCTS } from "../../data/products";
 import PradyLogo from "./PradyLogo";
 
 export default function SiteFooter() {
-  const [footerProducts, setFooterProducts] = useState([]);
+  const footerProducts = MAIN_PRODUCTS.slice(0, 6);
   const { contact } = portfolio;
-
-  useEffect(() => {
-    api("/public/products/")
-      .then((data) => setFooterProducts(Array.isArray(data) ? data.slice(0, 6) : []))
-      .catch(() => setFooterProducts([]));
-  }, []);
 
   return (
     <footer className="mkt-footer">

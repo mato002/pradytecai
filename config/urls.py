@@ -12,7 +12,7 @@ from apps.core.spa import spa_index
 from apps.core.views import health
 
 urlpatterns = [
-    path("admin-django/", admin.site.urls),
+    path("django-admin/", admin.site.urls),
     path("up", health),
     path("health", health),
     path("api/v1/", include("config.api_urls")),
@@ -21,7 +21,7 @@ urlpatterns = [
     path("newsletter/subscribe", newsletter_dispatch),
     path("careers/apply", careers_apply_dispatch),
     re_path(
-        r"^(?!api/|media/|static/|assets/|t/|up$|health$|admin-django/).*$",
+        r"^(?!api/|media/|static/|assets/|t/|up$|health$|django-admin/).*$",
         spa_index,
         name="spa",
     ),

@@ -21,7 +21,11 @@ class UserManager(BaseUserManager):
     def create_superuser(self, email, password=None, **extra):
         extra.setdefault("is_super_admin", True)
         extra.setdefault("role", "super_admin")
-        return self.create_user(email, password, **extra)
+        user = self.create_user(email, password, **extra)
+        role = Role.objects.filter(name="super_admin", guard_name="web").first()
+        if role:
+            user.assign_role(role)
+        return user
 
 
 class Permission(models.Model):
