@@ -187,12 +187,11 @@ MICROFINANCE = {
         ("problems", 30, "Problems solved", ""),
         ("capabilities", 40, "Core capabilities", ""),
         ("workflow", 50, "How it works", ""),
-        ("media", 60, "In the product", ""),
-        ("integrations", 70, "Integrations", "Only integrations configured for this product are listed."),
-        ("controls", 80, "Security and controls", ""),
-        ("outcomes", 90, "Outcomes", ""),
-        ("implementation", 100, "Getting started", ""),
-        ("faq", 110, "FAQ", ""),
+        ("integrations", 60, "Integrations", "Only integrations configured for this product are listed."),
+        ("controls", 70, "Security and controls", ""),
+        ("outcomes", 80, "Outcomes", ""),
+        ("implementation", 90, "Getting started", ""),
+        ("faq", 100, "FAQ", ""),
     ],
 }
 
