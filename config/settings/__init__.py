@@ -217,6 +217,7 @@ CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
 CSRF_COOKIE_HTTPONLY = False  # SPA must read cookie for X-CSRFToken header
 # Behind Apache/Nginx TLS termination
+SECURE_SSL_REDIRECT = False
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = os.getenv("USE_X_FORWARDED_HOST", "true").lower() in (
     "1",

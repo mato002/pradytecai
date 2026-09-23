@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from apps.marketing.models import BlogPost, NewsletterSubscriber, SiteSetting
+from apps.marketing.models import BlogPost, ContactChannel, NewsletterSubscriber, SiteSetting
 
 
 @admin.register(BlogPost)
@@ -16,6 +16,40 @@ class BlogPostAdmin(admin.ModelAdmin):
 class SiteSettingAdmin(admin.ModelAdmin):
     list_display = ("key", "value")
     search_fields = ("key", "value")
+
+
+@admin.register(ContactChannel)
+class ContactChannelAdmin(admin.ModelAdmin):
+    list_display = (
+        "label",
+        "channel_type",
+        "value",
+        "is_primary",
+        "is_active",
+        "display_order",
+        "updated_at",
+    )
+    list_filter = ("channel_type", "is_active", "is_primary")
+    list_editable = ("is_active", "is_primary", "display_order")
+    search_fields = ("label", "value", "href", "description")
+    ordering = ("display_order", "id")
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "channel_type",
+                    "label",
+                    "value",
+                    "href",
+                    "description",
+                    "is_primary",
+                    "is_active",
+                    "display_order",
+                )
+            },
+        ),
+    )
 
 
 @admin.register(NewsletterSubscriber)

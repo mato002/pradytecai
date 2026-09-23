@@ -447,5 +447,168 @@ cp -a /home/pradytec/public_html/.htaccess.laravel.bak /home/pradytec/public_htm
 
 * React login: `https://pradytecai.com/login` (API session auth)
 * Django admin: `https://pradytecai.com/django-admin/` (**trailing slash**; bare `/django-admin` 301s here)
-* If login fails with CSRF after an `.htaccess` change, redeploy so `authentication_classes=[]` on login is live, and refresh `.htaccess` (sets `X-Forwarded-Proto: https`)
+* If Network shows endless `csrf/` **301** / `ERR_TOO_MANY_REDIRECTS`, clear site data or use incognito (browsers cache bad 301s)
 * Confirm `.env` has `CSRF_TRUSTED_ORIGINS=https://www.pradytecai.com,https://pradytecai.com` and `SESSION_SECURE_COOKIE=true`
+
+### Env reminders
+
+```env
+PUBLIC_HTML=/home/pradytec/public_html
+GUNICORN_BIND=0.0.0.0:8100
+DEBUG=false
+```
+
+Host publish is `127.0.0.1:8100:8100` (host `:8000` is used by another app).
+
+---
+
+## Debugging helpers (when something breaks)
+
+Run these **on the server** as root or `pradytec`. Start at the top and stop when a check fails.
+
+### 1. Quick stack health
+
+```bash
+cd /home/pradytec/pradytecai
+
+docker compose ps
+docker compose logs --tail=80 web
+curl -fsS http://127.0.0.1:8100/up
+curl -fsS -H "Host: pradytecai.com" http://127.0.0.1/up
+```
+
+| Result | Likely cause |
+|--------|----------------|
+| `8100/up` fails | Compose `web` down / wrong port / Gunicorn crash → check `docker compose logs web` |
+| `8100/up` OK but Host `/up` fails | Apache proxy / `.htaccess` / `mod_proxy` not applying |
+| Both OK | Backend fine — look at SPA, cookies, or browser cache |
+
+### 2. Docroot + `.htaccess`
+
+```bash
+grep PUBLIC_HTML /home/pradytec/pradytecai/.env
+# expect: PUBLIC_HTML=/home/pradytec/public_html
+
+ls -la /home/pradytec/public_html/{index.html,assets,images,.htaccess}
+grep -E 'BEGIN PRADYTECAI|index\.php|127\.0\.0\.1:8100' /home/pradytec/public_html/.htaccess | head
+```
+
+| Symptom | Check / fix |
+|---------|-------------|
+| Directory listing / no React | Wrong `PUBLIC_HTML` or missing `index.html` → redeploy |
+| `/login` shows Laravel / PHP errors | Root `.htaccess` still routes to `index.php` → reinstall htaccess from repo |
+| `/api/v1` 404 / HTML SPA | Proxy rules missing → `cp deploy/apache/pradytecai-public_html.htaccess /home/pradytec/public_html/.htaccess` |
+| Sibling sites broken | Restore `.htaccess.laravel.bak` then re-apply only the PRADYTECAI file after fixing |
+
+Reinstall htaccess:
+
+```bash
+cp -a /home/pradytec/public_html/.htaccess /home/pradytec/public_html/.htaccess.bak.$(date +%Y%m%d%H%M)
+cp /home/pradytec/pradytecai/deploy/apache/pradytecai-public_html.htaccess \
+  /home/pradytec/public_html/.htaccess
+```
+
+### 3. SPA vs Django routes
+
+```bash
+# React (expect 200 + text/html, title Pradytec / Admin Login — not Django)
+curl -sI -H "Host: pradytecai.com" http://127.0.0.1/login | head -12
+curl -sI -H "Host: pradytecai.com" http://127.0.0.1/admin | head -8
+
+# Django admin (trailing slash; expect Django login, not marketing SPA)
+curl -sI -H "Host: pradytecai.com" http://127.0.0.1/django-admin | head -8
+# expect 301 → /django-admin/
+curl -sI -H "Host: pradytecai.com" http://127.0.0.1/django-admin/ | head -12
+
+# API CSRF (expect 200 + JSON token + Set-Cookie)
+curl -sS -D- -o /tmp/csrf.json -H "Accept: application/json" \
+  https://pradytecai.com/api/v1/auth/csrf/ | head -25
+cat /tmp/csrf.json
+
+# Images / assets
+curl -sI -H "Host: pradytecai.com" http://127.0.0.1/images/mfi.jpg | head -8
+ls /home/pradytec/public_html/assets | head
+```
+
+### 4. Login / CSRF failures
+
+**Browser shows `Failed to fetch` and Network floods `csrf/` with 301 / `ERR_TOO_MANY_REDIRECTS`:**
+
+1. Confirm server is healthy (section 3 CSRF curl → **200**, not 301).
+2. If curl is 200 but browser loops → **cached 301**: clear site data for `pradytecai.com`, or use incognito.
+3. Confirm env:
+
+```bash
+grep -E 'CSRF_TRUSTED_ORIGINS|SESSION_SECURE_COOKIE|ALLOWED_HOSTS|DEBUG' \
+  /home/pradytec/pradytecai/.env
+```
+
+Expect roughly:
+
+```env
+DEBUG=false
+ALLOWED_HOSTS=pradytecai.com,www.pradytecai.com,127.0.0.1,localhost
+CSRF_TRUSTED_ORIGINS=https://www.pradytecai.com,https://pradytecai.com
+SESSION_SECURE_COOKIE=true
+```
+
+**Login returns 403 CSRF / “CSRF Failed”:**
+
+* Redeploy so `authentication_classes=[]` on login is live: `FORCE_BUILD=1 ./deploy.sh`
+* Ensure `.htaccess` sets `X-Forwarded-Proto: https`
+* Hard-refresh so the latest `/assets/index-*.js` loads (check Network → JS filename)
+
+**Wrong password vs CSRF:** Network → `login/` should be **401** `Invalid credentials` (auth works) vs **403** (CSRF).
+
+### 5. Docker / Postgres / Redis
+
+```bash
+cd /home/pradytec/pradytecai
+docker compose ps -a
+docker compose logs --tail=100 web worker beat postgres
+
+# DB
+docker compose exec web python manage.py showmigrations accounts | tail
+docker compose exec postgres pg_isready -U "${DJANGO_DB_USER:-pradytecai}"
+
+# Redis (host; Celery optional)
+redis-cli -h 127.0.0.1 ping || true
+```
+
+| Symptom | Hint |
+|---------|------|
+| `web` restart loop | `.env` CRLF, bad DB password, migrate error → `docker compose logs web` |
+| Port bind error | Host `:8100` in use → `ss -tlnp \| grep 8100` |
+| Celery/worker exit | Redis down — site can still run; worker/beat may stay off |
+| collectstatic / permission | SELinux or uid mismatch → check deploy log; fix ownership under project dir |
+
+### 6. Safe redeploy
+
+```bash
+cd /home/pradytec/pradytecai
+git pull origin django
+
+# Normal (image cached)
+FORCE_PULL=1 ./deploy.sh
+
+# After Django/React code changes
+FORCE_BUILD=1 FORCE_PULL=1 ./deploy.sh
+```
+
+Then re-run section **1** and **3**.
+
+### 7. Sibling sites (crm / dashboard)
+
+```bash
+curl -sI https://crm.pradytecai.com/ | head -5
+curl -sI https://dashboard.pradytecai.com/ | head -5
+```
+
+Expect **200**. If broken after an htaccess change:
+
+```bash
+cp -a /home/pradytec/public_html/.htaccess.laravel.bak \
+  /home/pradytec/public_html/.htaccess
+```
+
+Then fix main-site htaccess again from `deploy/apache/pradytecai-public_html.htaccess` (siblings use their own docroots; root rules must not send everything to `index.php` for the main domain).
