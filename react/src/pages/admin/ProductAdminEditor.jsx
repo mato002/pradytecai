@@ -99,6 +99,26 @@ function CheckField({ label, help, children }) {
   );
 }
 
+function CheckCard({ label, description, help, checked, onChange, disabled }) {
+  return (
+    <label className={`admin-check-card ${checked ? "is-checked" : ""}`}>
+      <input
+        type="checkbox"
+        checked={checked}
+        onChange={onChange}
+        disabled={disabled}
+      />
+      <div className="admin-check-card__text">
+        <span className="admin-check-card__title">
+          {label}
+          <FieldHelp text={help} />
+        </span>
+        {description && <span className="admin-check-card__desc">{description}</span>}
+      </div>
+    </label>
+  );
+}
+
 function mediaPreview(item) {
   if (!item) return null;
   if (item.media_type === "video") {
@@ -249,7 +269,7 @@ export default function ProductAdminEditor() {
       let saved;
       if (isNew || !productId) {
         saved = await api("/products/", { method: "POST", body });
-        setNotice("Product created.");
+        setNotice("Product created successfully.");
         navigate(`/admin/products/${saved.id}/edit`, { replace: true });
         return;
       }
@@ -264,7 +284,7 @@ export default function ProductAdminEditor() {
       setPosterFile(null);
       setHeroFile(null);
       setMobileFile(null);
-      setNotice("Saved.");
+      setNotice("Changes saved successfully.");
     } catch (err) {
       setError(err.message || "Save failed");
     } finally {
@@ -306,7 +326,7 @@ export default function ProductAdminEditor() {
       setMediaImage(null);
       setMediaVideo(null);
       setMediaThumb(null);
-      setNotice("Media added.");
+      setNotice("Media added to gallery.");
       await loadMedia(productId);
     } catch (err) {
       const detail =
@@ -346,264 +366,438 @@ export default function ProductAdminEditor() {
 
   if (loading) {
     return (
-      <div className="admin-panel">
-        <p className="p-6 text-[var(--admin-muted)]">Loading…</p>
+      <div className="admin-editor-wrap">
+        <div className="admin-card-section text-center p-12">
+          <p className="text-[var(--admin-muted)] text-base">Loading product details…</p>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="admin-panel admin-product-editor">
-      <div className="admin-panel__head">
-        <div>
-          <Link to="/admin/products" className="admin-linkish">
-            ← Products
+    <div className="admin-editor-wrap">
+      {/* Header bar */}
+      <header className="admin-editor-header">
+        <div className="admin-editor-header__main">
+          <Link to="/admin/products" className="admin-linkish text-sm">
+            ← Back to Products list
           </Link>
-          <h2>{isNew ? "Create product" : `Edit · ${form.name || "Product"}`}</h2>
-        </div>
-        {!isNew && form.slug ? (
-          <Link to={`/products/${form.slug}`} className="admin-btn" target="_blank" rel="noreferrer">
-            View public page
-          </Link>
-        ) : null}
-      </div>
-
-      {error && <p className="admin-banner admin-banner--error">{error}</p>}
-      {notice && <p className="admin-banner admin-banner--ok">{notice}</p>}
-
-      <form className="admin-form admin-form--wide" onSubmit={onSave}>
-        <h3>Basics</h3>
-        <Field
-          label="Name"
-          help="Public product name shown on cards, detail pages, and menus."
-        >
-          <input required value={form.name} onChange={(e) => onNameChange(e.target.value)} disabled={!canManage} />
-        </Field>
-        <Field
-          label="Slug"
-          help="URL path for this product, e.g. /products/prady-microfinance. Generated automatically from the name; edit only if you need a custom URL."
-        >
-          <div className="admin-slug-row">
-            <input
-              value={form.slug}
-              onChange={(e) => onSlugChange(e.target.value)}
-              disabled={!canManage}
-              placeholder="generated-from-name"
-            />
-            {canManage && !slugLocked ? (
-              <button
-                type="button"
-                className="admin-linkish"
-                onClick={() => {
-                  setSlugLocked(true);
-                  set("slug", slugify(form.name));
-                }}
+          <h1 className="admin-editor-header__title">
+            <span>{isNew ? "Create Product" : form.name || "Edit Product"}</span>
+            {!isNew && (
+              <span
+                className={`admin-status ${
+                  form.is_active ? "admin-status--ok" : "admin-status--warn"
+                }`}
               >
-                Re-sync
-              </button>
-            ) : null}
+                {form.is_active ? "Active" : "Draft / Inactive"}
+              </span>
+            )}
+          </h1>
+        </div>
+        <div className="flex items-center gap-3">
+          {!isNew && form.slug && (
+            <Link to={`/products/${form.slug}`} className="admin-btn" target="_blank" rel="noreferrer">
+              <span>View Public Page ↗</span>
+            </Link>
+          )}
+        </div>
+      </header>
+
+      {error && (
+        <div className="admin-banner admin-banner--error" role="alert">
+          <span>⚠️ {error}</span>
+        </div>
+      )}
+      {notice && (
+        <div className="admin-banner admin-banner--ok" role="status">
+          <span>✓ {notice}</span>
+        </div>
+      )}
+
+      <form id="product-admin-form" className="admin-form" onSubmit={onSave}>
+        {/* Section 1: Basic Information */}
+        <section className="admin-card-section">
+          <div className="admin-card-section__head">
+            <div>
+              <h2 className="admin-card-section__title">
+                <span className="admin-card-section__badge">1</span>
+                Basic Details
+              </h2>
+              <p className="admin-card-section__subtitle">
+                Core identity, pricing tier, tagline, and customer description.
+              </p>
+            </div>
           </div>
-        </Field>
-        <Field
-          label="Tagline"
-          help="One short line under the product name on the detail page hero."
-        >
-          <input value={form.tagline} onChange={(e) => set("tagline", e.target.value)} disabled={!canManage} />
-        </Field>
-        <Field
-          label="Short description"
-          help="Brief card copy used on the homepage and products listing (keep to one or two sentences)."
-        >
-          <input value={form.short} onChange={(e) => set("short", e.target.value)} disabled={!canManage} />
-        </Field>
-        <Field
-          label="Full description / overview"
-          help="Longer overview shown on the product detail page. Supports multiple paragraphs."
-        >
-          <textarea rows={6} value={form.description} onChange={(e) => set("description", e.target.value)} disabled={!canManage} />
-        </Field>
-        <Field
-          label="Market"
-          help="Who this product is for (e.g. MFIs, landlords). Shown as supporting context on cards and detail."
-        >
-          <input value={form.market} onChange={(e) => set("market", e.target.value)} disabled={!canManage} />
-        </Field>
 
-        <div className="admin-form__row">
-          <Field
-            label="Icon key"
-            help="Marketing icon name used next to the product (e.g. finance, users, car). Must match a known Prady icon key."
-          >
-            <input value={form.icon} onChange={(e) => set("icon", e.target.value)} disabled={!canManage} />
-          </Field>
-          <Field
-            label="Group"
-            help="Portfolio group for the products page: finance, assets, or commerce."
-          >
-            <select value={form.group_key} onChange={(e) => set("group_key", e.target.value)} disabled={!canManage}>
-              <option value="">—</option>
-              <option value="finance">finance</option>
-              <option value="assets">assets</option>
-              <option value="commerce">commerce</option>
-            </select>
-          </Field>
-          <Field
-            label="Display order"
-            help="Sort priority on listings. Lower numbers appear first."
-          >
-            <input type="number" value={form.order} onChange={(e) => set("order", Number(e.target.value))} disabled={!canManage} />
-          </Field>
-        </div>
+          <div className="admin-form__row">
+            <Field label="Product Name" help="Public name displayed across cards, navigation, and landing pages.">
+              <input
+                required
+                type="text"
+                placeholder="e.g. Prady Microfinance"
+                value={form.name}
+                onChange={(e) => onNameChange(e.target.value)}
+                disabled={!canManage}
+              />
+            </Field>
 
-        <h3>Calls to action</h3>
-        <div className="admin-form__row">
-          <Field
-            label="CTA label"
-            help="Primary button text on the product page (e.g. Request demo)."
-          >
-            <input value={form.cta_label} onChange={(e) => set("cta_label", e.target.value)} disabled={!canManage} />
-          </Field>
-          <Field
-            label="CTA type"
-            help="demo or contact open the site form pre-filled for this product. external opens the CTA URL."
-          >
-            <select value={form.cta_type} onChange={(e) => set("cta_type", e.target.value)} disabled={!canManage}>
-              <option value="demo">demo</option>
-              <option value="contact">contact</option>
-              <option value="external">external</option>
-            </select>
-          </Field>
-          <Field
-            label="CTA URL"
-            help="Optional destination when CTA type is external (full URL or internal path)."
-          >
-            <input value={form.url} onChange={(e) => set("url", e.target.value)} disabled={!canManage} />
-          </Field>
-        </div>
-        <div className="admin-form__row">
-          <Field
-            label="Secondary CTA"
-            help="Optional second button label (e.g. Talk to Our Team). Leave blank to hide."
-          >
+            <Field label="URL Slug" help="URL path (e.g. /products/prady-microfinance). Auto-generated from name.">
+              <div className="admin-slug-row">
+                <input
+                  type="text"
+                  value={form.slug}
+                  onChange={(e) => onSlugChange(e.target.value)}
+                  disabled={!canManage}
+                  placeholder="prady-microfinance"
+                />
+                {canManage && !slugLocked ? (
+                  <button
+                    type="button"
+                    className="admin-linkish"
+                    onClick={() => {
+                      setSlugLocked(true);
+                      set("slug", slugify(form.name));
+                    }}
+                  >
+                    Auto-sync
+                  </button>
+                ) : null}
+              </div>
+            </Field>
+          </div>
+
+          <Field label="Tagline" help="Short punchy tagline shown under the hero header.">
             <input
-              value={form.secondary_cta_label}
-              onChange={(e) => set("secondary_cta_label", e.target.value)}
+              type="text"
+              placeholder="e.g. Next-generation core banking for modern MFIs"
+              value={form.tagline}
+              onChange={(e) => set("tagline", e.target.value)}
               disabled={!canManage}
-              placeholder="Talk to Our Team"
             />
           </Field>
-          <Field
-            label="Secondary type"
-            help="Where the secondary button goes: contact form, demo form, or an external URL."
-          >
-            <select value={form.secondary_cta_type} onChange={(e) => set("secondary_cta_type", e.target.value)} disabled={!canManage}>
-              <option value="contact">contact</option>
-              <option value="demo">demo</option>
-              <option value="external">external</option>
-            </select>
-          </Field>
-          <Field
-            label="Secondary URL"
-            help="Destination when secondary type is external."
-          >
-            <input value={form.secondary_cta_url} onChange={(e) => set("secondary_cta_url", e.target.value)} disabled={!canManage} />
-          </Field>
-        </div>
 
-        <h3>SEO</h3>
-        <Field
-          label="SEO title"
-          help="Browser tab and search title. Defaults to “Product name | Prady Technologies” if empty."
-        >
-          <input value={form.seo_title} onChange={(e) => set("seo_title", e.target.value)} disabled={!canManage} />
-        </Field>
-        <Field
-          label="SEO description"
-          help="Meta description for search results. Keep under ~160 characters."
-        >
-          <textarea rows={2} value={form.seo_description} onChange={(e) => set("seo_description", e.target.value)} disabled={!canManage} />
-        </Field>
-
-        <div className="admin-form__checks">
-          <CheckField
-            label="Active"
-            help="When off, the product is hidden from the public website but kept in admin."
-          >
+          <Field label="Short Description" help="Brief summary used on homepage cards and search results.">
             <input
-              type="checkbox"
+              type="text"
+              placeholder="e.g. Complete loan management and savings automation."
+              value={form.short}
+              onChange={(e) => set("short", e.target.value)}
+              disabled={!canManage}
+            />
+          </Field>
+
+          <Field label="Full Overview & Features" help="Detailed overview for the main product detail page.">
+            <textarea
+              rows={5}
+              placeholder="Describe product capabilities, benefits, and key features..."
+              value={form.description}
+              onChange={(e) => set("description", e.target.value)}
+              disabled={!canManage}
+            />
+          </Field>
+        </section>
+
+        {/* Section 2: Positioning & Categorization */}
+        <section className="admin-card-section">
+          <div className="admin-card-section__head">
+            <div>
+              <h2 className="admin-card-section__title">
+                <span className="admin-card-section__badge">2</span>
+                Categorization & Priority
+              </h2>
+              <p className="admin-card-section__subtitle">
+                Target audience, group category, icon, and display ordering.
+              </p>
+            </div>
+          </div>
+
+          <div className="admin-form__row">
+            <Field label="Target Market / Audience" help="Target user base (e.g. Microfinance institutions, SACCOs, Enterprise).">
+              <input
+                type="text"
+                placeholder="e.g. MFIs & Credit Unions"
+                value={form.market}
+                onChange={(e) => set("market", e.target.value)}
+                disabled={!canManage}
+              />
+            </Field>
+
+            <Field label="Icon Key" help="Marketing icon identifier (e.g. finance, users, building, shield).">
+              <input
+                type="text"
+                placeholder="e.g. finance"
+                value={form.icon}
+                onChange={(e) => set("icon", e.target.value)}
+                disabled={!canManage}
+              />
+            </Field>
+
+            <Field label="Portfolio Group" help="Group category on the public products listing page.">
+              <select value={form.group_key} onChange={(e) => set("group_key", e.target.value)} disabled={!canManage}>
+                <option value="">— Select Category Group —</option>
+                <option value="finance">finance</option>
+                <option value="assets">assets</option>
+                <option value="commerce">commerce</option>
+              </select>
+            </Field>
+
+            <Field label="Display Order Priority" help="Sorting order. Lower numbers appear first on listings.">
+              <input
+                type="number"
+                value={form.order}
+                onChange={(e) => set("order", Number(e.target.value))}
+                disabled={!canManage}
+              />
+            </Field>
+          </div>
+        </section>
+
+        {/* Section 3: Actions & Conversion Buttons */}
+        <section className="admin-card-section">
+          <div className="admin-card-section__head">
+            <div>
+              <h2 className="admin-card-section__title">
+                <span className="admin-card-section__badge">3</span>
+                Call-to-Action Buttons
+              </h2>
+              <p className="admin-card-section__subtitle">
+                Configure primary and secondary CTA buttons shown on product landing pages.
+              </p>
+            </div>
+          </div>
+
+          <div className="admin-form__row">
+            <Field label="Primary CTA Label" help="Primary call to action button text.">
+              <input
+                type="text"
+                placeholder="e.g. Request Demo"
+                value={form.cta_label}
+                onChange={(e) => set("cta_label", e.target.value)}
+                disabled={!canManage}
+              />
+            </Field>
+
+            <Field label="Primary CTA Action Type" help="Determines button action: open demo form, contact form, or external URL.">
+              <select value={form.cta_type} onChange={(e) => set("cta_type", e.target.value)} disabled={!canManage}>
+                <option value="demo">Demo modal form</option>
+                <option value="contact">Contact modal form</option>
+                <option value="external">External link / URL</option>
+              </select>
+            </Field>
+
+            <Field label="Primary CTA Destination URL" help="Required if CTA Action Type is external.">
+              <input
+                type="text"
+                placeholder="https://app.pradytec.com/signup"
+                value={form.url}
+                onChange={(e) => set("url", e.target.value)}
+                disabled={!canManage}
+              />
+            </Field>
+          </div>
+
+          <div className="admin-form__row">
+            <Field label="Secondary CTA Label" help="Optional secondary button text (leave blank to hide).">
+              <input
+                type="text"
+                placeholder="e.g. Talk to Sales"
+                value={form.secondary_cta_label}
+                onChange={(e) => set("secondary_cta_label", e.target.value)}
+                disabled={!canManage}
+              />
+            </Field>
+
+            <Field label="Secondary Action Type" help="Destination behavior for the secondary button.">
+              <select value={form.secondary_cta_type} onChange={(e) => set("secondary_cta_type", e.target.value)} disabled={!canManage}>
+                <option value="contact">Contact modal form</option>
+                <option value="demo">Demo modal form</option>
+                <option value="external">External link / URL</option>
+              </select>
+            </Field>
+
+            <Field label="Secondary Destination URL" help="URL if secondary type is set to external.">
+              <input
+                type="text"
+                placeholder="https://..."
+                value={form.secondary_cta_url}
+                onChange={(e) => set("secondary_cta_url", e.target.value)}
+                disabled={!canManage}
+              />
+            </Field>
+          </div>
+        </section>
+
+        {/* Section 4: Visibility & Featuring Controls */}
+        <section className="admin-card-section">
+          <div className="admin-card-section__head">
+            <div>
+              <h2 className="admin-card-section__title">
+                <span className="admin-card-section__badge">4</span>
+                Publishing Status
+              </h2>
+              <p className="admin-card-section__subtitle">
+                Manage active site publication and homepage featuring.
+              </p>
+            </div>
+          </div>
+
+          <div className="admin-check-card-group">
+            <CheckCard
+              label="Active & Published"
+              description="Visible to website visitors on listings and navigation menus."
+              help="When disabled, the product is saved as a draft and hidden from the public site."
               checked={!!form.is_active}
               onChange={(e) => set("is_active", e.target.checked)}
               disabled={!canManage}
             />
-          </CheckField>
-          <CheckField
-            label="Featured"
-            help="Featured products are prioritised on the homepage and marketing surfaces."
-          >
-            <input
-              type="checkbox"
+            <CheckCard
+              label="Featured Product"
+              description="Highlighted prominently on the homepage and top marketing cards."
+              help="Featured items appear first with highlighted badges."
               checked={!!form.is_featured}
               onChange={(e) => set("is_featured", e.target.checked)}
               disabled={!canManage}
             />
-          </CheckField>
-        </div>
+          </div>
+        </section>
 
-        <h3>Cover images</h3>
-        <p className="admin-help">JPEG, PNG, WebP, or GIF — max 5 MB each.</p>
-        <div className="admin-media-uploads">
-          <Field
-            label="Poster (cards & listing)"
-            help="Main product image on homepage and products grid cards. Prefer a clear 4:3 visual."
-          >
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif,.gif,.jpg,.jpeg,.png,.webp"
-              onChange={(e) => setPosterFile(e.target.files?.[0] || null)}
-              disabled={!canManage}
-            />
-            {form.poster_url ? <img src={form.poster_url} alt="" className="admin-poster-preview" /> : null}
-          </Field>
-          <Field
-            label="Hero image (detail page)"
-            help="Optional wide image for the product detail hero. Falls back to the poster if empty."
-          >
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif,.gif,.jpg,.jpeg,.png,.webp"
-              onChange={(e) => setHeroFile(e.target.files?.[0] || null)}
-              disabled={!canManage}
-            />
-            {form.hero_image_url ? <img src={form.hero_image_url} alt="" className="admin-poster-preview" /> : null}
-          </Field>
-          <Field
-            label="Mobile image"
-            help="Optional image shown on small screens instead of the hero/poster."
-          >
-            <input
-              type="file"
-              accept="image/jpeg,image/png,image/webp,image/gif,.gif,.jpg,.jpeg,.png,.webp"
-              onChange={(e) => setMobileFile(e.target.files?.[0] || null)}
-              disabled={!canManage}
-            />
-            {form.mobile_image_url ? <img src={form.mobile_image_url} alt="" className="admin-poster-preview" /> : null}
-          </Field>
-        </div>
+        {/* Section 5: SEO Configuration */}
+        <section className="admin-card-section">
+          <div className="admin-card-section__head">
+            <div>
+              <h2 className="admin-card-section__title">
+                <span className="admin-card-section__badge">5</span>
+                SEO & Meta Info
+              </h2>
+              <p className="admin-card-section__subtitle">
+                Optimize search engine listings and page titles.
+              </p>
+            </div>
+          </div>
 
-        {canManage && (
-          <button type="submit" className="admin-btn admin-btn--primary" disabled={saving}>
-            {saving ? "Saving…" : isNew ? "Create product" : "Save product"}
-          </button>
-        )}
+          <Field label="SEO Title Tag" help="Title shown in browser tabs and Google search snippet.">
+            <input
+              type="text"
+              placeholder="e.g. Prady Microfinance — Automated Core Banking Solution"
+              value={form.seo_title}
+              onChange={(e) => set("seo_title", e.target.value)}
+              disabled={!canManage}
+            />
+          </Field>
+
+          <Field label="Meta Description" help="Search engine preview text (150–160 characters recommended).">
+            <textarea
+              rows={2}
+              placeholder="e.g. Streamline loan disbursement, member accounts, and mobile banking with Prady Microfinance..."
+              value={form.seo_description}
+              onChange={(e) => set("seo_description", e.target.value)}
+              disabled={!canManage}
+            />
+          </Field>
+        </section>
+
+        {/* Section 6: Cover Images */}
+        <section className="admin-card-section">
+          <div className="admin-card-section__head">
+            <div>
+              <h2 className="admin-card-section__title">
+                <span className="admin-card-section__badge">6</span>
+                Cover Imagery
+              </h2>
+              <p className="admin-card-section__subtitle">
+                Main card poster, detail hero graphic, and mobile display artwork (JPEG, PNG, WebP, GIF up to 5MB).
+              </p>
+            </div>
+          </div>
+
+          <div className="admin-media-uploads">
+            <div className="admin-upload-card">
+              <Field label="Card Poster Image" help="4:3 visual used on homepage and portfolio grid cards.">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,.gif,.jpg,.jpeg,.png,.webp"
+                  onChange={(e) => setPosterFile(e.target.files?.[0] || null)}
+                  disabled={!canManage}
+                />
+              </Field>
+              {form.poster_url && (
+                <div>
+                  <span className="text-xs text-[var(--admin-muted)] font-medium">Current Poster:</span>
+                  <img src={form.poster_url} alt="Poster preview" className="admin-poster-preview" />
+                </div>
+              )}
+            </div>
+
+            <div className="admin-upload-card">
+              <Field label="Desktop Hero Graphic" help="Wide header artwork for the product detail hero section.">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,.gif,.jpg,.jpeg,.png,.webp"
+                  onChange={(e) => setHeroFile(e.target.files?.[0] || null)}
+                  disabled={!canManage}
+                />
+              </Field>
+              {form.hero_image_url && (
+                <div>
+                  <span className="text-xs text-[var(--admin-muted)] font-medium">Current Hero:</span>
+                  <img src={form.hero_image_url} alt="Hero preview" className="admin-poster-preview" />
+                </div>
+              )}
+            </div>
+
+            <div className="admin-upload-card">
+              <Field label="Mobile Visual (Optional)" help="Optimized mobile image shown on narrow smartphone screens.">
+                <input
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif,.gif,.jpg,.jpeg,.png,.webp"
+                  onChange={(e) => setMobileFile(e.target.files?.[0] || null)}
+                  disabled={!canManage}
+                />
+              </Field>
+              {form.mobile_image_url && (
+                <div>
+                  <span className="text-xs text-[var(--admin-muted)] font-medium">Current Mobile Visual:</span>
+                  <img src={form.mobile_image_url} alt="Mobile visual preview" className="admin-poster-preview" />
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+
+        {/* Sticky Toolbar Bar */}
+        <div className="admin-sticky-toolbar">
+          <div className="flex items-center gap-3">
+            <Link to="/admin/products" className="admin-btn">
+              Cancel
+            </Link>
+            <span className="text-xs text-[var(--admin-muted)] hidden sm:inline">
+              {isNew ? "Fill in required fields and save." : "Unsaved edits apply on save."}
+            </span>
+          </div>
+
+          {canManage && (
+            <button type="submit" className="admin-btn admin-btn--primary" disabled={saving}>
+              {saving ? "Saving product…" : isNew ? "Create Product" : "Save Changes"}
+            </button>
+          )}
+        </div>
       </form>
 
+      {/* Section 7: Gallery Media Manager */}
       {!isNew && productId ? (
-        <section className="admin-media-panel">
-          <h3>Gallery media</h3>
-          <p className="admin-help">
-            Images and GIFs, or MP4/WebM videos (upload or external URL). Featured item is the primary viewer on the
-            public product page.
-          </p>
+        <section className="admin-card-section admin-media-panel">
+          <div className="admin-card-section__head">
+            <div>
+              <h2 className="admin-card-section__title">
+                <span className="admin-card-section__badge">7</span>
+                Product Gallery Media ({mediaItems.length})
+              </h2>
+              <p className="admin-card-section__subtitle">
+                Screenshots, product demo videos (MP4/WebM), or GIFs. Mark one item as featured to set the main viewer.
+              </p>
+            </div>
+          </div>
 
           <div className="admin-media-grid">
             {mediaItems.map((item) => {
@@ -620,7 +814,7 @@ export default function ProductAdminEditor() {
                     )}
                   </div>
                   <div className="admin-media-card__meta">
-                    <strong>{item.title || item.alt_text || `#${item.id}`}</strong>
+                    <strong>{item.title || item.alt_text || `Media #${item.id}`}</strong>
                     <span>
                       {item.media_type}
                       {item.is_featured ? " · featured" : ""}
@@ -640,32 +834,34 @@ export default function ProductAdminEditor() {
                 </article>
               );
             })}
-            {!mediaItems.length && <p className="text-[var(--admin-muted)]">No gallery media yet.</p>}
+            {!mediaItems.length && (
+              <p className="text-[var(--admin-muted)] text-sm py-4 col-span-full">
+                No gallery items added yet. Use the form below to upload media.
+              </p>
+            )}
           </div>
 
           {canManage && (
-            <form className="admin-form admin-form--wide" onSubmit={onAddMedia}>
-              <h4>Add media</h4>
+            <form className="admin-upload-card mt-4" onSubmit={onAddMedia}>
+              <h3 className="text-sm font-bold text-[var(--admin-forest)]">Add Gallery Media</h3>
               <div className="admin-form__row">
-                <Field
-                  label="Type"
-                  help="Image/GIF for stills and animated GIFs. Video for MP4/WebM uploads or an external link."
-                >
+                <Field label="Media Type" help="Image/GIF or Video file / external URL.">
                   <select value={mediaForm.media_type} onChange={(e) => setMedia("media_type", e.target.value)}>
                     <option value="image">Image / GIF</option>
                     <option value="video">Video</option>
                   </select>
                 </Field>
-                <Field
-                  label="Title"
-                  help="Short label shown with the media item in the gallery."
-                >
-                  <input value={mediaForm.title} onChange={(e) => setMedia("title", e.target.value)} />
+
+                <Field label="Media Title" help="Short label for gallery modal.">
+                  <input
+                    type="text"
+                    placeholder="e.g. Dashboard Overview"
+                    value={mediaForm.title}
+                    onChange={(e) => setMedia("title", e.target.value)}
+                  />
                 </Field>
-                <Field
-                  label="Display order"
-                  help="Gallery sort order. Lower numbers appear first."
-                >
+
+                <Field label="Sort Order" help="Lower order numbers display first.">
                   <input
                     type="number"
                     value={mediaForm.display_order}
@@ -673,25 +869,30 @@ export default function ProductAdminEditor() {
                   />
                 </Field>
               </div>
-              <Field
-                label="Caption"
-                help="Optional text shown under the selected gallery item on the public page."
-              >
-                <textarea rows={2} value={mediaForm.caption} onChange={(e) => setMedia("caption", e.target.value)} />
-              </Field>
-              <Field
-                label="Alt text"
-                help="Accessibility description for screen readers and SEO. Required for meaningful images."
-              >
-                <input value={mediaForm.alt_text} onChange={(e) => setMedia("alt_text", e.target.value)} />
-              </Field>
+
+              <div className="admin-form__row">
+                <Field label="Caption" help="Optional descriptive text displayed under media viewer.">
+                  <input
+                    type="text"
+                    placeholder="e.g. Real-time member transaction ledger screen"
+                    value={mediaForm.caption}
+                    onChange={(e) => setMedia("caption", e.target.value)}
+                  />
+                </Field>
+
+                <Field label="Alt Text" help="Accessibility text for screen readers and SEO.">
+                  <input
+                    type="text"
+                    placeholder="e.g. Microfinance dashboard interface screenshot"
+                    value={mediaForm.alt_text}
+                    onChange={(e) => setMedia("alt_text", e.target.value)}
+                  />
+                </Field>
+              </div>
 
               {mediaForm.media_type === "image" ? (
-                <>
-                  <Field
-                    label="Category"
-                    help="Optional label for organising screenshots (dashboard, mobile, workflow, etc.)."
-                  >
+                <div className="admin-form__row">
+                  <Field label="Image Category" help="Category tag for organizing screenshots.">
                     <select value={mediaForm.image_category} onChange={(e) => setMedia("image_category", e.target.value)}>
                       <option value="screenshot">screenshot</option>
                       <option value="mobile">mobile</option>
@@ -702,10 +903,8 @@ export default function ProductAdminEditor() {
                       <option value="other">other</option>
                     </select>
                   </Field>
-                  <Field
-                    label="Image / GIF file"
-                    help="JPEG, PNG, WebP, or GIF up to 5 MB. GIFs play as animated images in the gallery."
-                  >
+
+                  <Field label="Upload Image / GIF File" help="JPEG, PNG, WebP, or GIF file.">
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp,image/gif,.gif,.jpg,.jpeg,.png,.webp"
@@ -713,48 +912,40 @@ export default function ProductAdminEditor() {
                       onChange={(e) => setMediaImage(e.target.files?.[0] || null)}
                     />
                   </Field>
-                </>
+                </div>
               ) : (
                 <>
-                  <Field
-                    label="Video source"
-                    help="Upload a file to host on this site, or link to an external video URL (YouTube/Vimeo preferred)."
-                  >
-                    <select value={mediaForm.video_source} onChange={(e) => setMedia("video_source", e.target.value)}>
-                      <option value="upload">Uploaded file</option>
-                      <option value="external">External URL</option>
-                    </select>
-                  </Field>
-                  {mediaForm.video_source === "upload" ? (
-                    <Field
-                      label="Video file"
-                      help="MP4 or WebM file, typically up to ~80 MB depending on server limits."
-                    >
-                      <input
-                        type="file"
-                        accept="video/mp4,video/webm,.mp4,.webm"
-                        required
-                        onChange={(e) => setMediaVideo(e.target.files?.[0] || null)}
-                      />
+                  <div className="admin-form__row">
+                    <Field label="Video Source Type" help="Upload MP4 file or link external URL.">
+                      <select value={mediaForm.video_source} onChange={(e) => setMedia("video_source", e.target.value)}>
+                        <option value="upload">Uploaded MP4/WebM file</option>
+                        <option value="external">External Video Link (YouTube/Vimeo)</option>
+                      </select>
                     </Field>
-                  ) : (
-                    <Field
-                      label="Video URL"
-                      help="Full HTTPS link visitors can open. Shown with an optional thumbnail on the product page."
-                    >
-                      <input
-                        type="url"
-                        required
-                        value={mediaForm.video_url}
-                        onChange={(e) => setMedia("video_url", e.target.value)}
-                        placeholder="https://"
-                      />
-                    </Field>
-                  )}
-                  <Field
-                    label="Thumbnail (optional)"
-                    help="Poster frame shown before video playback or for external video cards."
-                  >
+
+                    {mediaForm.video_source === "upload" ? (
+                      <Field label="Video File" help="MP4 or WebM file format.">
+                        <input
+                          type="file"
+                          accept="video/mp4,video/webm,.mp4,.webm"
+                          required
+                          onChange={(e) => setMediaVideo(e.target.files?.[0] || null)}
+                        />
+                      </Field>
+                    ) : (
+                      <Field label="External Video Link" help="Full HTTPS video link.">
+                        <input
+                          type="url"
+                          required
+                          value={mediaForm.video_url}
+                          onChange={(e) => setMedia("video_url", e.target.value)}
+                          placeholder="https://youtube.com/watch?v=..."
+                        />
+                      </Field>
+                    )}
+                  </div>
+
+                  <Field label="Video Thumbnail (Optional)" help="Custom poster frame image.">
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp,image/gif,.gif,.jpg,.jpeg,.png,.webp"
@@ -764,43 +955,35 @@ export default function ProductAdminEditor() {
                 </>
               )}
 
-              <div className="admin-form__checks">
-                <CheckField
-                  label="Featured"
-                  help="Featured media is the primary gallery viewer. Only one featured item per product."
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!mediaForm.is_featured}
-                    onChange={(e) => setMedia("is_featured", e.target.checked)}
-                  />
-                </CheckField>
-                <CheckField
-                  label="Active"
-                  help="Inactive media stays in admin but is hidden from the public gallery."
-                >
-                  <input
-                    type="checkbox"
-                    checked={!!mediaForm.is_active}
-                    onChange={(e) => setMedia("is_active", e.target.checked)}
-                  />
-                </CheckField>
+              <div className="admin-check-card-group my-2">
+                <CheckCard
+                  label="Set as Featured Gallery Item"
+                  description="Initial active slide on the public product viewer."
+                  checked={!!mediaForm.is_featured}
+                  onChange={(e) => setMedia("is_featured", e.target.checked)}
+                />
+                <CheckCard
+                  label="Active & Visible"
+                  description="Visible on public product page media viewer."
+                  checked={!!mediaForm.is_active}
+                  onChange={(e) => setMedia("is_active", e.target.checked)}
+                />
               </div>
 
-              <button type="submit" className="admin-btn admin-btn--primary" disabled={mediaSaving}>
-                {mediaSaving ? "Uploading…" : "Add media"}
-              </button>
+              <div>
+                <button type="submit" className="admin-btn admin-btn--primary" disabled={mediaSaving}>
+                  {mediaSaving ? "Uploading media…" : "Upload Media Item"}
+                </button>
+              </div>
             </form>
           )}
-
-          <p className="admin-help">
-            Highlights, audiences, capabilities, FAQs and section order can also be edited in Django admin for richer
-            page structure.
-          </p>
         </section>
       ) : (
-        <p className="admin-help p-6">Save the product first to attach gallery images, GIFs, or videos.</p>
+        <div className="admin-card-section text-center p-6">
+          <p className="admin-help text-base">Save product basic details first to attach gallery screenshots and media.</p>
+        </div>
       )}
     </div>
   );
 }
+
