@@ -2,7 +2,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.middleware.csrf import get_token
 from django.views.decorators.csrf import ensure_csrf_cookie
 from rest_framework import serializers, status
-from rest_framework.decorators import api_view, permission_classes
+from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
@@ -14,6 +14,7 @@ class LoginSerializer(serializers.Serializer):
 
 @api_view(["GET"])
 @permission_classes([AllowAny])
+@authentication_classes([])
 @ensure_csrf_cookie
 def csrf(request):
     return Response({"csrfToken": get_token(request)})
@@ -21,7 +22,16 @@ def csrf(request):
 
 @api_view(["POST"])
 @permission_classes([AllowAny])
+@authentication_classes([])
 def login_view(request):
+    """
+    Session login without DRF SessionAuthentication CSRF gate.
+
+    The SPA is served by Apache (static index.html), so the first visit does not
+    go through Django's ensure_csrf_cookie. Behind a reverse proxy, cookie/CSRF
+    bootstrap can still fail; authenticating this view with [] avoids that deadlock.
+    After login(), the session cookie is set; later mutating API calls still use CSRF.
+    """
     ser = LoginSerializer(data=request.data)
     ser.is_valid(raise_exception=True)
     email = ser.validated_data["email"].strip().lower()

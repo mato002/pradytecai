@@ -17,8 +17,10 @@ from apps.products.models import (
     ProductFAQ,
     ProductHighlight,
     ProductIntegration,
+    ProductMedia,
     ProductPageSection,
     ProductWorkflowStep,
+    validate_product_video,
 )
 
 
@@ -427,3 +429,192 @@ class ProductDetailApiTests(TestCase):
             [s["section_type"] for s in micro["page_sections"]],
             [s["section_type"] for s in prop["page_sections"]],
         )
+
+
+def _tiny_mp4(name="clip.mp4"):
+    # Minimal bytes with .mp4 name — validation is extension/MIME/size based.
+    return SimpleUploadedFile(name, b"\x00\x00\x00\x18ftypmp42", content_type="video/mp4")
+
+
+class ProductMediaTests(TestCase):
+    def setUp(self):
+        import tempfile
+        from pathlib import Path
+
+        self._tmpdir = tempfile.TemporaryDirectory()
+        self.addCleanup(self._tmpdir.cleanup)
+        media = override_settings(MEDIA_ROOT=Path(self._tmpdir.name))
+        media.enable()
+        self.addCleanup(media.disable)
+        self.client = Client(enforce_csrf_checks=False)
+        self.product = Product.objects.create(
+            name="Media Product",
+            slug="media-product",
+            short="Has media",
+            is_active=True,
+            cta_label="Request demo",
+            cta_type="demo",
+        )
+
+    def test_image_media_creation(self):
+        row = ProductMedia(
+            product=self.product,
+            media_type=ProductMedia.TYPE_IMAGE,
+            title="Dashboard",
+            image=_png("dash.png"),
+            image_category=ProductMedia.CATEGORY_DASHBOARD,
+            display_order=10,
+        )
+        row.full_clean()
+        row.save()
+        self.assertEqual(row.media_type, "image")
+        self.assertTrue(row.image)
+
+    def test_video_upload_creation(self):
+        row = ProductMedia(
+            product=self.product,
+            media_type=ProductMedia.TYPE_VIDEO,
+            video_source=ProductMedia.SOURCE_UPLOAD,
+            title="Overview",
+            video_file=_tiny_mp4(),
+            thumbnail=_png("thumb.png"),
+            display_order=20,
+        )
+        row.full_clean()
+        row.save()
+        self.assertEqual(row.video_source, "upload")
+        self.assertTrue(row.video_file)
+        self.assertTrue(row.mime_type)
+
+    def test_invalid_video_format_rejected(self):
+        bad = SimpleUploadedFile("clip.exe", b"MZ", content_type="application/octet-stream")
+        with self.assertRaises(Exception):
+            validate_product_video(bad)
+
+    def test_oversized_video_rejected(self):
+        with override_settings(PRODUCT_VIDEO_MAX_BYTES=1024):
+            huge = SimpleUploadedFile("big.mp4", b"x" * 2048, content_type="video/mp4")
+            with self.assertRaises(Exception):
+                validate_product_video(huge)
+
+    def test_upload_video_without_file_rejected(self):
+        row = ProductMedia(
+            product=self.product,
+            media_type=ProductMedia.TYPE_VIDEO,
+            video_source=ProductMedia.SOURCE_UPLOAD,
+            title="Missing file",
+        )
+        with self.assertRaises(Exception):
+            row.full_clean()
+
+    def test_external_video_without_url_rejected(self):
+        row = ProductMedia(
+            product=self.product,
+            media_type=ProductMedia.TYPE_VIDEO,
+            video_source=ProductMedia.SOURCE_EXTERNAL,
+            title="Missing url",
+        )
+        with self.assertRaises(Exception):
+            row.full_clean()
+
+    def test_image_cannot_carry_video_file(self):
+        row = ProductMedia(
+            product=self.product,
+            media_type=ProductMedia.TYPE_IMAGE,
+            image=_png(),
+            video_file=_tiny_mp4(),
+        )
+        with self.assertRaises(Exception):
+            row.full_clean()
+
+    def test_active_filtering_and_ordering(self):
+        ProductMedia.objects.create(
+            product=self.product,
+            media_type=ProductMedia.TYPE_IMAGE,
+            title="Second",
+            image=_png("b.png"),
+            display_order=20,
+        )
+        ProductMedia.objects.create(
+            product=self.product,
+            media_type=ProductMedia.TYPE_IMAGE,
+            title="First",
+            image=_png("a.png"),
+            display_order=10,
+        )
+        ProductMedia.objects.create(
+            product=self.product,
+            media_type=ProductMedia.TYPE_IMAGE,
+            title="Hidden",
+            image=_png("c.png"),
+            display_order=5,
+            is_active=False,
+        )
+        visible = list(ProductMedia.objects.publicly_visible().filter(product=self.product))
+        self.assertEqual([m.title for m in visible], ["First", "Second"])
+
+    def test_featured_media_unique_per_product(self):
+        first = ProductMedia.objects.create(
+            product=self.product,
+            media_type=ProductMedia.TYPE_IMAGE,
+            title="A",
+            image=_png("a.png"),
+            is_featured=True,
+            display_order=10,
+        )
+        second = ProductMedia.objects.create(
+            product=self.product,
+            media_type=ProductMedia.TYPE_VIDEO,
+            video_source=ProductMedia.SOURCE_UPLOAD,
+            title="B",
+            video_file=_tiny_mp4(),
+            is_featured=True,
+            display_order=20,
+        )
+        first.refresh_from_db()
+        second.refresh_from_db()
+        self.assertFalse(first.is_featured)
+        self.assertTrue(second.is_featured)
+
+    def test_detail_serializer_mixed_media_list_stays_light(self):
+        ProductMedia.objects.create(
+            product=self.product,
+            media_type=ProductMedia.TYPE_IMAGE,
+            title="Shot",
+            image=_png("shot.png"),
+            is_featured=True,
+            display_order=10,
+        )
+        ProductMedia.objects.create(
+            product=self.product,
+            media_type=ProductMedia.TYPE_VIDEO,
+            video_source=ProductMedia.SOURCE_UPLOAD,
+            title="Clip",
+            video_file=_tiny_mp4(),
+            thumbnail=_png("t.png"),
+            display_order=20,
+        )
+        ProductMedia.objects.create(
+            product=self.product,
+            media_type=ProductMedia.TYPE_VIDEO,
+            video_source=ProductMedia.SOURCE_EXTERNAL,
+            title="Ext",
+            video_url="https://example.com/watch",
+            display_order=30,
+        )
+
+        detail = self.client.get("/api/v1/public/products/media-product/").json()
+        self.assertEqual(len(detail["media"]), 3)
+        types = [m["media_type"] for m in detail["media"]]
+        self.assertEqual(types, ["image", "video", "video"])
+        self.assertTrue(detail["media"][0]["image_url"])
+        self.assertTrue(detail["media"][0]["is_featured"])
+        self.assertTrue(detail["media"][1]["video_file_url"])
+        self.assertEqual(detail["media"][1]["video_source"], "upload")
+        self.assertEqual(detail["media"][2]["video_url"], "https://example.com/watch")
+
+        listing = self.client.get("/api/v1/public/products/").json()
+        row = next(item for item in listing if item["slug"] == "media-product")
+        self.assertNotIn("media", row)
+        self.assertIn("poster_url", row)
+        self.assertIn("short_description", row)

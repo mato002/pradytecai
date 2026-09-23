@@ -183,6 +183,20 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Product gallery video uploads (MP4/WebM). Keep below typical reverse-proxy limits.
+# Apache/cPanel often needs LimitRequestBody raised separately if uploads fail at ~few MB.
+PRODUCT_VIDEO_MAX_BYTES = int(
+    os.getenv("PRODUCT_VIDEO_MAX_BYTES", str(80 * 1024 * 1024))
+)
+# Allow multipart bodies large enough for the configured video ceiling (+ 1 MiB headroom).
+_DATA_UPLOAD_DEFAULT = max(PRODUCT_VIDEO_MAX_BYTES + 1024 * 1024, 2621440)
+DATA_UPLOAD_MAX_MEMORY_SIZE = int(
+    os.getenv("DATA_UPLOAD_MAX_MEMORY_SIZE", str(_DATA_UPLOAD_DEFAULT))
+)
+FILE_UPLOAD_MAX_MEMORY_SIZE = int(
+    os.getenv("FILE_UPLOAD_MAX_MEMORY_SIZE", str(min(10 * 1024 * 1024, DATA_UPLOAD_MAX_MEMORY_SIZE)))
+)
+
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
@@ -201,6 +215,7 @@ if not DEBUG and os.getenv("SESSION_SECURE_COOKIE") is None:
     SESSION_COOKIE_SECURE = True
 CSRF_COOKIE_SAMESITE = "Lax"
 CSRF_COOKIE_SECURE = SESSION_COOKIE_SECURE
+CSRF_COOKIE_HTTPONLY = False  # SPA must read cookie for X-CSRFToken header
 # Behind Apache/Nginx TLS termination
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 USE_X_FORWARDED_HOST = os.getenv("USE_X_FORWARDED_HOST", "true").lower() in (

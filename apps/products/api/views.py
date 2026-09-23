@@ -227,7 +227,7 @@ def public_product_detail_queryset():
             ),
         ),
         Prefetch("workflow_steps", queryset=_active_ordered(ProductWorkflowStep)),
-        Prefetch("media_items", queryset=_active_ordered(ProductMedia).exclude(image="")),
+        Prefetch("media_items", queryset=ProductMedia.objects.publicly_visible()),
         Prefetch("integrations", queryset=_active_ordered(ProductIntegration)),
         Prefetch("controls", queryset=_active_ordered(ProductControl)),
         Prefetch("outcomes", queryset=_active_ordered(ProductOutcome)),

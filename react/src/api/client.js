@@ -3,9 +3,13 @@ function getCookie(name) {
   return match ? decodeURIComponent(match[2]) : null;
 }
 
+/** In-memory fallback when Set-Cookie is delayed/blocked behind a proxy. */
+let cachedCsrfToken = null;
+
 /** Match Django CSRF_COOKIE_NAME (default csrftoken or pradytecai_django_csrftoken). */
 function getCsrfToken() {
   return (
+    cachedCsrfToken ||
     getCookie("pradytecai_django_csrftoken") ||
     getCookie("csrftoken") ||
     getCookie("CSRF-TOKEN")
@@ -57,5 +61,9 @@ export async function api(path, options = {}) {
 }
 
 export async function ensureCsrf() {
-  await api("/auth/csrf/");
+  const data = await api("/auth/csrf/");
+  if (data?.csrfToken) {
+    cachedCsrfToken = data.csrfToken;
+  }
+  return data;
 }

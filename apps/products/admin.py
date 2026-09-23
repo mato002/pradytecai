@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 
 from apps.products.models import (
@@ -55,10 +56,53 @@ class ProductWorkflowStepInline(OrderedTabularInline):
     classes = ("collapse",)
 
 
-class ProductMediaInline(OrderedTabularInline):
+class ProductMediaAdminForm(forms.ModelForm):
+    class Meta:
+        model = ProductMedia
+        fields = "__all__"
+
+
+class ProductMediaInline(admin.StackedInline):
     model = ProductMedia
-    fields = ("title", "caption", "image", "media_type", "alt_text", "display_order", "is_active")
+    form = ProductMediaAdminForm
+    extra = 0
+    ordering = ("display_order", "id")
+    show_change_link = True
     classes = ("collapse",)
+    verbose_name_plural = "product media (screenshots and videos)"
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "media_type",
+                    "title",
+                    "caption",
+                    "alt_text",
+                    "is_featured",
+                    "is_active",
+                    "display_order",
+                )
+            },
+        ),
+        (
+            "Image",
+            {
+                "fields": ("image", "image_category"),
+                "description": "Required when media type is Image. Leave video fields empty.",
+            },
+        ),
+        (
+            "Video",
+            {
+                "fields": ("video_source", "video_file", "video_url", "thumbnail", "duration_seconds"),
+                "description": (
+                    "Required when media type is Video. Upload = MP4/WebM file. "
+                    "External = HTTPS URL (schema ready; prefer upload for playback)."
+                ),
+            },
+        ),
+    )
 
 
 class ProductIntegrationInline(OrderedTabularInline):
@@ -192,6 +236,56 @@ class ProductAdmin(admin.ModelAdmin):
         ProductCustomSectionInline,
         ProductPageSectionInline,
     ]
+
+
+@admin.register(ProductMedia)
+class ProductMediaAdmin(admin.ModelAdmin):
+    form = ProductMediaAdminForm
+    list_display = (
+        "title",
+        "product",
+        "media_type",
+        "video_source",
+        "is_featured",
+        "is_active",
+        "display_order",
+        "file_size",
+    )
+    list_filter = ("media_type", "video_source", "is_featured", "is_active", "product")
+    list_editable = ("display_order", "is_active", "is_featured")
+    search_fields = ("title", "caption", "alt_text", "product__name", "product__slug")
+    autocomplete_fields = ("product",)
+    ordering = ("product", "display_order", "id")
+    fieldsets = (
+        (
+            None,
+            {
+                "fields": (
+                    "product",
+                    "media_type",
+                    "title",
+                    "caption",
+                    "alt_text",
+                    "is_featured",
+                    "is_active",
+                    "display_order",
+                )
+            },
+        ),
+        ("Image", {"fields": ("image", "image_category")}),
+        (
+            "Video",
+            {"fields": ("video_source", "video_file", "video_url", "thumbnail", "duration_seconds")},
+        ),
+        (
+            "Metadata",
+            {
+                "classes": ("collapse",),
+                "fields": ("mime_type", "file_size"),
+            },
+        ),
+    )
+    readonly_fields = ("mime_type", "file_size")
 
 
 @admin.register(ProductCapabilityGroup)

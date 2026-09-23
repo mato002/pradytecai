@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import PradyIcon, { hasPradyIcon } from "./PradyIcon";
 import ProductPoster from "./ProductPoster";
+import ProductMediaGallery from "./ProductMediaGallery";
 import {
   SECTION_LABELS,
   heroSources,
@@ -169,59 +170,6 @@ function Workflow({ product, title, subtitle }) {
   );
 }
 
-const MEDIA_LABELS = {
-  screenshot: "Screenshot",
-  mobile: "Mobile",
-  dashboard: "Dashboard",
-  poster: "Poster",
-  feature: "Feature",
-  workflow: "Workflow",
-};
-
-function MediaGallery({ product, title, subtitle }) {
-  const items = (product.media || []).filter((item) => text(item.image_url));
-  const [active, setActive] = useState(0);
-  const safeIndex = active >= 0 && active < items.length ? active : 0;
-  const current = items[safeIndex];
-  if (!current) return null;
-  const alt = text(current.alt_text) || text(current.title) || `${product.name} screenshot`;
-  return (
-    <section className="mkt-pdp-section">
-      <h2 className="mkt-pdp-section__title">{title || "In the product"}</h2>
-      {subtitle ? <p className="mkt-pdp-section__intro">{subtitle}</p> : null}
-      <div className="mkt-pdp-gallery">
-        <ProductPoster src={current.image_url} alt={alt} variant="gallery" lazy={safeIndex > 0} />
-        {text(current.caption) || (current.media_type && current.media_type !== "other") ? (
-          <p className="mkt-pdp-gallery__caption">
-            {MEDIA_LABELS[current.media_type] ? <span>{MEDIA_LABELS[current.media_type]}. </span> : null}
-            {text(current.caption) || text(current.title)}
-          </p>
-        ) : null}
-        {items.length > 1 ? (
-          <div className="mkt-pdp-thumbs" role="tablist" aria-label="Product images">
-            {items.slice(0, 4).map((item, index) => {
-              const thumbAlt = text(item.alt_text) || text(item.title) || `${product.name} image ${index + 1}`;
-              const selected = index === safeIndex;
-              return (
-                <button
-                  key={item.id || item.image_url}
-                  type="button"
-                  role="tab"
-                  aria-selected={selected}
-                  className={`mkt-pdp-thumb${selected ? " is-active" : ""}`}
-                  onClick={() => setActive(index)}
-                >
-                  <ProductPoster src={item.image_url} alt={thumbAlt} variant="thumb" lazy />
-                </button>
-              );
-            })}
-          </div>
-        ) : null}
-      </div>
-    </section>
-  );
-}
-
 function Integrations({ product, title, subtitle }) {
   const items = (product.integrations || []).filter((item) => text(item.name));
   return (
@@ -377,7 +325,7 @@ const RENDERERS = {
   problems: Problems,
   capabilities: Capabilities,
   workflow: Workflow,
-  media: MediaGallery,
+  media: ProductMediaGallery,
   integrations: Integrations,
   controls: Controls,
   outcomes: Outcomes,

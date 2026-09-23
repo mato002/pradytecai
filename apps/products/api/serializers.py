@@ -68,21 +68,38 @@ class ProductWorkflowStepSerializer(serializers.ModelSerializer):
 
 class ProductMediaSerializer(serializers.ModelSerializer):
     image_url = serializers.SerializerMethodField()
+    video_file_url = serializers.SerializerMethodField()
+    thumbnail_url = serializers.SerializerMethodField()
 
     class Meta:
         model = ProductMedia
         fields = [
             "id",
+            "media_type",
+            "image_category",
             "title",
             "caption",
             "image_url",
-            "media_type",
+            "video_source",
+            "video_file_url",
+            "video_url",
+            "thumbnail_url",
             "alt_text",
+            "is_featured",
             "display_order",
+            "mime_type",
+            "file_size",
+            "duration_seconds",
         ]
 
     def get_image_url(self, obj):
         return file_url(obj.image)
+
+    def get_video_file_url(self, obj):
+        return file_url(obj.video_file)
+
+    def get_thumbnail_url(self, obj):
+        return file_url(obj.thumbnail)
 
 
 class ProductIntegrationSerializer(serializers.ModelSerializer):

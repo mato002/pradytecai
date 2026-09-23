@@ -21,7 +21,7 @@ export const DEFAULT_SECTION_TITLES = {
   problems: "Problems solved",
   capabilities: "Core capabilities",
   workflow: "How it works",
-  media: "In the product",
+  media: "See the product",
   integrations: "Integrations",
   controls: "Security and controls",
   outcomes: "Outcomes",
@@ -36,7 +36,7 @@ export const SECTION_LABELS = {
   problems: "Problems solved",
   capabilities: "Core capabilities",
   workflow: "How it works",
-  media: "In the product",
+  media: "See the product",
   integrations: "Integrations",
   controls: "Security and controls",
   outcomes: "Outcomes",
@@ -53,6 +53,34 @@ function rows(list) {
   return Array.isArray(list) ? list : [];
 }
 
+/** True when the API media row can be shown in the gallery. */
+export function mediaIsRenderable(item) {
+  if (!item) return false;
+  if (text(item.media_type) === "video") {
+    return Boolean(text(item.video_file_url) || text(item.video_url));
+  }
+  return Boolean(text(item.image_url));
+}
+
+export function visibleMedia(product) {
+  return rows(product?.media).filter(mediaIsRenderable);
+}
+
+/** Featured row if active; otherwise first by API order (display_order). */
+export function pickFeaturedMedia(items) {
+  const list = Array.isArray(items) ? items.filter(mediaIsRenderable) : [];
+  if (!list.length) return null;
+  return list.find((item) => item.is_featured) || list[0];
+}
+
+export function mediaThumbSrc(item) {
+  if (!item) return "";
+  if (text(item.media_type) === "video") {
+    return text(item.thumbnail_url) || text(item.image_url) || "";
+  }
+  return text(item.image_url) || text(item.thumbnail_url) || "";
+}
+
 export function hasSectionContent(product, type) {
   if (!product) return false;
   switch (type) {
@@ -67,7 +95,7 @@ export function hasSectionContent(product, type) {
     case "workflow":
       return rows(product.workflow_steps).some((item) => text(item?.title));
     case "media":
-      return rows(product.media).some((item) => text(item?.image_url));
+      return visibleMedia(product).length > 0;
     case "integrations":
       return rows(product.integrations).some((item) => text(item?.name));
     case "controls":

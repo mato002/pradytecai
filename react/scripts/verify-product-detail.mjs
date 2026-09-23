@@ -4,6 +4,10 @@ import {
   resolveSections,
   showOverview,
   heroSources,
+  mediaIsRenderable,
+  pickFeaturedMedia,
+  visibleMedia,
+  mediaThumbSrc,
 } from "../src/lib/productDetailModel.js";
 
 const micro = {
@@ -134,5 +138,34 @@ assert.equal(
 
 assert.equal(showOverview({ short_description: "Same", overview: "Same" }), "");
 assert.ok(showOverview(micro).includes("longer overview"));
+
+const mixedMediaProduct = {
+  media: [
+    {
+      id: 1,
+      media_type: "image",
+      image_url: "/media/a.jpg",
+      is_featured: false,
+      display_order: 20,
+    },
+    {
+      id: 2,
+      media_type: "video",
+      video_source: "upload",
+      video_file_url: "/media/v.mp4",
+      thumbnail_url: "/media/t.jpg",
+      is_featured: true,
+      display_order: 10,
+    },
+    { id: 3, media_type: "image", image_url: "", is_featured: false },
+    { id: 4, media_type: "video", video_source: "upload", video_file_url: "", is_featured: false },
+  ],
+};
+assert.equal(visibleMedia(mixedMediaProduct).length, 2);
+assert.equal(pickFeaturedMedia(mixedMediaProduct.media).id, 2);
+assert.equal(mediaIsRenderable({ media_type: "image", image_url: "/x.png" }), true);
+assert.equal(mediaIsRenderable({ media_type: "video", video_url: "https://example.com/v" }), true);
+assert.equal(mediaThumbSrc(mixedMediaProduct.media[1]), "/media/t.jpg");
+assert.equal(mediaThumbSrc({ media_type: "video", video_file_url: "/v.mp4" }), "");
 
 console.log("product detail model checks passed");

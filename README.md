@@ -372,3 +372,80 @@ Safe to re-run. Manual seed after a partial deploy: `docker compose exec web pyt
 * [docs/CUTOVER.md](docs/CUTOVER.md)
 * [docs/COEXISTENCE.md](docs/COEXISTENCE.md)
 * [docs/LARAVEL_RETIREMENT.md](docs/LARAVEL_RETIREMENT.md)
+
+---
+
+## N.B. — Shared `public_html` + Apache `.htaccess` (WHM)
+
+`pradytecai.com` DocumentRoot is **`/home/pradytec/public_html`** (not `/home/pradytec/pradytecai/public_html`). That folder also hosts sibling apps (`crm/`, `dashboard/`, `analyzer/`, …).
+
+### Problem
+
+A legacy Laravel root `.htaccess` sends unknown paths to **`index.php`**:
+
+```apache
+RewriteRule ^ index.php [L]
+```
+
+That breaks React routes (`/login`, `/admin`, …), Django `/api/v1`, and can hide static `/images/*` unless files exist on disk.
+
+### Safe fix (does not wipe sibling sites)
+
+`deploy.sh` installs `deploy/apache/pradytecai-public_html.htaccess` as the root `.htaccess`. It:
+
+* Proxies `/api/v1`, `/up`, `/health`, `/t`, `/django-admin`, form posts → `127.0.0.1:8100`
+* Serves real files/dirs as-is (`assets/`, `images/`, `static/`, `media/`, `crm/`, …)
+* Falls back remaining routes to **`index.html`** (React SPA), not `index.php`
+* Leaves cPanel **subdomains** alone (they use their own DocumentRoots)
+
+Manual one-time install (or rely on `./deploy.sh`):
+
+```bash
+cd /home/pradytec/public_html
+cp -a .htaccess .htaccess.laravel.bak
+cp /home/pradytec/pradytecai/deploy/apache/pradytecai-public_html.htaccess .htaccess
+
+cd /home/pradytec/pradytecai
+git pull origin django
+FORCE_PULL=1 ./deploy.sh
+```
+
+### Verify siblings still OK
+
+```bash
+curl -sI https://crm.pradytecai.com/ | head -5
+curl -sI https://dashboard.pradytecai.com/ | head -5
+```
+
+Expect **HTTP 200** (Laravel cookies are fine).
+
+### Verify main site
+
+```bash
+curl -fsS http://127.0.0.1:8100/up
+curl -fsS -H "Host: pradytecai.com" http://127.0.0.1/up
+curl -sI -H "Host: pradytecai.com" http://127.0.0.1/login | head -8
+curl -sI -H "Host: pradytecai.com" http://127.0.0.1/images/mfi.jpg | head -5
+ls /home/pradytec/public_html/assets | head
+ls /home/pradytec/public_html/images | head
+```
+
+Useful URLs:
+
+* Site / SPA: `https://pradytecai.com/`, `/login`, `/admin`
+* Django admin: `https://pradytecai.com/django-admin/`
+* API: `https://pradytecai.com/api/v1/…`
+* Health: `https://pradytecai.com/up`
+
+### Rollback `.htaccess` only
+
+```bash
+cp -a /home/pradytec/public_html/.htaccess.laravel.bak /home/pradytec/public_html/.htaccess
+```
+
+### Login CSRF / django-admin
+
+* React login: `https://pradytecai.com/login` (API session auth)
+* Django admin: `https://pradytecai.com/django-admin/` (**trailing slash**; bare `/django-admin` 301s here)
+* If login fails with CSRF after an `.htaccess` change, redeploy so `authentication_classes=[]` on login is live, and refresh `.htaccess` (sets `X-Forwarded-Proto: https`)
+* Confirm `.env` has `CSRF_TRUSTED_ORIGINS=https://www.pradytecai.com,https://pradytecai.com` and `SESSION_SECURE_COOKIE=true`
