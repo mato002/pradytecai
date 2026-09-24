@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useId, useState } from "react";
 import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { api, ensureCsrf } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
+import RichTextEditor from "../../components/admin/RichTextEditor";
 
 const EMPTY = {
   name: "",
@@ -487,13 +488,17 @@ export default function ProductAdminEditor() {
             />
           </Field>
 
-          <Field label="Full Overview & Features" help="Detailed overview for the main product detail page.">
-            <textarea
-              rows={5}
-              placeholder="Describe product capabilities, benefits, and key features..."
+          <Field
+            label="Full Overview & Features"
+            help="Detailed overview for the main product detail page. Supports Subtitles (##), Headings (###, ####), Bullet & Numbered lists, Links, and HTML."
+          >
+            <RichTextEditor
               value={form.description}
-              onChange={(e) => set("description", e.target.value)}
+              onChange={(val) => set("description", val)}
+              siteUrl={form.url}
               disabled={!canManage}
+              placeholder="Describe product capabilities, benefits, and key features..."
+              rows={8}
             />
           </Field>
         </section>
@@ -586,10 +591,13 @@ export default function ProductAdminEditor() {
               </select>
             </Field>
 
-            <Field label="Primary CTA Destination URL" help="Required if CTA Action Type is external.">
+            <Field
+              label="Live Website / Platform URL"
+              help="Direct link to the live product website or web app (e.g. https://rafikiloans.com). Displayed on the product detail page as 'Visit Live Site ↗' and clickable in the browser preview mockup."
+            >
               <input
                 type="text"
-                placeholder="https://app.pradytec.com/signup"
+                placeholder="https://rafikiloans.com"
                 value={form.url}
                 onChange={(e) => set("url", e.target.value)}
                 disabled={!canManage}

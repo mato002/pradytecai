@@ -1132,3 +1132,145 @@
   font-size: 0.92rem;
 }
 
+/* Rich Text Editor for Admin Product Creation & Editing */
+.admin-rich-editor {
+  border: 1px solid var(--admin-border);
+  border-radius: 8px;
+  background: #ffffff;
+  overflow: hidden;
+  margin-top: 0.35rem;
+}
+
+.admin-rich-editor__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.45rem 0.75rem;
+  background: #f8fafc;
+  border-bottom: 1px solid var(--admin-border);
+}
+
+.admin-rich-editor__toolbar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.admin-rich-editor__tool {
+  padding: 0.3rem 0.55rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #334155;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 28px;
+}
+
+.admin-rich-editor__tool:hover:not(:disabled) {
+  background: #f1f5f9;
+  border-color: #94a3b8;
+  color: #0f172a;
+}
+
+.admin-rich-editor__tool--accent {
+  background: #ecfdf5;
+  border-color: #a7f3d0;
+  color: #065f46;
+  font-weight: 700;
+}
+
+.admin-rich-editor__tool--accent:hover:not(:disabled) {
+  background: #d1fae5;
+  border-color: #6ee7b7;
+}
+
+.admin-rich-editor__divider {
+  width: 1px;
+  height: 18px;
+  background: #cbd5e1;
+  margin: 0 0.25rem;
+}
+
+.admin-rich-editor__tabs {
+  display: flex;
+  gap: 3px;
+  background: #e2e8f0;
+  padding: 3px;
+  border-radius: 6px;
+}
+
+.admin-rich-editor__tab {
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  background: transparent;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #64748b;
+  transition: all 0.15s ease;
+}
+
+.admin-rich-editor__tab.is-active {
+  background: #ffffff;
+  color: #0f172a;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.admin-rich-editor__textarea {
+  width: 100%;
+  padding: 0.75rem 0.85rem;
+  border: none;
+  outline: none;
+  font-family: inherit;
+  font-size: 0.88rem;
+  line-height: 1.6;
+  resize: vertical;
+  box-sizing: border-box;
+  background: #ffffff;
+  color: #1e293b;
+}
+
+.admin-rich-editor__hint {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  font-size: 0.72rem;
+  color: #64748b;
+}
+
+.admin-rich-editor__site-badge a {
+  color: #0284c7;
+  font-weight: 600;
+  text-decoration: underline;
+}
+
+.admin-rich-editor__preview {
+  padding: 1.25rem;
+  min-height: 160px;
+  max-height: 420px;
+  overflow-y: auto;
+  background: #ffffff;
+}
+
+.admin-rich-editor__empty {
+  color: #94a3b8;
+  font-size: 0.85rem;
+  font-style: italic;
+  margin: 0;
+}
+

@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import PradyIcon, { hasPradyIcon } from "./PradyIcon";
 import ProductPoster from "./ProductPoster";
 import ProductMediaGallery from "./ProductMediaGallery";
+import ProductDeviceShowcase from "./ProductDeviceShowcase";
+import RichContent from "../common/RichContent";
 import {
   SECTION_LABELS,
   heroSources,
@@ -302,7 +304,9 @@ function CustomBlocks({ product, title, subtitle }) {
             <div>
               {text(item.title) ? <h3 className="mkt-pdp-custom__title">{item.title}</h3> : null}
               {text(item.subtitle) ? <p className="mkt-pdp-section__intro">{item.subtitle}</p> : null}
-              {text(item.body) ? <p className="mkt-pdp-note__text">{item.body}</p> : null}
+              {text(item.body) ? (
+                <RichContent content={item.body} className="mkt-pdp-custom__rich" />
+              ) : null}
             </div>
             {text(item.image_url) ? (
               <ProductPoster
@@ -341,12 +345,13 @@ export default function ProductDetailView({ product }) {
   const secondary = productCta(product, "secondary");
   const overview = showOverview(product);
   const name = text(product.name) || "Product";
-  const hasMobile = Boolean(sources.mobile);
-  const heroAlt = `${name} poster`;
+  const siteUrl = text(product.url || product.cta_url);
+  const siteHref = siteUrl ? (siteUrl.startsWith("http") ? siteUrl : `https://${siteUrl}`) : null;
+  const isCtaToSite = (primary?.external && primary?.href === siteHref) || (secondary?.external && secondary?.href === siteHref);
 
   return (
     <article className="mkt-pdp">
-      <header className={`mkt-pdp-hero${hasMobile ? " mkt-pdp-hero--has-mobile" : ""}`}>
+      <header className="mkt-pdp-hero">
         <div className="mkt-container mkt-pdp-hero__grid">
           <div className="mkt-pdp-hero__copy">
             <p className="mkt-pdp-hero__back">
@@ -360,24 +365,39 @@ export default function ProductDetailView({ product }) {
             <div className="mkt-pdp-hero__actions">
               <CtaLink cta={primary} variant="primary" />
               <CtaLink cta={secondary} variant="secondary" />
+              {siteHref && !isCtaToSite ? (
+                <a
+                  href={siteHref}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="mkt-btn mkt-btn--outline mkt-btn--live-site"
+                  title={`Visit live site for ${name}`}
+                >
+                  <span>Visit Live Site</span>
+                  <span aria-hidden="true"> ↗</span>
+                </a>
+              ) : null}
             </div>
           </div>
           <div className="mkt-pdp-hero__visual">
-            <div className="mkt-pdp-hero__desktop">
-              <ProductPoster src={sources.desktop || null} alt={heroAlt} variant="hero" lazy={false} />
-            </div>
-            {hasMobile ? (
-              <div className="mkt-pdp-hero__mobile">
-                <ProductPoster src={sources.mobile} alt={`${name} on mobile`} variant="hero" lazy={false} />
-              </div>
-            ) : null}
+            <ProductDeviceShowcase
+              desktopSrc={sources.desktop}
+              mobileSrc={sources.mobile}
+              name={name}
+              url={siteUrl}
+              slug={product.slug}
+            />
           </div>
         </div>
       </header>
 
       <div className="mkt-pdp-body">
         <div className="mkt-container">
-          {overview ? <p className="mkt-pdp-overview">{overview}</p> : null}
+          {overview ? (
+            <div className="mkt-pdp-overview-wrapper">
+              <RichContent content={overview} className="mkt-pdp-overview-rich" />
+            </div>
+          ) : null}
           {sections.map((section) => {
             const Renderer = RENDERERS[section.type];
             if (!Renderer) return null;

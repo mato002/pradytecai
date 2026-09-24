@@ -206,6 +206,7 @@ class PublicProductDetailSerializer(serializers.ModelSerializer):
             "cta_label",
             "cta_type",
             "cta_url",
+            "url",
             "secondary_cta_label",
             "secondary_cta_type",
             "secondary_cta_url",

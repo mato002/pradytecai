@@ -66,7 +66,11 @@ class Product(models.Model):
     id = models.BigAutoField(primary_key=True)
     name = models.CharField(max_length=255)
     slug = models.SlugField(max_length=255, null=True, blank=True, unique=True)
-    description = models.TextField(null=True, blank=True)
+    description = models.TextField(
+        null=True,
+        blank=True,
+        help_text="Overview and feature details. Supports Subtitles (##), Headings (###, ####), Bullet/Numbered lists, Links ([Title](url)), and HTML.",
+    )
     short = models.CharField(
         max_length=500,
         null=True,
@@ -80,7 +84,7 @@ class Product(models.Model):
         max_length=500,
         null=True,
         blank=True,
-        help_text="Optional CTA destination URL (external or internal path).",
+        help_text="Product live website URL or CTA destination (e.g. https://rafikiloans.com).",
     )
     poster = models.ImageField(
         upload_to="products/posters/",
