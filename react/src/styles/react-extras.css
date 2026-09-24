@@ -105,47 +105,450 @@
   font-size: 0.88rem;
 }
 
+/* Animated Modern Hamburger Button */
 .mkt-header__burger {
   display: inline-flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 5px;
   width: 42px;
   height: 42px;
-  border: 1px solid #e5eaf0;
-  border-radius: 0.65rem;
-  background: #fff;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+  border-radius: 10px;
+  background: #ffffff;
   cursor: pointer;
-  padding: 0 11px;
+  padding: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 }
 
-.mkt-header__burger span {
+.mkt-header__burger:hover {
+  background: #f8fafc;
+  border-color: rgba(2, 132, 199, 0.3);
+}
+
+.mkt-burger-line {
   display: block;
+  width: 20px;
   height: 2px;
   background: #053171;
-  border-radius: 2px;
+  border-radius: 99px;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s ease, width 0.2s ease;
+  transform-origin: center;
+}
+
+/* Animated Transform from 3 lines to X */
+.mkt-header__burger.is-active .mkt-burger-line--1 {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.mkt-header__burger.is-active .mkt-burger-line--2 {
+  opacity: 0;
+  transform: scaleX(0);
+}
+
+.mkt-header__burger.is-active .mkt-burger-line--3 {
+  transform: translateY(-7px) rotate(-45deg);
 }
 
 @media (min-width: 1024px) {
-  .mkt-header__burger {
-    display: none;
+  .mkt-header__burger,
+  .mkt-mobile-backdrop,
+  .mkt-mobile-drawer {
+    display: none !important;
   }
 }
 
-.mkt-mobile {
+/* Mobile Drawer Backdrop */
+.mkt-mobile-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  z-index: 998;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mkt-mobile-backdrop.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* Mobile Navigation Drawer Panel */
+.mkt-mobile-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  z-index: 999;
+  box-shadow: -10px 0 40px rgba(15, 23, 42, 0.18);
+  transform: translateX(100%);
+  transition: transform 0.32s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.mkt-mobile-drawer.is-open {
+  transform: translateX(0);
+}
+
+@media (max-width: 480px) {
+  .mkt-mobile-drawer {
+    max-width: 100%;
+  }
+}
+
+.mkt-mobile-drawer__scroll {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  padding: 1.15rem 1.25rem 2.25rem;
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+/* Drawer Header */
+.mkt-mobile-drawer__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.mkt-mobile-drawer__close {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: #f1f5f9;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #475569;
+  cursor: pointer;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.mkt-mobile-drawer__close:hover {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+/* Action Banner Card */
+.mkt-mobile-drawer__cta-card {
+  background: linear-gradient(135deg, #06234b 0%, #0369a1 100%);
+  border-radius: 14px;
+  padding: 1rem 1.15rem;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  box-shadow: 0 8px 24px -4px rgba(3, 105, 161, 0.25);
+}
+
+.mkt-mobile-drawer__cta-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: #7dd3fc;
+}
+
+.mkt-mobile-drawer__cta-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #38bdf8;
+  box-shadow: 0 0 8px #38bdf8;
+}
+
+.mkt-mobile-drawer__cta-desc {
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: #e0f2fe;
+  margin: 0;
+}
+
+.mkt-mobile-drawer__primary-btn {
+  width: 100%;
+  justify-content: center;
+  min-height: 42px;
+  padding: 0.6rem 1rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  border-radius: 8px;
+  background: #0284c7;
+  color: #ffffff;
+  box-shadow: 0 4px 14px rgba(2, 132, 199, 0.4);
+}
+
+.mkt-mobile-drawer__primary-btn:hover {
+  background: #0369a1;
+}
+
+/* Mobile Nav List */
+.mkt-mobile-nav {
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
-  padding: 1rem 1.25rem 1.25rem;
-  border-top: 1px solid #e5eaf0;
-  background: #fff;
 }
 
-.mkt-mobile a {
-  padding: 0.75rem 0.35rem;
-  font-weight: 600;
-  color: #151a23;
+.mkt-mobile-nav__item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 0.85rem;
+  border-radius: 10px;
+  color: #1e293b;
   text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+  transition: all 0.18s ease;
+  min-height: 46px;
+}
+
+.mkt-mobile-nav__item:hover {
+  background: #f8fafc;
+  color: #0284c7;
+}
+
+.mkt-mobile-nav__item.is-active {
+  background: #f0f9ff;
+  color: #0284c7;
+  font-weight: 700;
+}
+
+.mkt-mobile-nav__icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #f1f5f9;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #0284c7;
+  flex-shrink: 0;
+  transition: background 0.18s ease;
+}
+
+.mkt-mobile-nav__item:hover .mkt-mobile-nav__icon,
+.mkt-mobile-nav__item.is-active .mkt-mobile-nav__icon {
+  background: #e0f2fe;
+}
+
+.mkt-mobile-nav__label {
+  flex: 1;
+}
+
+.mkt-mobile-nav__count-badge {
+  background: #e2e8f0;
+  color: #475569;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.55rem;
+  border-radius: 99px;
+}
+
+.mkt-mobile-nav__hiring-pill {
+  background: #dcfce7;
+  color: #15803d;
+  font-size: 0.68rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 99px;
+  border: 1px solid #bbf7d0;
+}
+
+/* Expandable Accordions for Products, Solutions, Industries */
+.mkt-mobile-accordion {
+  border-radius: 10px;
+  overflow: hidden;
+  transition: background 0.2s ease;
+}
+
+.mkt-mobile-accordion.is-expanded {
+  background: #f8fafc;
+}
+
+.mkt-mobile-accordion__header {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.7rem 0.85rem;
+  border: none;
+  background: transparent;
+  color: #1e293b;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  text-align: left;
+  min-height: 46px;
+  transition: all 0.18s ease;
+}
+
+.mkt-mobile-accordion__header:hover {
+  background: #f1f5f9;
+  color: #0284c7;
+}
+
+.mkt-mobile-accordion__chevron {
+  margin-left: auto;
+  transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  color: #94a3b8;
+  display: flex;
+  align-items: center;
+}
+
+.mkt-mobile-accordion.is-expanded .mkt-mobile-accordion__chevron {
+  transform: rotate(180deg);
+  color: #0284c7;
+}
+
+.mkt-mobile-accordion__body {
+  display: none;
+  padding: 0.35rem 0.85rem 0.85rem 2.85rem;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.mkt-mobile-accordion.is-expanded .mkt-mobile-accordion__body {
+  display: flex;
+}
+
+.mkt-mobile-sublink {
+  display: block;
+  padding: 0.45rem 0.65rem;
+  border-radius: 6px;
+  text-decoration: none;
+  color: #334155;
+  transition: all 0.15s ease;
+}
+
+.mkt-mobile-sublink:hover {
+  background: #ffffff;
+  color: #0284c7;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.mkt-mobile-sublink--all {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-weight: 700;
+  font-size: 0.82rem;
+  color: #0284c7;
+  padding: 0.45rem 0.65rem;
+  border-bottom: 1px solid #e2e8f0;
+  margin-bottom: 0.25rem;
+}
+
+.mkt-mobile-sublink__title {
+  display: block;
+  font-weight: 600;
+  font-size: 0.88rem;
+  color: #0f172a;
+}
+
+.mkt-mobile-sublink:hover .mkt-mobile-sublink__title {
+  color: #0284c7;
+}
+
+.mkt-mobile-sublink__desc {
+  display: block;
+  font-size: 0.74rem;
+  color: #64748b;
+  margin-top: 1px;
+  line-height: 1.35;
+}
+
+/* Quick Connect & Direct Contact Footer */
+.mkt-mobile-drawer__footer {
+  margin-top: auto;
+  padding-top: 1.15rem;
+  border-top: 1px solid #e2e8f0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.mkt-mobile-drawer__footer-heading {
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: #64748b;
+  margin: 0;
+}
+
+.mkt-mobile-drawer__contact-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.6rem;
+}
+
+.mkt-mobile-drawer__contact-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.55rem 0.65rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  text-decoration: none;
+  color: #1e293b;
+  transition: all 0.18s ease;
+}
+
+.mkt-mobile-drawer__contact-item:hover {
+  background: #f0f9ff;
+  border-color: #bae6fd;
+}
+
+.mkt-mobile-drawer__contact-icon {
+  font-size: 1.05rem;
+  flex-shrink: 0;
+}
+
+.mkt-mobile-drawer__contact-label {
+  display: block;
+  font-size: 0.66rem;
+  font-weight: 700;
+  color: #64748b;
+  text-transform: uppercase;
+}
+
+.mkt-mobile-drawer__contact-val {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 600;
+  color: #0f172a;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.mkt-mobile-drawer__meta {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  font-size: 0.72rem;
+  color: #94a3b8;
+  flex-wrap: wrap;
+  padding-top: 0.25rem;
 }
 
 /* Hero visual styles live in prady-marketing.css */

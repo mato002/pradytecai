@@ -8,6 +8,7 @@ const NAV = [
     section: "Command",
     items: [
       { to: "/admin", label: "Dashboard", perm: "dashboard.view", end: true, icon: "dashboard" },
+      { to: "/admin/products", label: "Products", perm: "products.view", icon: "products" },
       { to: "/admin/pulse", label: "Marketing Pulse", perm: "pulse.view", icon: "pulse" },
       { to: "/admin/tasks", label: "Tasks", perm: "tasks.view", icon: "tasks" },
     ],
@@ -45,7 +46,6 @@ const NAV = [
   {
     section: "Website",
     items: [
-      { to: "/admin/products", label: "Products", perm: "products.view", icon: "products" },
       { to: "/admin/blog", label: "Blog", perm: "blog.view", icon: "blog" },
     ],
   },
