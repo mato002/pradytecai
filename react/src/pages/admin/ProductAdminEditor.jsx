@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate, useParams } from "react-router-dom";
 import { api, ensureCsrf } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
 import RichTextEditor from "../../components/admin/RichTextEditor";
+import { AdminToast, AdminConfirmModal } from "../../components/common/AdminToast";
 
 const EMPTY = {
   name: "",
@@ -75,9 +76,10 @@ function FieldHelp({ text }) {
   );
 }
 
-function Field({ label, children, help, hint }) {
+function Field({ label, children, help, hint, className = "" }) {
+  const cls = ["admin-field", className].filter(Boolean).join(" ");
   return (
-    <label className="admin-field">
+    <label className={cls}>
       <span className="admin-field__label">
         <span>{label}</span>
         <FieldHelp text={help} />
@@ -147,11 +149,27 @@ export default function ProductAdminEditor() {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [mediaSaving, setMediaSaving] = useState(false);
-  const [error, setError] = useState("");
-  const [notice, setNotice] = useState("");
+  const [toast, setToast] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    title: "",
+    message: "",
+    confirmText: "Delete",
+    confirmVariant: "danger",
+    loading: false,
+    onConfirm: null,
+  });
   const [productId, setProductId] = useState(isNew ? null : id);
   /** When true, slug is locked to the name (auto). Manual slug edits unlock it. */
   const [slugLocked, setSlugLocked] = useState(isNew);
+
+  const showSuccess = useCallback((message, title = "Success") => {
+    setToast({ type: "success", title, message });
+  }, []);
+
+  const showError = useCallback((message, title = "Error") => {
+    setToast({ type: "error", title, message });
+  }, []);
 
   const loadMedia = useCallback(async (pid) => {
     if (!pid) return;
@@ -159,9 +177,9 @@ export default function ProductAdminEditor() {
       const rows = await api(`/products/${pid}/media/`);
       setMediaItems(Array.isArray(rows) ? rows : []);
     } catch (err) {
-      setError(err.message || "Failed to load media");
+      showError(err.message || "Failed to load media items.");
     }
-  }, []);
+  }, [showError]);
 
   useEffect(() => {
     if (!can("products.view")) return;
@@ -261,8 +279,6 @@ export default function ProductAdminEditor() {
     e.preventDefault();
     if (!canManage) return;
     setSaving(true);
-    setNotice("");
-    setError("");
     try {
       await ensureCsrf();
       const body = new FormData();
@@ -270,7 +286,7 @@ export default function ProductAdminEditor() {
       let saved;
       if (isNew || !productId) {
         saved = await api("/products/", { method: "POST", body });
-        setNotice("Product created successfully.");
+        showSuccess("Product created successfully.");
         navigate(`/admin/products/${saved.id}/edit`, { replace: true });
         return;
       }
@@ -285,9 +301,9 @@ export default function ProductAdminEditor() {
       setPosterFile(null);
       setHeroFile(null);
       setMobileFile(null);
-      setNotice("Changes saved successfully.");
+      showSuccess("Changes saved successfully.");
     } catch (err) {
-      setError(err.message || "Save failed");
+      showError(err.message || "Save failed.");
     } finally {
       setSaving(false);
     }
@@ -297,7 +313,6 @@ export default function ProductAdminEditor() {
     e.preventDefault();
     if (!canManage || !productId) return;
     setMediaSaving(true);
-    setError("");
     try {
       await ensureCsrf();
       const body = new FormData();
@@ -327,29 +342,43 @@ export default function ProductAdminEditor() {
       setMediaImage(null);
       setMediaVideo(null);
       setMediaThumb(null);
-      setNotice("Media added to gallery.");
+      showSuccess("Media added to gallery successfully.");
       await loadMedia(productId);
     } catch (err) {
       const detail =
         err.data && typeof err.data === "object"
           ? Object.values(err.data).flat().join(" ") || err.message
           : err.message;
-      setError(detail || "Media upload failed");
+      showError(detail || "Media upload failed.");
     } finally {
       setMediaSaving(false);
     }
   }
 
-  async function onDeleteMedia(item) {
+  function onDeleteMedia(item) {
     if (!canManage || !productId) return;
-    if (!window.confirm("Remove this media item?")) return;
-    try {
-      await ensureCsrf();
-      await api(`/products/${productId}/media/${item.id}/`, { method: "DELETE" });
-      await loadMedia(productId);
-    } catch (err) {
-      setError(err.message || "Delete failed");
-    }
+    const label = item.title || `${item.media_type} item`;
+    setConfirmModal({
+      open: true,
+      title: "Remove Media Item",
+      message: `Are you sure you want to remove "${label}"? The media file will be removed from Cloudflare R2 storage.`,
+      confirmText: "Delete",
+      confirmVariant: "danger",
+      loading: false,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, loading: true }));
+        try {
+          await ensureCsrf();
+          await api(`/products/${productId}/media/${item.id}/`, { method: "DELETE" });
+          setConfirmModal((prev) => ({ ...prev, open: false, loading: false }));
+          showSuccess("Media item removed successfully.");
+          await loadMedia(productId);
+        } catch (err) {
+          setConfirmModal((prev) => ({ ...prev, loading: false }));
+          showError(err.message || "Failed to delete media item.");
+        }
+      },
+    });
   }
 
   async function onToggleFeatured(item) {
@@ -359,9 +388,10 @@ export default function ProductAdminEditor() {
       const body = new FormData();
       body.append("is_featured", item.is_featured ? "false" : "true");
       await api(`/products/${productId}/media/${item.id}/`, { method: "PATCH", body });
+      showSuccess(item.is_featured ? "Featured status removed." : "Set as primary gallery item.");
       await loadMedia(productId);
     } catch (err) {
-      setError(err.message || "Update failed");
+      showError(err.message || "Update failed.");
     }
   }
 
@@ -404,17 +434,6 @@ export default function ProductAdminEditor() {
           )}
         </div>
       </header>
-
-      {error && (
-        <div className="admin-banner admin-banner--error" role="alert">
-          <span>⚠️ {error}</span>
-        </div>
-      )}
-      {notice && (
-        <div className="admin-banner admin-banner--ok" role="status">
-          <span>✓ {notice}</span>
-        </div>
-      )}
 
       <form id="product-admin-form" className="admin-form" onSubmit={onSave}>
         {/* Section 1: Basic Information */}
@@ -491,6 +510,7 @@ export default function ProductAdminEditor() {
           <Field
             label="Full Overview & Features"
             help="Detailed overview for the main product detail page. Supports Subtitles (##), Headings (###, ####), Bullet & Numbered lists, Links, and HTML."
+            className="admin-field--overview"
           >
             <RichTextEditor
               value={form.description}
@@ -498,7 +518,8 @@ export default function ProductAdminEditor() {
               siteUrl={form.url}
               disabled={!canManage}
               placeholder="Describe product capabilities, benefits, and key features..."
-              rows={8}
+              rows={14}
+              minHeight={320}
             />
           </Field>
         </section>
@@ -991,6 +1012,27 @@ export default function ProductAdminEditor() {
           <p className="admin-help text-base">Save product basic details first to attach gallery screenshots and media.</p>
         </div>
       )}
+
+      {toast && (
+        <AdminToast
+          type={toast.type}
+          title={toast.title}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <AdminConfirmModal
+        open={confirmModal.open}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        cancelText={confirmModal.cancelText}
+        confirmVariant={confirmModal.confirmVariant}
+        loading={confirmModal.loading}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
+      />
     </div>
   );
 }

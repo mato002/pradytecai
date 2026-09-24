@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Navigate } from "react-router-dom";
 import { api, ensureCsrf } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
+import { AdminToast } from "../../components/common/AdminToast";
 
 const STATUSES = [
   { value: "new", label: "New" },
@@ -18,7 +19,7 @@ export default function EnquiriesAdmin() {
   const [selected, setSelected] = useState(null);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
-  const [notice, setNotice] = useState("");
+  const [toast, setToast] = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -44,7 +45,6 @@ export default function EnquiriesAdmin() {
 
   async function updateStatus(status) {
     if (!selected || !canManage) return;
-    setNotice("");
     try {
       await ensureCsrf();
       const updated = await api(`/enquiries/${selected.id}/set_status/`, {
@@ -52,10 +52,10 @@ export default function EnquiriesAdmin() {
         body: { status },
       });
       setSelected(updated);
-      setNotice("Status updated.");
+      setToast({ type: "success", title: "Success", message: "Enquiry status updated." });
       load();
     } catch (err) {
-      setNotice(err.message || "Failed to update status");
+      setToast({ type: "error", title: "Error", message: err.message || "Failed to update status." });
     }
   }
 
@@ -180,10 +180,18 @@ export default function EnquiriesAdmin() {
                   onChange={updateStatus}
                 />
               )}
-              {notice && <p className="text-sm text-[var(--admin-muted)]">{notice}</p>}
             </div>
           )}
         </div>
+      )}
+
+      {toast && (
+        <AdminToast
+          type={toast.type}
+          title={toast.title}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
       )}
     </div>
   );

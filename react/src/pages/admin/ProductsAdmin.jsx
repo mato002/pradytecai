@@ -2,14 +2,32 @@ import React, { useCallback, useEffect, useState } from "react";
 import { Link, Navigate } from "react-router-dom";
 import { api, ensureCsrf } from "../../api/client";
 import { useAuth } from "../../auth/AuthContext";
+import { AdminToast, AdminConfirmModal } from "../../components/common/AdminToast";
 
 export default function ProductsAdmin() {
   const { can } = useAuth();
   const canManage = can("products.manage");
   const [rows, setRows] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [toast, setToast] = useState(null);
+  const [confirmModal, setConfirmModal] = useState({
+    open: false,
+    title: "",
+    message: "",
+    confirmText: "Delete",
+    confirmVariant: "danger",
+    loading: false,
+    onConfirm: null,
+  });
+
+  const showSuccess = useCallback((message, title = "Success") => {
+    setToast({ type: "success", title, message });
+  }, []);
+
+  const showError = useCallback((message, title = "Error") => {
+    setToast({ type: "error", title, message });
+  }, []);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -19,9 +37,9 @@ export default function ProductsAdmin() {
         else if (data?.results) setRows(data.results);
         else setRows([]);
       })
-      .catch((err) => setError(err.message || "Failed to load"))
+      .catch((err) => showError(err.message || "Failed to load products"))
       .finally(() => setLoading(false));
-  }, []);
+  }, [showError]);
 
   useEffect(() => {
     if (!can("products.view")) return;
@@ -30,29 +48,44 @@ export default function ProductsAdmin() {
 
   if (!can("products.view")) return <Navigate to="/admin" replace />;
 
-  async function onDelete(row) {
+  function onDelete(row) {
     if (!canManage) return;
-    if (!window.confirm(`Delete “${row.name}”? Linked enquiries will keep their history.`)) return;
-    try {
-      await ensureCsrf();
-      await api(`/products/${row.id}/`, { method: "DELETE" });
-      load();
-    } catch (err) {
-      setError(err.message || "Delete failed");
-    }
+    setConfirmModal({
+      open: true,
+      title: "Delete Product",
+      message: `Are you sure you want to delete “${row.name}”? All gallery images, videos, and settings will be permanently removed. Linked enquiries will keep their history.`,
+      confirmText: "Delete Product",
+      confirmVariant: "danger",
+      loading: false,
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, loading: true }));
+        try {
+          await ensureCsrf();
+          await api(`/products/${row.id}/`, { method: "DELETE" });
+          setConfirmModal((prev) => ({ ...prev, open: false, loading: false }));
+          showSuccess(`Product “${row.name}” was deleted successfully.`);
+          load();
+        } catch (err) {
+          setConfirmModal((prev) => ({ ...prev, loading: false }));
+          showError(err.message || "Failed to delete product.");
+        }
+      },
+    });
   }
 
   async function toggleActive(row) {
     if (!canManage) return;
+    const nextStatus = !row.is_active;
     try {
       await ensureCsrf();
       await api(`/products/${row.id}/`, {
         method: "PATCH",
-        body: { is_active: !row.is_active },
+        body: { is_active: nextStatus },
       });
+      showSuccess(`Product “${row.name}” is now ${nextStatus ? "Active" : "Inactive"}.`);
       load();
     } catch (err) {
-      setError(err.message || "Update failed");
+      showError(err.message || "Update status failed.");
     }
   }
 
@@ -108,12 +141,6 @@ export default function ProductsAdmin() {
         {loading && (
           <div className="text-center py-12">
             <p className="text-[var(--admin-muted)]">Loading products catalog…</p>
-          </div>
-        )}
-
-        {error && (
-          <div className="admin-banner admin-banner--error">
-            <span>⚠️ {error}</span>
           </div>
         )}
 
@@ -198,6 +225,27 @@ export default function ProductsAdmin() {
           </div>
         )}
       </div>
+
+      {toast && (
+        <AdminToast
+          type={toast.type}
+          title={toast.title}
+          message={toast.message}
+          onClose={() => setToast(null)}
+        />
+      )}
+
+      <AdminConfirmModal
+        open={confirmModal.open}
+        title={confirmModal.title}
+        message={confirmModal.message}
+        confirmText={confirmModal.confirmText}
+        cancelText={confirmModal.cancelText}
+        confirmVariant={confirmModal.confirmVariant}
+        loading={confirmModal.loading}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={() => setConfirmModal((prev) => ({ ...prev, open: false }))}
+      />
     </div>
   );
 }

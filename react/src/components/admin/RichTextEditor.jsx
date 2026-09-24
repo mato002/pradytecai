@@ -7,10 +7,15 @@ export default function RichTextEditor({
   siteUrl = "",
   disabled = false,
   placeholder = "Describe product capabilities, benefits, and key features...",
-  rows = 7,
+  rows = 12,
+  minHeight = 280,
 }) {
   const [mode, setMode] = useState("write"); // 'write' | 'preview'
   const textareaRef = useRef(null);
+
+  const containerMinHeightStyle = minHeight
+    ? { minHeight: typeof minHeight === "number" ? `${minHeight}px` : minHeight }
+    : undefined;
 
   function insertFormatting(prefix, suffix = "", defaultText = "") {
     if (disabled || !textareaRef.current) return;
@@ -208,6 +213,7 @@ export default function RichTextEditor({
           <textarea
             ref={textareaRef}
             rows={rows}
+            style={containerMinHeightStyle}
             placeholder={placeholder}
             value={value}
             onChange={(e) => onChange(e.target.value)}
@@ -226,7 +232,7 @@ export default function RichTextEditor({
           </div>
         </div>
       ) : (
-        <div className="admin-rich-editor__preview">
+        <div className="admin-rich-editor__preview" style={containerMinHeightStyle}>
           {value.trim() ? (
             <RichContent content={value} />
           ) : (
