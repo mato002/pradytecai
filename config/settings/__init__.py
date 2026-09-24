@@ -8,6 +8,7 @@ Env notes:
   REDIS_HOST=host.docker.internal (host Redis — no Redis Compose service).
 """
 import os
+import sys
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -42,6 +43,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "storages",
     "rest_framework",
     "django_celery_beat",
     "apps.core",
@@ -182,6 +184,51 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
+
+# ---------------------------------------------------------------------------
+# Cloudflare R2 / Object Storage Configuration
+# ---------------------------------------------------------------------------
+R2_ENDPOINT = os.getenv("R2_ENDPOINT")
+R2_ACCESS_KEY_ID = os.getenv("R2_ACCESS_KEY_ID")
+R2_SECRET_ACCESS_KEY = os.getenv("R2_SECRET_ACCESS_KEY")
+R2_BUCKET_NAME = os.getenv("R2_BUCKET_NAME", "pradytecai")
+R2_REGION = os.getenv("R2_REGION", "auto")
+R2_CUSTOM_DOMAIN = os.getenv("R2_CUSTOM_DOMAIN") or os.getenv("R2_PUBLIC_URL")
+R2_QUERYSTRING_EXPIRE = int(os.getenv("R2_QUERYSTRING_EXPIRE", "86400"))
+
+_is_testing = "test" in sys.argv
+USE_R2 = not _is_testing and os.getenv("USE_R2", "true").lower() in ("1", "true", "yes") and bool(
+    R2_ACCESS_KEY_ID and R2_SECRET_ACCESS_KEY and R2_ENDPOINT
+)
+
+if USE_R2:
+    STORAGES = {
+        "default": {
+            "BACKEND": "apps.core.storage.CloudflareR2Storage",
+            "OPTIONS": {
+                "bucket_name": R2_BUCKET_NAME,
+                "access_key": R2_ACCESS_KEY_ID,
+                "secret_key": R2_SECRET_ACCESS_KEY,
+                "endpoint_url": R2_ENDPOINT,
+                "region_name": R2_REGION,
+                "signature_version": "s3v4",
+                "addressing_style": "path",
+                "file_overwrite": False,
+            },
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
+else:
+    STORAGES = {
+        "default": {
+            "BACKEND": "django.core.files.storage.FileSystemStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 # Product gallery video uploads (MP4/WebM). Keep below typical reverse-proxy limits.
 # Apache/cPanel often needs LimitRequestBody raised separately if uploads fail at ~few MB.

@@ -5,3 +5,6 @@ class CareersConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "apps.careers"
     label = "careers"
+
+    def ready(self):
+        import apps.careers.signals  # noqa: F401
