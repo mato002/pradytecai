@@ -2436,38 +2436,171 @@
     border-radius: 30px;
 }
 
+/* Device View Filter Tabs */
+.pdp-showcase__header-bar {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 0.85rem;
+}
+
+.pdp-showcase__tabs {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(15, 23, 42, 0.05);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 99px;
+    padding: 3px;
+    gap: 3px;
+}
+
+.pdp-showcase__tab-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.28rem 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-secondary, #64748b);
+    background: transparent;
+    border: none;
+    border-radius: 99px;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+    white-space: nowrap;
+}
+
+.pdp-showcase__tab-btn:hover {
+    color: var(--text-primary, #0f172a);
+    background: rgba(255, 255, 255, 0.6);
+}
+
+.pdp-showcase__tab-btn.is-active {
+    color: #0284c7;
+    background: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
+}
+
 .pdp-showcase__stage {
     position: relative;
     z-index: 1;
     display: flex;
     align-items: flex-end;
+    justify-content: center;
+    gap: 1.5rem;
     padding-bottom: 8px;
+    width: 100%;
 }
 
 /* Dual Mode: Both Desktop and Mobile View */
 .pdp-showcase--dual .pdp-device--desktop {
-    width: 82%;
-    margin-right: auto;
+    flex: 1 1 0;
+    min-width: 0;
+    max-width: 440px;
+    width: 100%;
+    margin: 0;
 }
 
 .pdp-showcase--dual .pdp-device--mobile {
-    position: absolute;
-    right: 0;
-    bottom: -12px;
-    width: 36%;
-    min-width: 130px;
-    max-width: 205px;
-    z-index: 3;
+    position: relative;
+    right: auto;
+    bottom: auto;
+    flex-shrink: 0;
+    width: 175px;
+    max-width: 190px;
+    margin: 0;
+    z-index: 2;
+}
+
+/* Solo View Overrides inside Dual Component */
+.pdp-showcase__stage--view-desktop .pdp-device--desktop {
+    flex: none;
+    width: 100%;
+    max-width: 580px;
+    margin-inline: auto;
+}
+
+.pdp-showcase__stage--view-mobile .pdp-device--mobile {
+    width: 100%;
+    max-width: 250px;
+    margin-inline: auto;
+}
+
+/* Tablet & Mobile Screens */
+@media (max-width: 959px) {
+    .pdp-showcase__header-bar {
+        justify-content: center;
+        margin-bottom: 0.9rem;
+    }
+
+    .pdp-showcase--dual .pdp-showcase__stage {
+        flex-direction: column;
+        align-items: center;
+        gap: 1.75rem;
+        padding-bottom: 0;
+    }
+
+    .pdp-showcase--dual .pdp-device--desktop {
+        width: 100%;
+        max-width: 520px;
+        margin-inline: auto;
+    }
+
+    .pdp-showcase--dual .pdp-device--mobile {
+        position: relative;
+        right: auto;
+        bottom: auto;
+        width: 100%;
+        max-width: 230px;
+        margin-inline: auto;
+    }
 }
 
 @media (max-width: 480px) {
-    .pdp-showcase--dual .pdp-device--desktop {
-        width: 75%;
+    .pdp-showcase__header-bar {
+        margin-bottom: 0.75rem;
     }
+
+    .pdp-showcase__tabs {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .pdp-showcase__tab-btn {
+        flex: 1;
+        justify-content: center;
+        padding: 0.3rem 0.35rem;
+        font-size: 0.67rem;
+    }
+
+    .pdp-showcase--dual .pdp-showcase__stage {
+        gap: 1.5rem;
+    }
+
+    .pdp-showcase--dual .pdp-device--desktop {
+        width: 100%;
+        max-width: 100%;
+        border-radius: 10px;
+    }
+
+    .pdp-showcase--dual .pdp-device--desktop .pdp-device__desktop-screen {
+        aspect-ratio: 16 / 10;
+        max-height: 250px;
+    }
+
     .pdp-showcase--dual .pdp-device--mobile {
-        width: 44%;
-        min-width: 115px;
-        bottom: -6px;
+        width: 100%;
+        max-width: 220px;
+        border-radius: 24px;
+        border-width: 3px;
+        margin-inline: auto;
+    }
+
+    .pdp-showcase--dual .pdp-device--mobile .pdp-device__phone-screen {
+        aspect-ratio: 9 / 18.5;
+        max-height: 440px;
     }
 }
 
@@ -2653,7 +2786,7 @@
     position: relative;
     width: 100%;
     aspect-ratio: 9 / 18.5;
-    max-height: 380px;
+    max-height: 480px;
     background: #0f172a;
     overflow: hidden;
 }
