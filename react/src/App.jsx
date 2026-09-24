@@ -32,6 +32,7 @@ import SocialAccounts from "./pages/admin/social/SocialAccounts";
 import SocialAnalytics from "./pages/admin/social/SocialAnalytics";
 import SocialInbox from "./pages/admin/social/SocialInbox";
 import SocialHealth from "./pages/admin/social/SocialHealth";
+import SettingsAdmin from "./pages/admin/SettingsAdmin";
 
 function RequireAuth({ children }) {
   const { user, loading } = useAuth();
