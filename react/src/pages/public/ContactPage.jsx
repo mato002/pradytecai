@@ -62,9 +62,12 @@ const ICON_BY_TYPE = {
   twitter: "twitter",
   instagram: "instagram",
   youtube: "youtube",
+  tiktok: "tiktok",
   telegram: "telegram",
+  github: "github",
   location: "location",
   hours: "clock",
+  website: "globe",
   other: "support",
 };
 
@@ -74,7 +77,10 @@ const SOCIAL_TYPES = new Set([
   "twitter",
   "instagram",
   "youtube",
+  "tiktok",
   "telegram",
+  "github",
+  "website",
 ]);
 
 function channelIcon(type) {

@@ -104,7 +104,7 @@ export default function App() {
         <Route path="pulse" element={<AdminModule resource="pulse" title="Marketing Pulse" perm="pulse.view" />} />
         <Route path="tasks" element={<AdminModule resource="tasks" title="Tasks" perm="tasks.view" />} />
         <Route path="subscribers" element={<AdminModule resource="subscribers" title="Subscribers" perm="subscribers.view" />} />
-        <Route path="settings" element={<AdminModule resource="settings" title="Settings" perm="settings.view" />} />
+        <Route path="settings" element={<SettingsAdmin />} />
         <Route path="activity-logs" element={<AdminModule resource="activity-logs" title="Activity Logs" perm="audit.view" />} />
         <Route path="profile" element={<div className="rounded-2xl border bg-white p-6">Profile settings coming next.</div>} />
       </Route>
