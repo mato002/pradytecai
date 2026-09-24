@@ -2225,6 +2225,60 @@
     max-width: 22rem;
 }
 
+.mkt-footer__social {
+    margin-top: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.mkt-footer__social-label {
+    font-size: 0.72rem;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.mkt-footer__social-links {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    flex-wrap: wrap;
+}
+
+.mkt-footer__social-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 9px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+    text-decoration: none;
+    transition: all 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.mkt-footer__social-btn:hover {
+    background: #0284c7;
+    border-color: #38bdf8;
+    color: #ffffff;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(2, 132, 199, 0.4);
+}
+
+.mkt-footer__whatsapp-link {
+    color: #34d399 !important;
+    font-weight: 600;
+}
+
+.mkt-footer__whatsapp-link:hover {
+    color: #6ee7b7 !important;
+    text-decoration: underline;
+}
+
 .mkt-footer__heading {
     margin: 0 0 1rem;
     color: #fff;
