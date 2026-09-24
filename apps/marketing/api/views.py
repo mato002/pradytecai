@@ -16,7 +16,7 @@ class BlogPostSerializer(serializers.ModelSerializer):
 
 
 class ContactChannelSerializer(serializers.ModelSerializer):
-    href = serializers.SerializerMethodField()
+    href = serializers.CharField(required=False, allow_blank=True, allow_null=True)
 
     class Meta:
         model = ContactChannel
@@ -27,12 +27,30 @@ class ContactChannelSerializer(serializers.ModelSerializer):
             "value",
             "href",
             "description",
+            "is_active",
             "is_primary",
             "display_order",
+            "created_at",
+            "updated_at",
         ]
 
-    def get_href(self, obj):
-        return obj.build_href()
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        if not data.get("href"):
+            data["href"] = instance.build_href()
+        return data
+
+
+class ContactChannelViewSet(viewsets.ModelViewSet):
+    queryset = ContactChannel.objects.all().order_by("display_order", "id")
+    serializer_class = ContactChannelSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_permissions(self):
+        if self.action in ("create", "update", "partial_update", "destroy"):
+            return [require_perm("settings.manage")()]
+        return [require_perm("settings.view|settings.manage")()]
+
 
 
 class BlogPostViewSet(viewsets.ModelViewSet):

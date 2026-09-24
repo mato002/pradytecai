@@ -51,7 +51,10 @@ class ContactChannel(models.Model):
     TYPE_TWITTER = "twitter"
     TYPE_INSTAGRAM = "instagram"
     TYPE_YOUTUBE = "youtube"
+    TYPE_TIKTOK = "tiktok"
     TYPE_TELEGRAM = "telegram"
+    TYPE_GITHUB = "github"
+    TYPE_WEBSITE = "website"
     TYPE_LOCATION = "location"
     TYPE_HOURS = "hours"
     TYPE_OTHER = "other"
@@ -65,7 +68,10 @@ class ContactChannel(models.Model):
         (TYPE_TWITTER, "X / Twitter"),
         (TYPE_INSTAGRAM, "Instagram"),
         (TYPE_YOUTUBE, "YouTube"),
+        (TYPE_TIKTOK, "TikTok"),
         (TYPE_TELEGRAM, "Telegram"),
+        (TYPE_GITHUB, "GitHub"),
+        (TYPE_WEBSITE, "Website / Link"),
         (TYPE_LOCATION, "Location"),
         (TYPE_HOURS, "Business hours"),
         (TYPE_OTHER, "Other / custom link"),
@@ -136,12 +142,23 @@ class ContactChannel(models.Model):
             if raw.startswith("http"):
                 return raw
             return f"https://t.me/{handle}"
+        if kind == self.TYPE_TIKTOK:
+            handle = raw.lstrip("@")
+            if raw.startswith("http"):
+                return raw
+            return f"https://www.tiktok.com/@{handle}"
+        if kind == self.TYPE_GITHUB:
+            handle = raw.lstrip("@")
+            if raw.startswith("http"):
+                return raw
+            return f"https://github.com/{handle}"
         if kind in (
             self.TYPE_FACEBOOK,
             self.TYPE_LINKEDIN,
             self.TYPE_TWITTER,
             self.TYPE_INSTAGRAM,
             self.TYPE_YOUTUBE,
+            self.TYPE_WEBSITE,
             self.TYPE_OTHER,
         ):
             if raw.startswith("http://") or raw.startswith("https://"):

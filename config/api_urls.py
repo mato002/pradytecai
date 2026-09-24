@@ -11,6 +11,7 @@ from apps.core.views import health
 from apps.leads.api.views import DemoRequestViewSet, EnquiryViewSet, public_contact
 from apps.marketing.api.views import (
     BlogPostViewSet,
+    ContactChannelViewSet,
     SettingsViewSet,
     SubscriberViewSet,
     dashboard,
@@ -41,6 +42,7 @@ router.register(r"applications", JobApplicationViewSet, basename="applications")
 router.register(r"blog", BlogPostViewSet, basename="blog")
 router.register(r"subscribers", SubscriberViewSet, basename="subscribers")
 router.register(r"settings", SettingsViewSet, basename="settings")
+router.register(r"contact-channels", ContactChannelViewSet, basename="contact-channels")
 router.register(r"tasks", MarketingTaskViewSet, basename="tasks")
 router.register(r"activity-logs", ActivityLogViewSet, basename="activity-logs")
 
